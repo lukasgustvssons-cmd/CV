@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { DemoPanel } from "@/components/DemoPanel";
 import { FeatureCard } from "@/components/FeatureCard";
 import { Footer } from "@/components/Footer";
@@ -12,8 +11,7 @@ import { StepCard } from "@/components/StepCard";
 import { copy, Lang } from "../lib/translations";
 
 export default function Home() {
-  const [lang, setLang] = useState<Lang>("en");
-  const t = copy[lang];
+const lang: Lang = "sv";  const t = copy[lang];
 
   const steps = [
     {
