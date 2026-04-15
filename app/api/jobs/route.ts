@@ -95,7 +95,6 @@ async function fetchArbetsformedlingenJobs(
   }
 
   const locationLower = normalizedLocation.toLowerCase();
-
   const filteredJobs = mappedJobs.filter((job) =>
     job.location.toLowerCase().includes(locationLower)
   );
@@ -276,7 +275,10 @@ ${jobDescription}
     score: clampScore(Number(parsed?.score) || 0),
     summary: String(parsed?.summary || ""),
     missing: Array.isArray(parsed?.missing)
-      ? parsed.missing.map((item: unknown) => String(item).trim()).filter(Boolean).slice(0, 3)
+      ? parsed.missing
+          .map((item: unknown) => String(item).trim())
+          .filter(Boolean)
+          .slice(0, 3)
       : [],
   };
 }
@@ -308,28 +310,28 @@ export async function POST(req: Request) {
 
     const { userId } = await auth();
 
-    if (!userId) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    let plan = "free";
+
+    if (userId) {
+      const { data: appUser, error: userError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("clerk_user_id", String(userId))
+        .maybeSingle();
+
+      if (userError) {
+        return Response.json(
+          { error: userError.message || "Failed to fetch user" },
+          { status: 500 }
+        );
+      }
+
+      if (appUser?.plan) {
+        plan = appUser.plan;
+      }
     }
 
-    const { data: appUser, error: userError } = await supabase
-      .from("users")
-      .select("*")
-      .eq("clerk_user_id", String(userId))
-      .maybeSingle();
-
-    if (userError) {
-      return Response.json(
-        { error: userError.message || "Failed to fetch user" },
-        { status: 500 }
-      );
-    }
-
-    if (!appUser) {
-      return Response.json({ error: "User not found" }, { status: 404 });
-    }
-
-    if (appUser.plan === "free") {
+    if (plan === "free") {
       return Response.json(
         {
           error: "Upgrade to Pro to unlock AI job matching.",
@@ -352,7 +354,7 @@ export async function POST(req: Request) {
     const jobs = await fetchArbetsformedlingenJobs(searchQuery || "utvecklare", location);
     const jobsWithDescriptions = jobs.filter((job) => job.description.trim());
 
-    const isCareerPlus = appUser.plan === "career+";
+    const isCareerPlus = plan === "career+";
     const maxJobsToScore = isCareerPlus ? 10 : 6;
 
     const scoredJobs = await Promise.all(
@@ -392,7 +394,7 @@ export async function POST(req: Request) {
 
     return Response.json({
       jobs: scoredJobs,
-      plan: appUser.plan,
+      plan,
     });
   } catch (error: any) {
     console.error("JOBS ROUTE ERROR:", error);

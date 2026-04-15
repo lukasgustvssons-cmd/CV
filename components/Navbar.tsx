@@ -1,35 +1,42 @@
 "use client";
 
-import { Dispatch, SetStateAction } from "react";
-import { Lang } from "@/lib/translations";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
-type NavbarProps = {
-  lang: Lang;
-  setLang: Dispatch<SetStateAction<Lang>>;
-  nav: {
-    features: string;
-    howItWorks: string;
-    pricing: string;
-  };
+type Props = {
+  lang?: any;
+  setLang?: any;
+  nav?: any;
 };
 
-export function Navbar({ lang, setLang, nav }: NavbarProps) {
+export default function Navbar({ lang, setLang, nav }: Props) {
   return (
-    <nav className="flex items-center justify-between p-6">
-      <div className="font-semibold">TailorCV</div>
+    <nav className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+      <div className="font-semibold text-lg">TailorCV</div>
 
-      <div className="flex gap-6">
-        <a href="#features">{nav.features}</a>
-        <a href="#how-it-works">{nav.howItWorks}</a>
-        <a href="#pricing">{nav.pricing}</a>
+      <div className="flex items-center gap-4">
+        {/* LANGUAGE SWITCH (om du använder den) */}
+        {setLang && (
+          <button
+            onClick={() => setLang(lang === "sv" ? "en" : "sv")}
+            className="text-sm text-slate-600"
+          >
+            {nav?.language}
+          </button>
+        )}
+
+        {/* 🔑 AUTH */}
+        <SignedOut>
+          <SignInButton mode="modal">
+            <button className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white">
+              Logga in
+            </button>
+          </SignInButton>
+        </SignedOut>
+
+        <SignedIn>
+          <UserButton afterSignOutUrl="/" />
+        </SignedIn>
       </div>
-
-      <button
-        onClick={() => setLang(lang === "en" ? "sv" : "en")}
-        className="text-sm"
-      >
-        {lang === "en" ? "SV" : "EN"}
-      </button>
     </nav>
   );
 }
