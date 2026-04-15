@@ -5,8 +5,7 @@ import { DemoPanel } from "@/components/DemoPanel";
 import { FeatureCard } from "@/components/FeatureCard";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
-import { Navbar } from "@/components/Navbar";import { PricingCard } from "@/components/PricingCard";
-import { SectionTitle } from "@/components/SectionTitle";
+import Navbar from "@/components/Navbar";import { SectionTitle } from "@/components/SectionTitle";
 import { StepCard } from "@/components/StepCard";
 import { copy, Lang } from "../lib/translations";
 
