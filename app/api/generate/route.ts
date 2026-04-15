@@ -19,13 +19,11 @@ export async function POST(req: Request) {
 
     const isSwedish = lang === "sv";
 
-    if (!userId) {
-      return Response.json({
-        output: isSwedish
-          ? "Du måste vara inloggad för att generera ett CV."
-          : "You must be logged in to generate a resume.",
-      });
-    }
+    // if (!userId) {
+//   return Response.json({
+//     output: "Du måste vara inloggad..."
+//   });
+// }
 
     if (!experience || !job) {
       return Response.json({
