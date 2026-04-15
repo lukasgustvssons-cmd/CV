@@ -19,12 +19,6 @@ export async function POST(req: Request) {
 
     const isSwedish = lang === "sv";
 
-    // if (!userId) {
-//   return Response.json({
-//     output: "Du måste vara inloggad..."
-//   });
-// }
-
     if (!experience || !job) {
       return Response.json({
         output: isSwedish
@@ -52,53 +46,58 @@ export async function POST(req: Request) {
       });
     }
 
-    const client = await clerkClient();
-    const clerkUser = await client.users.getUser(userId);
-    const email = clerkUser.emailAddresses?.[0]?.emailAddress ?? null;
+    let appUser: any = null;
+    let email: string | null = null;
 
-    const { data: existingUser, error: fetchUserError } = await supabase
-      .from("users")
-      .select("*")
-      .eq("clerk_user_id", String(userId))
-      .maybeSingle();
+    if (userId) {
+      const client = await clerkClient();
+      const clerkUser = await client.users.getUser(userId);
+      email = clerkUser.emailAddresses?.[0]?.emailAddress ?? null;
 
-    if (fetchUserError) {
-      return Response.json({
-        output:
-          fetchUserError.message ||
-          (isSwedish
-            ? "Databasfel vid hämtning av användare."
-            : "Database error while fetching user."),
-      });
-    }
-
-    let appUser = existingUser;
-
-    if (!appUser) {
-      const defaultPlan = "free";
-
-      const { data: insertedUser, error: insertUserError } = await supabase
+      const { data: existingUser, error: fetchUserError } = await supabase
         .from("users")
-        .insert({
-          clerk_user_id: String(userId),
-          email,
-          plan: defaultPlan,
-          credits_used: 0,
-        })
         .select("*")
-        .single();
+        .eq("clerk_user_id", String(userId))
+        .maybeSingle();
 
-      if (insertUserError) {
+      if (fetchUserError) {
         return Response.json({
           output:
-            insertUserError.message ||
+            fetchUserError.message ||
             (isSwedish
-              ? "Databasfel vid skapande av användare."
-              : "Database error while creating user."),
+              ? "Databasfel vid hämtning av användare."
+              : "Database error while fetching user."),
         });
       }
 
-      appUser = insertedUser;
+      appUser = existingUser;
+
+      if (!appUser) {
+        const defaultPlan = "free";
+
+        const { data: insertedUser, error: insertUserError } = await supabase
+          .from("users")
+          .insert({
+            clerk_user_id: String(userId),
+            email,
+            plan: defaultPlan,
+            credits_used: 0,
+          })
+          .select("*")
+          .single();
+
+        if (insertUserError) {
+          return Response.json({
+            output:
+              insertUserError.message ||
+              (isSwedish
+                ? "Databasfel vid skapande av användare."
+                : "Database error while creating user."),
+          });
+        }
+
+        appUser = insertedUser;
+      }
     }
 
     const systemPrompt = isSwedish
@@ -281,19 +280,21 @@ Additional instructions:
       });
     }
 
-    const { error: updateCreditsError } = await supabase
-      .from("users")
-      .update({ credits_used: (appUser?.credits_used || 0) + 1 })
-      .eq("clerk_user_id", String(userId));
+    if (userId && appUser) {
+      const { error: updateCreditsError } = await supabase
+        .from("users")
+        .update({ credits_used: (appUser?.credits_used || 0) + 1 })
+        .eq("clerk_user_id", String(userId));
 
-    if (updateCreditsError) {
-      return Response.json({
-        output:
-          updateCreditsError.message ||
-          (isSwedish
-            ? "CV:t skapades, men statistiken kunde inte uppdateras."
-            : "The resume was created, but statistics could not be updated."),
-      });
+      if (updateCreditsError) {
+        return Response.json({
+          output:
+            updateCreditsError.message ||
+            (isSwedish
+              ? "CV:t skapades, men statistiken kunde inte uppdateras."
+              : "The resume was created, but statistics could not be updated."),
+        });
+      }
     }
 
     return Response.json({ output });
