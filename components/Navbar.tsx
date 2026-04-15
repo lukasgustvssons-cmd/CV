@@ -11,7 +11,7 @@ export default function Navbar() {
 
       <div className="flex items-center gap-4">
         {!isLoaded ? null : isSignedIn ? (
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         ) : (
           <SignInButton mode="modal">
             <button className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white">
