@@ -5,7 +5,9 @@ import { DemoPanel } from "@/components/DemoPanel";
 import { FeatureCard } from "@/components/FeatureCard";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
-import Navbar from "@/components/Navbar";import { SectionTitle } from "@/components/SectionTitle";
+import Navbar from "@/components/Navbar";
+import { PricingCard } from "@/components/PricingCard";
+import { SectionTitle } from "@/components/SectionTitle";
 import { StepCard } from "@/components/StepCard";
 import { copy, Lang } from "../lib/translations";
 
@@ -159,7 +161,7 @@ export default function Home() {
 
   return (
     <main>
-      <Navbar lang={lang} setLang={setLang} nav={t.nav} />
+      <Navbar />
       <Hero t={t.hero} />
 
       <section id="how-it-works" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
