@@ -152,16 +152,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="demo" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
-        <SectionTitle
-          eyebrow="Så ser det ut"
-          title="Skapa ett jobbredo CV på några minuter"
-          description="Fyll i din bakgrund och målroll så skapar Hireon ett tydligt och professionellt CV som är lätt att anpassa vidare."
-        />
-        <div className="mt-10">
-          <DemoPanel lang={lang} t={t.demo} />
-        </div>
-      </section>
+      <DemoPanel lang={lang} t={t.demo} />
 
       <section className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
         <SectionTitle
