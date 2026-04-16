@@ -95,54 +95,60 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         body: JSON.stringify({ experience, job, lang }),
       });
 
-     const data = await res.json();
+      const data = await res.json();
 
-if (data.limitReached) {
-  setResult(data.output);
-  return;
-}
+      if (data.limitReached) {
+        setResult(data.output);
+        return;
+      }
 
-setResult(data.output || t.error);
+      setResult(data.output || t.error);
+    } catch {
+      setResult(t.error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDownloadPdf = async () => {
-  if (!cvRef.current) return;
+    if (!cvRef.current) return;
 
-  try {
-    setDownloading(true);
+    try {
+      setDownloading(true);
 
-    const html2pdf = (await import("html2pdf.js")).default;
+      const html2pdf = (await import("html2pdf.js")).default;
 
-    const options: any = {
-      margin: 0,
-      filename: t.fileName,
-      image: { type: "jpeg", quality: 1 },
-      html2canvas: {
-        scale: 2,
-        backgroundColor: "#ffffff",
-        useCORS: true,
-      },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait",
-      },
-      pagebreak: {
-        mode: ["css", "legacy"],
-      },
-    };
+      const options: any = {
+        margin: 0,
+        filename: t.fileName,
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: {
+          scale: 2,
+          backgroundColor: "#ffffff",
+          useCORS: true,
+        },
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait",
+        },
+        pagebreak: {
+          mode: ["css", "legacy"],
+        },
+      };
 
-    await html2pdf().set(options).from(cvRef.current).save();
-  } catch (error) {
-    console.error(error);
-    alert(
-      lang === "sv"
-        ? "Kunde inte ladda ner PDF."
-        : "Could not download PDF."
-    );
-  } finally {
-    setDownloading(false);
-  }
-};
+      await html2pdf().set(options).from(cvRef.current).save();
+    } catch (error) {
+      console.error(error);
+      alert(
+        lang === "sv"
+          ? "Kunde inte ladda ner PDF."
+          : "Could not download PDF."
+      );
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <section id="demo" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
