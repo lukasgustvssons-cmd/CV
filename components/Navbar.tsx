@@ -7,7 +7,7 @@ export default function Navbar() {
 
   return (
     <nav className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-      <div className="text-lg font-semibold">TailorCV</div>
+      <div className="text-lg font-semibold">Hireon</div>
 
       <div className="flex flex-col items-end gap-2">
         {!isLoaded ? null : isSignedIn ? (

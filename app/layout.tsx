@@ -3,8 +3,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 export const metadata: Metadata = {
- title: "TailorCV | Få fler intervjuer med AI",
-description: "Skapa skräddarsydda CV:n, personliga brev och se exakt hur du matchar jobbet.",
+  title: "Hireon | Skaffa ditt drömjobb enklare",
+  description:
+    "Skapa bättre CV, personliga brev och jobbansökningar med AI.",
 };
 
 export default function RootLayout({

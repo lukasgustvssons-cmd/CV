@@ -32,14 +32,14 @@ export function Hero({ t }: HeroProps) {
 
         <div className="mt-8 flex flex-wrap gap-4">
           <a
-            href="#pricing"
+            href="#demo"
             className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
           >
             {t.primaryCta}
           </a>
 
           <a
-            href="#demo"
+            href="#pricing"
             className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
           >
             {t.secondaryCta}

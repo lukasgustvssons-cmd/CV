@@ -11,22 +11,21 @@ export const copy = {
       language: "SV",
     },
 
-    hero: {
-      eyebrow: "AI-DRIVEN JOB SEARCH PLATFORM",
-      title: "Your next job application, tailored in seconds.",
-      description:
-        "Create a polished resume, tailor it to the role you want, and discover matching jobs with AI.",
-      primaryCta: "Get Started",
-      secondaryCta: "Try Demo",
-      profileSummary: "Profile Summary",
-      profileText:
-        "Product-minded marketer with B2B SaaS growth experience.",
-      matchScore: "Match Score",
-      tailoredResumeReady: "Tailored resume ready",
-      coverLetterGenerated: "Cover letter generated",
-      atsSuggestions: "ATS-friendly suggestions included",
-    },
-
+hero: {
+  eyebrow: "AI FÖR SMARTARE JOBBSÖKANDE",
+  title: "Skaffa ditt drömjobb enklare.",
+  description:
+    "Hireon hjälper dig skapa bättre CV, starkare personliga brev och smartare jobbansökningar på minuter.",
+  primaryCta: "Testa gratis",
+  secondaryCta: "Se priser",
+  profileSummary: "Din fördel",
+  profileText:
+    "Skapa träffsäkra ansökningar, förstå vad som saknas och förbättra varje ansökan mot rätt jobb.",
+  matchScore: "Matchningsgrad",
+  tailoredResumeReady: "Anpassat CV klart",
+  coverLetterGenerated: "Personligt brev klart",
+  atsSuggestions: "Smarta förbättringsförslag för starkare ansökningar",
+},
     demo: {
       eyebrow: "LIVE DEMO",
       title: "Create a tailored resume in seconds",
