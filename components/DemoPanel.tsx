@@ -48,6 +48,31 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   const cvRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
 
+  const isSwedish = lang === "sv";
+
+  const panelCopy = {
+    eyebrow: isSwedish ? "SÅ SER DET UT" : "SEE HOW IT WORKS",
+    title: isSwedish
+      ? "Skapa ett starkare CV på några minuter"
+      : "Create a stronger resume in a few minutes",
+    description: isSwedish
+      ? "Fyll i din erfarenhet och vilken roll du söker. Hireon hjälper dig formulera ett tydligt och professionellt CV direkt."
+      : "Add your experience and the role you want. Hireon helps you turn it into a clear and professional resume right away.",
+    formTitle: isSwedish ? "Skapa ditt CV" : "Create your resume",
+    formDescription: isSwedish
+      ? "Lägg till din bakgrund och målroll nedan."
+      : "Add your background and target role below.",
+    previewTitle: isSwedish ? "Förhandsvisning" : "Preview",
+    previewDescription: isSwedish
+      ? "Så här kan ditt CV se ut."
+      : "This is how your resume can look.",
+    emptyTitle: isSwedish ? "Din CV-förhandsvisning visas här" : "Your resume preview appears here",
+    emptyText: isSwedish
+      ? "Fyll i din erfarenhet och målroll, och klicka sedan på Generera CV."
+      : "Fill in your experience and target role, then click Generate resume.",
+    save: isSwedish ? "Spara CV" : "Save resume",
+  };
+
   useEffect(() => {
     const updateScale = () => {
       if (!previewContainerRef.current) return;
@@ -195,13 +220,13 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     <section id="demo" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
       <div className="mb-12 text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-          {t.eyebrow}
+          {panelCopy.eyebrow}
         </p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-          {t.title}
+          {panelCopy.title}
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
-          {t.description}
+          {panelCopy.description}
         </p>
       </div>
 
@@ -209,10 +234,10 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-soft">
           <div className="mb-6">
             <h3 className="text-xl font-semibold text-slate-900">
-              {t.formTitle}
+              {panelCopy.formTitle}
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              {t.formDescription}
+              {panelCopy.formDescription}
             </p>
           </div>
 
@@ -268,9 +293,11 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-slate-900">
-                  {t.previewTitle}
+                  {panelCopy.previewTitle}
                 </h3>
-                <p className="text-sm text-slate-600">{t.previewDescription}</p>
+                <p className="text-sm text-slate-600">
+                  {panelCopy.previewDescription}
+                </p>
               </div>
 
               {result && (
@@ -279,7 +306,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                     onClick={handleSaveCv}
                     className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
                   >
-                    {lang === "sv" ? "Spara CV" : "Save resume"}
+                    {panelCopy.save}
                   </button>
 
                   <button
@@ -320,10 +347,10 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                       <div className="flex min-h-full flex-col items-center justify-center text-center">
                         <div className="w-full max-w-[420px] rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-8 py-12">
                           <p className="text-lg font-medium text-slate-700">
-                            {t.emptyTitle}
+                            {panelCopy.emptyTitle}
                           </p>
                           <p className="mt-3 text-sm leading-relaxed text-slate-500">
-                            {t.emptyText}
+                            {panelCopy.emptyText}
                           </p>
                         </div>
                       </div>
