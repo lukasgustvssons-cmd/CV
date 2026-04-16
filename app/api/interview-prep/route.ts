@@ -1,9 +1,21 @@
 import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
 
 export async function POST(req: Request) {
   try {
@@ -13,6 +25,31 @@ export async function POST(req: Request) {
       return Response.json(
         { error: "Du måste vara inloggad." },
         { status: 401 }
+      );
+    }
+
+    const { data: appUser, error: userError } = await supabase
+      .from("users")
+      .select("plan")
+      .eq("clerk_user_id", String(userId))
+      .maybeSingle();
+
+    if (userError) {
+      return Response.json(
+        { error: userError.message || "Kunde inte hämta användaren." },
+        { status: 500 }
+      );
+    }
+
+    const plan = String(appUser?.plan || "free").toLowerCase();
+
+    if (plan !== "career+") {
+      return Response.json(
+        {
+          error: "Uppgradera till Career+ för att låsa upp intervjuförberedelse.",
+          requiredPlan: "career+",
+        },
+        { status: 403 }
       );
     }
 
