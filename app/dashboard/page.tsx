@@ -4,6 +4,18 @@ import { useEffect, useState } from "react";
 
 type JobStatus = "saved" | "applied" | "interview" | "rejected";
 
+type InterviewPrep = {
+  disclaimer?: string;
+  intro?: string;
+  questions?: {
+    question: string;
+    whyThisMatters: string;
+    answerTip: string;
+  }[];
+  thingsToHighlight?: string[];
+  thingsToPrepare?: string[];
+};
+
 type SavedItem = {
   id: string;
   type: "cv" | "job" | "cover_letter";
@@ -23,6 +35,8 @@ export default function DashboardPage() {
   const [items, setItems] = useState<SavedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [prepData, setPrepData] = useState<Record<string, InterviewPrep>>({});
+  const [loadingPrepId, setLoadingPrepId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadItems = async () => {
@@ -55,6 +69,8 @@ export default function DashboardPage() {
   const jobs = items.filter((item) => item.type === "job");
   const cvs = items.filter((item) => item.type === "cv");
   const letters = items.filter((item) => item.type === "cover_letter");
+
+  const latestCvText = cvs[0]?.content || "";
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16 lg:px-8">
@@ -96,31 +112,50 @@ export default function DashboardPage() {
 
                     <button
                       onClick={async () => {
-                        const res = await fetch("/api/interview-prep", {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            jobTitle: item.title,
-                            jobDescription: item.content || "",
-                            cvText: "TEMP CV TEXT",
-                          }),
-                        });
+                        try {
+                          setError("");
+                          setLoadingPrepId(item.id);
 
-                        const data = await res.json();
+                          const res = await fetch("/api/interview-prep", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              jobTitle: item.title,
+                              jobDescription: item.content || "",
+                              cvText: latestCvText,
+                            }),
+                          });
 
-                        if (!res.ok) {
-                          setError(data?.error || "Kunde inte skapa interview prep.");
-                          return;
+                          const data = await res.json();
+
+                          if (!res.ok) {
+                            throw new Error(
+                              data?.error || "Kunde inte skapa intervjuförberedelse."
+                            );
+                          }
+
+                          setPrepData((prev) => ({
+                            ...prev,
+                            [item.id]: data.prep,
+                          }));
+                        } catch (err: any) {
+                          setError(err?.message || "Något gick fel.");
+                        } finally {
+                          setLoadingPrepId(null);
                         }
-
-                        console.log("INTERVIEW PREP:", data);
                       }}
-                     className="mt-3 inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
->
-  Intervjuförberedelse
-</button>
+                      className="mt-3 inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                    >
+                      Intervjuförberedelse
+                    </button>
+
+                    {loadingPrepId === item.id && (
+                      <p className="mt-3 text-sm text-slate-500">
+                        Skapar intervjuförberedelse...
+                      </p>
+                    )}
 
                     <div className="mt-2 flex items-center gap-2 text-sm text-slate-600">
                       <span>Status:</span>
@@ -184,6 +219,87 @@ export default function DashboardPage() {
                       >
                         Öppna annons
                       </a>
+                    )}
+
+                    {prepData[item.id] && (
+                      <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                        <h4 className="text-base font-semibold text-slate-900">
+                          Intervjuförberedelse
+                        </h4>
+
+                        {prepData[item.id].disclaimer && (
+                          <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                            {prepData[item.id].disclaimer}
+                          </p>
+                        )}
+
+                        {prepData[item.id].intro && (
+                          <p className="mt-3 text-sm text-slate-700">
+                            {prepData[item.id].intro}
+                          </p>
+                        )}
+
+                        {prepData[item.id].questions &&
+                          prepData[item.id].questions!.length > 0 && (
+                            <div className="mt-4">
+                              <h5 className="font-medium text-slate-900">
+                                Sannolika intervjufrågor
+                              </h5>
+                              <div className="mt-3 space-y-4">
+                                {prepData[item.id].questions!.map((q, index) => (
+                                  <div
+                                    key={index}
+                                    className="rounded-xl bg-white p-4 border border-slate-200"
+                                  >
+                                    <p className="font-medium text-slate-900">
+                                      {index + 1}. {q.question}
+                                    </p>
+                                    <p className="mt-2 text-sm text-slate-600">
+                                      <span className="font-medium text-slate-800">
+                                        Varför den kan komma:
+                                      </span>{" "}
+                                      {q.whyThisMatters}
+                                    </p>
+                                    <p className="mt-2 text-sm text-slate-600">
+                                      <span className="font-medium text-slate-800">
+                                        Svarstips:
+                                      </span>{" "}
+                                      {q.answerTip}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                        {prepData[item.id].thingsToHighlight &&
+                          prepData[item.id].thingsToHighlight!.length > 0 && (
+                            <div className="mt-4">
+                              <h5 className="font-medium text-slate-900">
+                                Det du bör lyfta i intervjun
+                              </h5>
+                              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
+                                {prepData[item.id].thingsToHighlight!.map((point, index) => (
+                                  <li key={index}>{point}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                        {prepData[item.id].thingsToPrepare &&
+                          prepData[item.id].thingsToPrepare!.length > 0 && (
+                            <div className="mt-4">
+                              <h5 className="font-medium text-slate-900">
+                                Förbered detta innan intervjun
+                              </h5>
+                              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
+                                {prepData[item.id].thingsToPrepare!.map((point, index) => (
+                                  <li key={index}>{point}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                      </div>
                     )}
                   </div>
                 ))

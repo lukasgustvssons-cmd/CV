@@ -1,21 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
-import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  }
-);
 
 export async function POST(req: Request) {
   try {
@@ -29,48 +17,52 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
+
     const jobTitle = String(body?.jobTitle || "").trim();
     const jobDescription = String(body?.jobDescription || "").trim();
     const cvText = String(body?.cvText || "").trim();
 
-    if (!jobTitle || !jobDescription || !cvText) {
+    if (!jobTitle || !jobDescription) {
       return Response.json(
-        { error: "Jobbtitel, jobbannons och CV krävs." },
+        { error: "Jobbtitel och jobbannons krävs." },
         { status: 400 }
       );
     }
 
     const prompt = `
-Du är en expert på jobbintervjuer och coachar kandidaten på svenska.
+Du är en svensk karriärcoach och intervjucoach.
 
-Utgå från detta CV och denna jobbannons och skapa interview prep.
+Din uppgift är att skapa en intervjuförberedelse på svenska baserat på ett jobb som användaren har sparat.
+Frågorna ska vara realistiska och sannolika utifrån jobbannonsen, men du måste vara tydlig med att detta inte är de riktiga intervjufrågorna utan övningsfrågor som troligen liknar sådana arbetsgivaren kan ställa.
 
-CV:
-${cvText}
+Utgå främst från jobbannonsen. Om CV-text finns, använd den för att anpassa tipsen.
 
-Jobb:
-Titel: ${jobTitle}
-Annons:
+Jobbtitel:
+${jobTitle}
+
+Jobbannons:
 ${jobDescription}
 
-Returnera svaret på svenska i exakt detta JSON-format:
+CV:
+${cvText || "Inget CV skickades med."}
+
+Returnera endast giltig JSON i exakt detta format:
 
 {
+  "disclaimer": "Kort svensk text som förklarar att detta inte är de riktiga frågorna utan AI-genererade övningsfrågor baserade på jobbet.",
+  "intro": "Kort svensk introduktion till användaren.",
   "questions": [
     {
-      "question": "Fråga här",
-      "answer": "Ett starkt exempel på svar här"
+      "question": "En sannolik intervjufråga på svenska",
+      "whyThisMatters": "Kort förklaring varför arbetsgivaren kan ställa denna fråga",
+      "answerTip": "Kort tips på hur användaren kan tänka när den svarar"
     }
   ],
-  "strengthsToHighlight": [
+  "thingsToHighlight": [
     "Punkt 1",
     "Punkt 2"
   ],
-  "risksToPrepareFor": [
-    "Punkt 1",
-    "Punkt 2"
-  ],
-  "finalTips": [
+  "thingsToPrepare": [
     "Punkt 1",
     "Punkt 2"
   ]
@@ -84,7 +76,7 @@ Returnera svaret på svenska i exakt detta JSON-format:
         {
           role: "system",
           content:
-            "Du är en expert på intervjuförberedelser och svarar endast med giltig JSON.",
+            "Du är en intervjucoach. Du svarar endast med giltig JSON.",
         },
         {
           role: "user",
@@ -109,7 +101,7 @@ Returnera svaret på svenska i exakt detta JSON-format:
   } catch (error: any) {
     console.error("INTERVIEW PREP ERROR:", error);
     return Response.json(
-      { error: error?.message || "Något gick fel i interview prep." },
+      { error: error?.message || "Något gick fel i intervjuförberedelsen." },
       { status: 500 }
     );
   }
