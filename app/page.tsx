@@ -79,41 +79,40 @@ export default function Home() {
     },
   ];
 
-  const pricing = [
-    {
-      name: "Gratis",
-      price: "0 kr",
-      description: "För dig som vill komma igång",
-      features: [
-        "1 CV-version",
-        "Grundläggande jobbmatchning",
-        "Begränsad tillgång till brevfunktion",
-      ],
-    },
-    {
-      name: "Pro",
-      price: "49 kr",
-      description: "För dig som söker aktivt",
-      highlighted: true,
-      features: [
-        "3 jobbmatchningar",
-        "Spara CV, jobb och brev",
-        "Personligt brev för valda jobb",
-        "Job tracker i dashboard",
-      ],
-    },
-    {
-      name: "Career+",
-      price: "99 kr",
-      description: "För dig som vill öka chansen till intervju",
-      features: [
-        "Allt i Pro",
-        "Obegränsad jobbmatchning",
-        "Förbättra CV för specifika jobb",
-        "Intervjuförberedelse och djupare insikter",
-      ],
-    },
-  ];
+const pricing = [
+  {
+    name: "Gratis",
+    price: "0 kr",
+    description: "För dig som vill komma igång",
+    features: [
+      "1 CV-version",
+      "Grundläggande jobbmatchning",
+      "Begränsad tillgång till brevfunktion",
+    ],
+  },
+  {
+    name: "Career+",
+    price: "99 kr",
+    description: "För dig som vill öka chansen till intervju",
+    highlighted: true,
+    features: [
+      "Allt i Pro",
+      "Obegränsad jobbmatchning",
+      "Förbättra CV för specifika jobb",
+      "Intervjuförberedelse och djupare insikter",
+    ],
+  },
+  {
+    name: "Pro",
+    price: "49 kr",
+    description: "För dig som söker aktivt",
+    features: [
+      "3 jobbmatchningar",
+      "Spara CV, jobb och brev",
+      "Job tracker i dashboard",
+    ],
+  },
+];
 
   const trustItems = [
     "Skapat för att göra jobbsökandet enklare",
