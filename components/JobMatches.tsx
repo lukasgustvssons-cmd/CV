@@ -637,6 +637,23 @@ export function JobMatches({
   }
 };
 
+
+const handleCopyCoverLetter = async () => {
+  if (!coverLetter) return;
+
+  try {
+    await navigator.clipboard.writeText(coverLetter);
+  } catch {
+    alert(
+      isSwedish
+        ? "Kunde inte kopiera personligt brev."
+        : "Could not copy cover letter."
+    );
+  }
+};
+
+
+
   if (error.toLowerCase().includes("upgrade to pro")) {
     return (
       <motion.div
