@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 
+type JobStatus = "saved" | "applied" | "interview" | "rejected";
+
 type SavedItem = {
   id: string;
   type: "cv" | "job" | "cover_letter";
   title: string;
   content: string | null;
   meta?: {
-    status?: "saved" | "applied" | "interview" | "rejected";
+    status?: JobStatus;
     company?: string;
     location?: string;
     url?: string;
@@ -97,7 +99,7 @@ export default function DashboardPage() {
                       <select
                         value={item.meta?.status || "saved"}
                         onChange={async (e) => {
-                          const newStatus = e.target.value;
+                          const newStatus = e.target.value as JobStatus;
 
                           const res = await fetch("/api/update-saved-item", {
                             method: "PATCH",
