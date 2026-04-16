@@ -588,71 +588,64 @@ export function JobMatches({
   };
 
   const handleSaveCoverLetter = async () => {
-  if (!coverLetter.trim() || !selectedJob) return;
+    if (!coverLetter.trim() || !selectedJob) return;
 
-  try {
-    const res = await fetch("/api/save-item", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        type: "cover_letter",
-        title: isSwedish
-          ? `Personligt brev för ${selectedJob.title}`
-          : `Cover letter for ${selectedJob.title}`,
-        content: coverLetter,
-        meta: {
-          jobTitle: selectedJob.title,
-          company: selectedJob.company,
-          location: selectedJob.location,
-          url: selectedJob.url,
+    try {
+      const res = await fetch("/api/save-item", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      }),
-    });
+        body: JSON.stringify({
+          type: "cover_letter",
+          title: isSwedish
+            ? `Personligt brev för ${selectedJob.title}`
+            : `Cover letter for ${selectedJob.title}`,
+          content: coverLetter,
+          meta: {
+            jobTitle: selectedJob.title,
+            company: selectedJob.company,
+            location: selectedJob.location,
+            url: selectedJob.url,
+          },
+        }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(
-        data?.error ||
+      if (!res.ok) {
+        throw new Error(
+          data?.error ||
+            (isSwedish
+              ? "Kunde inte spara personligt brev."
+              : "Could not save cover letter.")
+        );
+      }
+
+      alert(isSwedish ? "Personligt brev sparat." : "Cover letter saved.");
+    } catch (error: any) {
+      alert(
+        error?.message ||
           (isSwedish
             ? "Kunde inte spara personligt brev."
             : "Could not save cover letter.")
       );
     }
+  };
 
-    alert(
-      isSwedish
-        ? "Personligt brev sparat."
-        : "Cover letter saved."
-    );
-  } catch (error: any) {
-    alert(
-      error?.message ||
-        (isSwedish
-          ? "Kunde inte spara personligt brev."
-          : "Could not save cover letter.")
-    );
-  }
-};
+  const handleCopyCoverLetter = async () => {
+    if (!coverLetter) return;
 
-
-const handleCopyCoverLetter = async () => {
-  if (!coverLetter) return;
-
-  try {
-    await navigator.clipboard.writeText(coverLetter);
-  } catch {
-    alert(
-      isSwedish
-        ? "Kunde inte kopiera personligt brev."
-        : "Could not copy cover letter."
-    );
-  }
-};
-
-
+    try {
+      await navigator.clipboard.writeText(coverLetter);
+    } catch {
+      alert(
+        isSwedish
+          ? "Kunde inte kopiera personligt brev."
+          : "Could not copy cover letter."
+      );
+    }
+  };
 
   if (error.toLowerCase().includes("upgrade to pro")) {
     return (
@@ -945,6 +938,13 @@ const handleCopyCoverLetter = async () => {
                 </div>
 
                 <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={handleSaveCoverLetter}
+                    className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50"
+                  >
+                    {isSwedish ? "Spara brev" : "Save letter"}
+                  </button>
+
                   <button
                     onClick={handleCopyCoverLetter}
                     className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50"
