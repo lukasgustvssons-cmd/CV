@@ -11,7 +11,12 @@ export default function Navbar() {
 
       <div className="flex flex-col items-end gap-2">
         {!isLoaded ? null : isSignedIn ? (
-          <UserButton />
+          <div className="flex items-center gap-4">
+            <a href="/dashboard" className="text-sm font-medium hover:underline">
+              Dashboard
+            </a>
+            <UserButton />
+          </div>
         ) : (
           <>
             <SignInButton mode="modal">
