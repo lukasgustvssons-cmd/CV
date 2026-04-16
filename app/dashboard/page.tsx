@@ -4,12 +4,32 @@ import { useEffect, useState } from "react";
 
 type SavedItem = {
   id: string;
-  type: string;
+  type: "cv" | "job" | "cover_letter";
   title: string;
   content: string | null;
-  meta: any;
+  meta?: {
+    status?: "saved" | "applied" | "interview" | "rejected";
+    company?: string;
+    location?: string;
+    url?: string;
+    [key: string]: any;
+  };
   created_at: string;
 };
+
+function getStatusLabel(status?: string) {
+  switch (status) {
+    case "applied":
+      return "Ansökt";
+    case "interview":
+      return "Intervju";
+    case "rejected":
+      return "Avslag";
+    case "saved":
+    default:
+      return "Sparad";
+  }
+}
 
 export default function DashboardPage() {
   const [items, setItems] = useState<SavedItem[]>([]);
@@ -82,10 +102,19 @@ export default function DashboardPage() {
                 jobs.map((item) => (
                   <div key={item.id} className="rounded-2xl border border-slate-200 bg-white p-5">
                     <h3 className="font-semibold text-slate-900">{item.title}</h3>
+
+                    <p className="mt-2 text-sm text-slate-600">
+                      Status:{" "}
+                      <span className="font-medium text-slate-900">
+                        {getStatusLabel(item.meta?.status)}
+                      </span>
+                    </p>
+
                     <p className="mt-2 text-sm text-slate-600">
                       {item.meta?.company ? `${item.meta.company} • ` : ""}
                       {item.meta?.location || ""}
                     </p>
+
                     {item.meta?.url && (
                       <a
                         href={item.meta.url}
