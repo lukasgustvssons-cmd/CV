@@ -17,20 +17,6 @@ type SavedItem = {
   created_at: string;
 };
 
-function getStatusLabel(status?: string) {
-  switch (status) {
-    case "applied":
-      return "Ansökt";
-    case "interview":
-      return "Intervju";
-    case "rejected":
-      return "Avslag";
-    case "saved":
-    default:
-      return "Sparad";
-  }
-}
-
 export default function DashboardPage() {
   const [items, setItems] = useState<SavedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,15 +86,59 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 jobs.map((item) => (
-                  <div key={item.id} className="rounded-2xl border border-slate-200 bg-white p-5">
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-slate-200 bg-white p-5"
+                  >
                     <h3 className="font-semibold text-slate-900">{item.title}</h3>
 
-                    <p className="mt-2 text-sm text-slate-600">
-                      Status:{" "}
-                      <span className="font-medium text-slate-900">
-                        {getStatusLabel(item.meta?.status)}
-                      </span>
-                    </p>
+                    <div className="mt-2 flex items-center gap-2 text-sm text-slate-600">
+                      <span>Status:</span>
+                      <select
+                        value={item.meta?.status || "saved"}
+                        onChange={async (e) => {
+                          const newStatus = e.target.value;
+
+                          const res = await fetch("/api/update-saved-item", {
+                            method: "PATCH",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              id: item.id,
+                              status: newStatus,
+                            }),
+                          });
+
+                          const data = await res.json();
+
+                          if (!res.ok) {
+                            setError(data?.error || "Kunde inte uppdatera status.");
+                            return;
+                          }
+
+                          setItems((prev) =>
+                            prev.map((it) =>
+                              it.id === item.id
+                                ? {
+                                    ...it,
+                                    meta: {
+                                      ...it.meta,
+                                      status: newStatus,
+                                    },
+                                  }
+                                : it
+                            )
+                          );
+                        }}
+                        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm"
+                      >
+                        <option value="saved">Sparad</option>
+                        <option value="applied">Ansökt</option>
+                        <option value="interview">Intervju</option>
+                        <option value="rejected">Avslag</option>
+                      </select>
+                    </div>
 
                     <p className="mt-2 text-sm text-slate-600">
                       {item.meta?.company ? `${item.meta.company} • ` : ""}
@@ -140,7 +170,10 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 cvs.map((item) => (
-                  <div key={item.id} className="rounded-2xl border border-slate-200 bg-white p-5">
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-slate-200 bg-white p-5"
+                  >
                     <h3 className="font-semibold text-slate-900">{item.title}</h3>
                     <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">
                       {item.content}
@@ -152,7 +185,9 @@ export default function DashboardPage() {
           </section>
 
           <section>
-            <h2 className="mb-4 text-xl font-semibold text-slate-900">Sparade personliga brev</h2>
+            <h2 className="mb-4 text-xl font-semibold text-slate-900">
+              Sparade personliga brev
+            </h2>
             <div className="grid gap-4">
               {letters.length === 0 ? (
                 <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
@@ -160,7 +195,10 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 letters.map((item) => (
-                  <div key={item.id} className="rounded-2xl border border-slate-200 bg-white p-5">
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-slate-200 bg-white p-5"
+                  >
                     <h3 className="font-semibold text-slate-900">{item.title}</h3>
                     <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">
                       {item.content}
