@@ -95,14 +95,14 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         body: JSON.stringify({ experience, job, lang }),
       });
 
-      const data = await res.json();
-      setResult(data.output || t.error);
-    } catch {
-      setResult(t.error);
-    } finally {
-      setLoading(false);
-    }
-  };
+     const data = await res.json();
+
+if (data.limitReached) {
+  setResult(data.output);
+  return;
+}
+
+setResult(data.output || t.error);
 
   const handleDownloadPdf = async () => {
   if (!cvRef.current) return;

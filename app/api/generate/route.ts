@@ -98,6 +98,17 @@ export async function POST(req: Request) {
 
         appUser = insertedUser;
       }
+
+      const isFree = appUser.plan === "free";
+
+      if (isFree && (appUser.credits_used || 0) >= 1) {
+        return Response.json({
+          output: isSwedish
+            ? "Du har nått gränsen för gratis användning. Uppgradera för att skapa fler CV."
+            : "You have reached the free limit. Upgrade to create more resumes.",
+          limitReached: true,
+        });
+      }
     }
 
     const systemPrompt = isSwedish
