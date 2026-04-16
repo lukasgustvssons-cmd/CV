@@ -110,6 +110,47 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     }
   };
 
+  const handleSaveCv = async () => {
+    if (!result.trim()) return;
+
+    try {
+      const res = await fetch("/api/save-item", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "cv",
+          title:
+            lang === "sv"
+              ? `CV för ${job || "vald roll"}`
+              : `Resume for ${job || "selected role"}`,
+          content: result,
+          meta: {
+            targetJob: job,
+            location,
+          },
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data?.error ||
+            (lang === "sv" ? "Kunde inte spara CV." : "Could not save resume.")
+        );
+      }
+
+      alert(lang === "sv" ? "CV sparat." : "Resume saved.");
+    } catch (error: any) {
+      alert(
+        error?.message ||
+          (lang === "sv" ? "Kunde inte spara CV." : "Could not save resume.")
+      );
+    }
+  };
+
   const handleDownloadPdf = async () => {
     if (!cvRef.current) return;
 
@@ -233,13 +274,22 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
               </div>
 
               {result && (
-                <button
-                  onClick={handleDownloadPdf}
-                  disabled={downloading}
-                  className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {downloading ? t.downloading : t.download}
-                </button>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={handleSaveCv}
+                    className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
+                  >
+                    {lang === "sv" ? "Spara CV" : "Save resume"}
+                  </button>
+
+                  <button
+                    onClick={handleDownloadPdf}
+                    disabled={downloading}
+                    className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {downloading ? t.downloading : t.download}
+                  </button>
+                </div>
               )}
             </div>
 
