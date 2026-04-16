@@ -94,6 +94,34 @@ export default function DashboardPage() {
                   >
                     <h3 className="font-semibold text-slate-900">{item.title}</h3>
 
+                    <button
+                      onClick={async () => {
+                        const res = await fetch("/api/interview-prep", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            jobTitle: item.title,
+                            jobDescription: item.content || "",
+                            cvText: "TEMP CV TEXT",
+                          }),
+                        });
+
+                        const data = await res.json();
+
+                        if (!res.ok) {
+                          setError(data?.error || "Kunde inte skapa interview prep.");
+                          return;
+                        }
+
+                        console.log("INTERVIEW PREP:", data);
+                      }}
+                      className="mt-3 rounded-lg bg-black px-3 py-2 text-sm text-white"
+                    >
+                      Interview prep
+                    </button>
+
                     <div className="mt-2 flex items-center gap-2 text-sm text-slate-600">
                       <span>Status:</span>
                       <select
