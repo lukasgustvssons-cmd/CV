@@ -117,10 +117,10 @@ export default function DashboardPage() {
 
                         console.log("INTERVIEW PREP:", data);
                       }}
-                      className="mt-3 rounded-lg bg-black px-3 py-2 text-sm text-white"
-                    >
-                      Interview prep
-                    </button>
+                     className="mt-3 inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+>
+  Intervjuförberedelse
+</button>
 
                     <div className="mt-2 flex items-center gap-2 text-sm text-slate-600">
                       <span>Status:</span>
