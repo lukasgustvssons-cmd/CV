@@ -587,19 +587,55 @@ export function JobMatches({
     }
   };
 
-  const handleCopyCoverLetter = async () => {
-    if (!coverLetter) return;
+  const handleSaveCoverLetter = async () => {
+  if (!coverLetter.trim() || !selectedJob) return;
 
-    try {
-      await navigator.clipboard.writeText(coverLetter);
-    } catch {
-      alert(
-        isSwedish
-          ? "Kunde inte kopiera personligt brev."
-          : "Could not copy cover letter."
+  try {
+    const res = await fetch("/api/save-item", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type: "cover_letter",
+        title: isSwedish
+          ? `Personligt brev för ${selectedJob.title}`
+          : `Cover letter for ${selectedJob.title}`,
+        content: coverLetter,
+        meta: {
+          jobTitle: selectedJob.title,
+          company: selectedJob.company,
+          location: selectedJob.location,
+          url: selectedJob.url,
+        },
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(
+        data?.error ||
+          (isSwedish
+            ? "Kunde inte spara personligt brev."
+            : "Could not save cover letter.")
       );
     }
-  };
+
+    alert(
+      isSwedish
+        ? "Personligt brev sparat."
+        : "Cover letter saved."
+    );
+  } catch (error: any) {
+    alert(
+      error?.message ||
+        (isSwedish
+          ? "Kunde inte spara personligt brev."
+          : "Could not save cover letter.")
+    );
+  }
+};
 
   if (error.toLowerCase().includes("upgrade to pro")) {
     return (
