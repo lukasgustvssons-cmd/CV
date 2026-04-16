@@ -12,7 +12,10 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       return Response.json(
         { error: "Supabase-miljövariabler saknas." },
         { status: 500 }
@@ -35,7 +38,15 @@ export async function POST(req: Request) {
     const type = String(body?.type || "").trim();
     const title = String(body?.title || "").trim();
     const content = String(body?.content || "").trim();
-    const meta = body?.meta ?? {};
+    const rawMeta = body?.meta ?? {};
+
+    const meta =
+      type === "job"
+        ? {
+            ...rawMeta,
+            status: rawMeta?.status || "saved",
+          }
+        : rawMeta;
 
     if (!type || !title) {
       return Response.json(
