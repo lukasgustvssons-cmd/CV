@@ -286,15 +286,24 @@ ${jobDescription}
 export async function POST(req: Request) {
   try {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      return Response.json({ error: "Missing NEXT_PUBLIC_SUPABASE_URL" }, { status: 500 });
+      return Response.json(
+        { error: "Missing NEXT_PUBLIC_SUPABASE_URL" },
+        { status: 500 }
+      );
     }
 
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return Response.json({ error: "Missing SUPABASE_SERVICE_ROLE_KEY" }, { status: 500 });
+      return Response.json(
+        { error: "Missing SUPABASE_SERVICE_ROLE_KEY" },
+        { status: 500 }
+      );
     }
 
     if (!process.env.OPENAI_API_KEY) {
-      return Response.json({ error: "Missing OPENAI_API_KEY" }, { status: 500 });
+      return Response.json(
+        { error: "Missing OPENAI_API_KEY" },
+        { status: 500 }
+      );
     }
 
     const supabase = createClient(
@@ -310,32 +319,46 @@ export async function POST(req: Request) {
 
     const { userId } = await auth();
 
-    let plan = "free";
-
-    if (userId) {
-      const { data: appUser, error: userError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("clerk_user_id", String(userId))
-        .maybeSingle();
-
-      if (userError) {
-        return Response.json(
-          { error: userError.message || "Failed to fetch user" },
-          { status: 500 }
-        );
-      }
-
-      if (appUser?.plan) {
-        plan = appUser.plan;
-      }
+    if (!userId) {
+      return Response.json(
+        {
+          error: "Du måste vara inloggad för att använda jobbmatchning.",
+        },
+        { status: 401 }
+      );
     }
+
+    const { data: appUser, error: userError } = await supabase
+      .from("users")
+      .select("plan, credits_used")
+      .eq("clerk_user_id", String(userId))
+      .maybeSingle();
+
+    if (userError) {
+      return Response.json(
+        { error: userError.message || "Failed to fetch user" },
+        { status: 500 }
+      );
+    }
+
+    const plan = String(appUser?.plan || "free").toLowerCase();
+    const creditsUsed = Number(appUser?.credits_used || 0);
 
     if (plan === "free") {
       return Response.json(
         {
-          error: "Upgrade to Pro to unlock AI job matching.",
+          error: "Uppgradera till Pro för att använda jobbmatchning.",
           requiredPlan: "pro",
+        },
+        { status: 403 }
+      );
+    }
+
+    if (plan === "pro" && creditsUsed >= 3) {
+      return Response.json(
+        {
+          error: "Du har använt dina 3 jobbmatchningar. Uppgradera till Career+ för obegränsad jobbmatchning.",
+          requiredPlan: "career+",
         },
         { status: 403 }
       );
@@ -351,7 +374,11 @@ export async function POST(req: Request) {
       return Response.json({ error: "Missing cvText" }, { status: 400 });
     }
 
-    const jobs = await fetchArbetsformedlingenJobs(searchQuery || "utvecklare", location);
+    const jobs = await fetchArbetsformedlingenJobs(
+      searchQuery || "utvecklare",
+      location
+    );
+
     const jobsWithDescriptions = jobs.filter((job) => job.description.trim());
 
     const isCareerPlus = plan === "career+";
@@ -392,9 +419,30 @@ export async function POST(req: Request) {
 
     scoredJobs.sort((a, b) => b.score - a.score);
 
+    if (plan === "pro") {
+      const { error: updateCreditsError } = await supabase
+        .from("users")
+        .update({
+          credits_used: creditsUsed + 1,
+        })
+        .eq("clerk_user_id", String(userId));
+
+      if (updateCreditsError) {
+        return Response.json(
+          {
+            error:
+              updateCreditsError.message ||
+              "Kunde inte uppdatera användarens jobbmatchningar.",
+          },
+          { status: 500 }
+        );
+      }
+    }
+
     return Response.json({
       jobs: scoredJobs,
       plan,
+      remainingMatches: plan === "pro" ? Math.max(0, 2 - creditsUsed) : null,
     });
   } catch (error: any) {
     console.error("JOBS ROUTE ERROR:", error);
