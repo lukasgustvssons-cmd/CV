@@ -5,34 +5,35 @@ export const copy = {
     nav: {
       features: "Features",
       howItWorks: "How it works",
-      demo: "Demo",
+      demo: "See how it works",
       pricing: "Pricing",
-      getStarted: "Get Started",
+      getStarted: "Get started",
       language: "SV",
     },
 
-hero: {
-  eyebrow: "AI FÖR SMARTARE JOBBSÖKANDE",
-  title: "Skaffa ditt drömjobb enklare.",
-  description:
-    "Hireon hjälper dig skapa bättre CV, starkare personliga brev och smartare jobbansökningar på minuter.",
-  primaryCta: "Testa gratis",
-  secondaryCta: "Se priser",
-  profileSummary: "Din fördel",
-  profileText:
-    "Skapa träffsäkra ansökningar, förstå vad som saknas och förbättra varje ansökan mot rätt jobb.",
-  matchScore: "Matchningsgrad",
-  tailoredResumeReady: "Anpassat CV klart",
-  coverLetterGenerated: "Personligt brev klart",
-  atsSuggestions: "Smarta förbättringsförslag för starkare ansökningar",
-},
-    demo: {
-      eyebrow: "LIVE DEMO",
-      title: "Create a tailored resume in seconds",
+    hero: {
+      eyebrow: "FOR PEOPLE WHO WANT TO APPLY SMARTER",
+      title: "Get a stronger resume and better job applications faster.",
       description:
-        "Paste your experience and the role you want to generate a cleaner, more professional resume.",
+        "Hireon helps you create clearer resumes, stronger cover letters, and more focused job applications with less stress.",
+      primaryCta: "Get started",
+      secondaryCta: "See how it works",
+      profileSummary: "PROFILE SUMMARY",
+      profileText:
+        "Results-driven marketer with experience in B2B, growth, and customer communication.",
+      matchScore: "MATCH SCORE",
+      tailoredResumeReady: "Resume ready",
+      coverLetterGenerated: "Cover letter prepared",
+      atsSuggestions: "Suggestions to make your application clearer and more relevant",
+    },
+
+    demo: {
+      eyebrow: "SEE HOW IT WORKS",
+      title: "Create a stronger resume in a few minutes",
+      description:
+        "Add your experience and the role you want. Hireon helps you turn it into a clear and professional resume right away.",
       formTitle: "Create your resume",
-      formDescription: "Add your experience and target role below.",
+      formDescription: "Add your background and target role below.",
       experienceLabel: "Experience",
       experiencePlaceholder:
         "Example: 2 years in sales, customer meetings, CRM, onboarding, budgeting...",
@@ -44,10 +45,10 @@ hero: {
       generate: "Generate resume",
       generating: "Generating...",
       previewTitle: "Preview",
-      previewDescription: "This is how the exported resume will look.",
+      previewDescription: "This is how your resume can look.",
       download: "Download PDF",
       downloading: "Downloading...",
-      emptyTitle: "Your resume preview will appear here",
+      emptyTitle: "Your resume preview appears here",
       emptyText:
         "Fill in your experience and target role, then click Generate resume.",
       fileName: "resume.pdf",
@@ -60,35 +61,35 @@ hero: {
     nav: {
       features: "Funktioner",
       howItWorks: "Så fungerar det",
-      demo: "Demo",
+      demo: "Se hur det fungerar",
       pricing: "Priser",
       getStarted: "Kom igång",
       language: "EN",
     },
 
     hero: {
-      eyebrow: "AI-DRIVEN JOB SEARCH PLATFORM",
-      title: "Din nästa jobbansökan, skräddarsydd på sekunder.",
+      eyebrow: "FÖR DIG SOM VILL SÖKA JOBB SMARTARE",
+      title: "Få bättre CV, starkare ansökningar och fler chanser till intervju.",
       description:
-        "Skapa ett professionellt CV, anpassa det till rollen du vill ha och hitta matchande jobb med AI.",
+        "Hireon hjälper dig skapa tydligare CV, starkare personliga brev och mer relevanta ansökningar snabbare.",
       primaryCta: "Kom igång",
-      secondaryCta: "Testa demo",
-      profileSummary: "Profilsammanfattning",
+      secondaryCta: "Se hur det fungerar",
+      profileSummary: "PROFILSAMMANFATTNING",
       profileText:
-        "Resultatinriktad marknadsförare med erfarenhet av B2B SaaS-tillväxt.",
-      matchScore: "Matchningsgrad",
-      tailoredResumeReady: "Anpassat CV klart",
-      coverLetterGenerated: "Personligt brev genererat",
-      atsSuggestions: "ATS-anpassade förbättringar inkluderade",
+        "Resultatinriktad kandidat med tydlig erfarenhet, stark kommunikation och bättre förutsättningar att sticka ut i urvalet.",
+      matchScore: "MATCHNINGSGRAD",
+      tailoredResumeReady: "CV klart att använda",
+      coverLetterGenerated: "Personligt brev framtaget",
+      atsSuggestions: "Förslag för att göra ansökan tydligare och mer relevant",
     },
 
     demo: {
-      eyebrow: "LIVE DEMO",
-      title: "Skapa ett skräddarsytt CV på sekunder",
+      eyebrow: "SÅ SER DET UT",
+      title: "Skapa ett starkare CV på några minuter",
       description:
-        "Klistra in din erfarenhet och rollen du vill ha för att skapa ett renare och mer professionellt CV.",
+        "Fyll i din erfarenhet och vilken roll du söker. Hireon hjälper dig formulera ett tydligt och professionellt CV direkt.",
       formTitle: "Skapa ditt CV",
-      formDescription: "Lägg till din erfarenhet och målroll nedan.",
+      formDescription: "Lägg till din bakgrund och målroll nedan.",
       experienceLabel: "Erfarenhet",
       experiencePlaceholder:
         "Exempel: 2 år inom försäljning, kundmöten, CRM, onboarding, budgetansvar...",
@@ -100,7 +101,7 @@ hero: {
       generate: "Generera CV",
       generating: "Genererar...",
       previewTitle: "Förhandsvisning",
-      previewDescription: "Så här kommer det exporterade CV:t att se ut.",
+      previewDescription: "Så här kan ditt CV se ut.",
       download: "Ladda ner PDF",
       downloading: "Laddar ner...",
       emptyTitle: "Din CV-förhandsvisning visas här",
