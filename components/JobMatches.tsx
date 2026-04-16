@@ -322,6 +322,7 @@ export function JobMatches({
   const [plan, setPlan] = useState("");
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [improvingCv, setImprovingCv] = useState(false);
+  const [improveMessage, setImproveMessage] = useState("");
 
   const [coverLetter, setCoverLetter] = useState("");
   const [generatingCoverLetter, setGeneratingCoverLetter] = useState(false);
@@ -352,6 +353,7 @@ export function JobMatches({
         setExpandedStrengths(false);
         setCoverLetter("");
         setCoverLetterError("");
+        setImproveMessage("");
 
         const res = await fetch("/api/jobs", {
           method: "POST",
@@ -410,6 +412,9 @@ export function JobMatches({
   }, [cvText, targetJob, location, lang]);
 
   const isCareerPlus = plan === "career+";
+  const isPro = plan === "pro";
+  const canUseSelectedJobTools = isCareerPlus || isPro;
+
   const bestJob = jobs[0];
   const selectedJob =
     jobs.find((job) => job.id === selectedJobId) ?? bestJob ?? null;
@@ -442,6 +447,7 @@ export function JobMatches({
     setSelectedJobId(jobId);
     setCoverLetter("");
     setCoverLetterError("");
+    setImproveMessage("");
   };
 
   const handleSaveJob = async (job: JobMatch) => {
@@ -489,6 +495,7 @@ export function JobMatches({
 
     try {
       setImprovingCv(true);
+      setImproveMessage("");
 
       const res = await fetch("/api/improve-cv", {
         method: "POST",
@@ -535,6 +542,21 @@ export function JobMatches({
     }
   };
 
+  const handleImproveClick = () => {
+    if (!selectedJob) return;
+
+    if (!isCareerPlus) {
+      setImproveMessage(
+        isSwedish
+          ? "Den här funktionen ingår i Career+. Uppgradera för att förbättra ditt CV för det valda jobbet med AI."
+          : "This feature is included in Career+. Upgrade to improve your CV for the selected job with AI."
+      );
+      return;
+    }
+
+    handleImproveCv();
+  };
+
   const handleGenerateCoverLetter = async () => {
     if (!selectedJob) return;
 
@@ -542,6 +564,7 @@ export function JobMatches({
       setGeneratingCoverLetter(true);
       setCoverLetterError("");
       setCoverLetter("");
+      setImproveMessage("");
 
       const res = await fetch("/api/generate-cover-letter", {
         method: "POST",
@@ -845,7 +868,7 @@ export function JobMatches({
             </motion.div>
           )}
 
-          {isCareerPlus && selectedJob && (
+          {canUseSelectedJobTools && selectedJob && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -877,7 +900,7 @@ export function JobMatches({
 
                 <div className="flex flex-wrap gap-3">
                   <button
-                    onClick={handleImproveCv}
+                    onClick={handleImproveClick}
                     disabled={improvingCv}
                     className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
                   >
@@ -905,10 +928,16 @@ export function JobMatches({
                   </button>
                 </div>
               </div>
+
+              {improveMessage && (
+                <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                  {improveMessage}
+                </div>
+              )}
             </motion.div>
           )}
 
-          {isCareerPlus && coverLetterError && (
+          {canUseSelectedJobTools && coverLetterError && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -918,7 +947,7 @@ export function JobMatches({
             </motion.div>
           )}
 
-          {isCareerPlus && coverLetter && (
+          {canUseSelectedJobTools && coverLetter && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -939,13 +968,6 @@ export function JobMatches({
 
                 <div className="flex flex-wrap gap-3">
                   <button
-                    onClick={handleSaveCoverLetter}
-                    className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50"
-                  >
-                    {isSwedish ? "Spara brev" : "Save letter"}
-                  </button>
-
-                  <button
                     onClick={handleCopyCoverLetter}
                     className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50"
                   >
@@ -964,6 +986,13 @@ export function JobMatches({
                       : isSwedish
                       ? "Skapa ny version"
                       : "Generate again"}
+                  </button>
+
+                  <button
+                    onClick={handleSaveCoverLetter}
+                    className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50"
+                  >
+                    {isSwedish ? "Spara" : "Save"}
                   </button>
                 </div>
               </div>
@@ -1034,7 +1063,7 @@ export function JobMatches({
                     </button>
                   )}
 
-                  {isCareerPlus && bestJob && (
+                  {canUseSelectedJobTools && bestJob && (
                     <button
                       onClick={() => handleSelectJob(bestJob.id)}
                       className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
@@ -1201,25 +1230,27 @@ export function JobMatches({
                       {isSwedish ? "Spara jobb" : "Save job"}
                     </button>
 
+                    {canUseSelectedJobTools && (
+                      <button
+                        onClick={() => handleSelectJob(job.id)}
+                        className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                          isSelected
+                            ? "bg-slate-900 text-white"
+                            : "border border-slate-300 text-slate-900 hover:border-slate-900 hover:bg-white"
+                        }`}
+                      >
+                        {isSelected
+                          ? isSwedish
+                            ? "Valt jobb"
+                            : "Selected"
+                          : isSwedish
+                          ? "Välj detta jobb"
+                          : "Select this job"}
+                      </button>
+                    )}
+
                     {isCareerPlus && (
                       <>
-                        <button
-                          onClick={() => handleSelectJob(job.id)}
-                          className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                            isSelected
-                              ? "bg-slate-900 text-white"
-                              : "border border-slate-300 text-slate-900 hover:border-slate-900 hover:bg-white"
-                          }`}
-                        >
-                          {isSelected
-                            ? isSwedish
-                              ? "Valt jobb"
-                              : "Selected"
-                            : isSwedish
-                            ? "Välj detta jobb"
-                            : "Select this job"}
-                        </button>
-
                         <button
                           onClick={() => toggleMissing(job.id)}
                           className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
