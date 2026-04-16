@@ -11,45 +11,35 @@ import { StepCard } from "@/components/StepCard";
 import { copy, Lang } from "../lib/translations";
 
 export default function Home() {
-const lang: Lang = "sv";  const t = copy[lang];
+  const lang: Lang = "sv";
+  const t = copy[lang];
 
   const steps = [
     {
-      step: lang === "sv" ? "Steg 01" : "Step 01",
-      title: lang === "sv" ? "Lägg till din bakgrund" : "Add your background",
+      step: "Steg 01",
+      title: "Lägg till din bakgrund",
       description:
-        lang === "sv"
-          ? "Fyll i din erfarenhet, utbildning och kompetens."
-          : "Enter your experience, education, and skills.",
+        "Skriv in erfarenhet, utbildning och det du vill lyfta i ditt CV.",
     },
     {
-      step: lang === "sv" ? "Steg 02" : "Step 02",
-      title: lang === "sv" ? "Klistra in en jobbannons" : "Paste a job description",
+      step: "Steg 02",
+      title: "Välj jobb eller målroll",
       description:
-        lang === "sv"
-          ? "Låt AI:n förstå rollen och vad som är viktigt."
-          : "Let the AI understand the role and what matters.",
+        "Utgå från ett jobb du vill söka eller en roll du vill rikta dig mot.",
     },
     {
-      step: lang === "sv" ? "Steg 03" : "Step 03",
-      title:
-        lang === "sv"
-          ? "Få skräddarsydda dokument direkt"
-          : "Get tailored documents instantly",
+      step: "Steg 03",
+      title: "Få dokument som är redo att använda",
       description:
-        lang === "sv"
-          ? "Få ett anpassat CV, personligt brev och matchningsinsikter."
-          : "Receive a custom resume, cover letter, and match insights.",
+        "Skapa CV, personligt brev och jobbanpassade versioner snabbare.",
     },
   ];
 
   const features = [
     {
-      title: lang === "sv" ? "AI CV-byggare" : "AI Resume Builder",
+      title: "CV som känns professionellt",
       description:
-        lang === "sv"
-          ? "Skapa ett tydligt och professionellt grund-CV anpassat efter din bakgrund."
-          : "Generate a clear, professional base resume tailored to your background.",
+        "Skapa ett tydligt grund-CV som är lätt att anpassa för olika jobb.",
       icon: (
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
           <path d="M7 6h10M7 12h10M7 18h6" />
@@ -57,11 +47,9 @@ const lang: Lang = "sv";  const t = copy[lang];
       ),
     },
     {
-      title: lang === "sv" ? "Jobbmatchning" : "Job Match Scoring",
+      title: "Hitta jobb som passar din bakgrund",
       description:
-        lang === "sv"
-          ? "Se hur väl din profil matchar varje möjlighet."
-          : "Understand how aligned your profile is with every opportunity.",
+        "Se vilka roller som ligger närmast din profil och var du har bäst chans.",
       icon: (
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
           <path d="M12 3v18M3 12h18" />
@@ -69,11 +57,9 @@ const lang: Lang = "sv";  const t = copy[lang];
       ),
     },
     {
-      title: lang === "sv" ? "Anpassade ansökningar" : "Tailored Applications",
+      title: "Anpassa varje ansökan snabbare",
       description:
-        lang === "sv"
-          ? "Skapa rollspecifika CV-versioner på sekunder, inte timmar."
-          : "Create role-specific resume versions in seconds, not hours.",
+        "Slipp börja om från början varje gång du söker ett nytt jobb.",
       icon: (
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
           <path d="m4 12 5 5 11-11" />
@@ -81,11 +67,9 @@ const lang: Lang = "sv";  const t = copy[lang];
       ),
     },
     {
-      title: lang === "sv" ? "Generator för personligt brev" : "Cover Letter Generator",
+      title: "Skriv personligt brev snabbare",
       description:
-        lang === "sv"
-          ? "Skapa övertygande och koncisa brev med en enhetlig ton."
-          : "Produce compelling, concise letters with a consistent tone.",
+        "Få ett starkt första utkast som du kan använda och förbättra direkt.",
       icon: (
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
           <path d="M4 5h16v14H4z" />
@@ -97,65 +81,45 @@ const lang: Lang = "sv";  const t = copy[lang];
 
   const pricing = [
     {
-      name: lang === "sv" ? "Gratis" : "Free",
-      price: "$0",
-      description: lang === "sv" ? "För nya användare" : "For first-time users",
-      features:
-        lang === "sv"
-          ? [
-              "1 anpassat CV",
-              "Grundläggande matchningsinsikter",
-              "Begränsad generering av personligt brev",
-            ]
-          : [
-              "1 tailored resume",
-              "Basic match insights",
-              "Limited cover letter generation",
-            ],
+      name: "Gratis",
+      price: "0 kr",
+      description: "För dig som vill komma igång",
+      features: [
+        "1 CV-version",
+        "Grundläggande jobbmatchning",
+        "Begränsad tillgång till brevfunktion",
+      ],
     },
     {
       name: "Pro",
-      price: "$19",
-      description: lang === "sv" ? "För aktiva jobbsökare" : "For active job seekers",
+      price: "49 kr",
+      description: "För dig som söker aktivt",
       highlighted: true,
-      features:
-        lang === "sv"
-          ? [
-              "Obegränsat med anpassade CV:n",
-              "Obegränsat med personliga brev",
-              "Fulla matchningsinsikter",
-              "Sparade ansökningsversioner",
-            ]
-          : [
-              "Unlimited tailored resumes",
-              "Unlimited cover letters",
-              "Full match insights",
-              "Saved application versions",
-            ],
+      features: [
+        "3 jobbmatchningar",
+        "Spara CV, jobb och brev",
+        "Personligt brev för valda jobb",
+        "Job tracker i dashboard",
+      ],
     },
     {
       name: "Career+",
-      price: "$39",
-      description: lang === "sv" ? "För snabbare utveckling" : "For accelerated growth",
-      features:
-        lang === "sv"
-          ? ["Allt i Pro", "Avancerade optimeringstips", "Prioriterad support"]
-          : ["Everything in Pro", "Advanced optimization tips", "Priority support"],
+      price: "99 kr",
+      description: "För dig som vill öka chansen till intervju",
+      features: [
+        "Allt i Pro",
+        "Obegränsad jobbmatchning",
+        "Förbättra CV för specifika jobb",
+        "Intervjuförberedelse och djupare insikter",
+      ],
     },
   ];
 
-  const trustItems =
-    lang === "sv"
-      ? [
-          "Byggd för moderna jobbsökare",
-          "Designad för att spara tid",
-          "Skräddarsydd för bättre ansökningar",
-        ]
-      : [
-          "Built for modern job seekers",
-          "Designed to save time",
-          "Tailored for better applications",
-        ];
+  const trustItems = [
+    "Skapat för att göra jobbsökandet enklare",
+    "Hjälper dig spara tid i varje ansökan",
+    "Ger bättre struktur i hela jobbsökandet",
+  ];
 
   return (
     <main>
@@ -164,17 +128,9 @@ const lang: Lang = "sv";  const t = copy[lang];
 
       <section id="how-it-works" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
         <SectionTitle
-          eyebrow={lang === "sv" ? "Så fungerar det" : "How it works"}
-          title={
-            lang === "sv"
-              ? "Ett enkelt flöde som minskar friktionen i jobbsökandet"
-              : "A simple workflow that removes application friction"
-          }
-          description={
-            lang === "sv"
-              ? "Från profil till rollspecifika dokument i tre tydliga steg."
-              : "From profile to role-specific documents in three clear steps."
-          }
+          eyebrow="Så fungerar det"
+          title="Tre steg till en starkare jobbansökan"
+          description="Från bakgrund till färdiga dokument på ett enkelt sätt."
         />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {steps.map((step) => (
@@ -185,17 +141,9 @@ const lang: Lang = "sv";  const t = copy[lang];
 
       <section id="features" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
         <SectionTitle
-          eyebrow={lang === "sv" ? "Funktioner" : "Features"}
-          title={
-            lang === "sv"
-              ? "Byggd för att hjälpa dig gå snabbare fram och söka smartare"
-              : "Built to help you move faster and apply smarter"
-          }
-          description={
-            lang === "sv"
-              ? "Allt du behöver för att skapa professionella ansökningar med mindre arbete."
-              : "Everything you need to create premium applications with less effort."
-          }
+          eyebrow="Funktioner"
+          title="Allt du behöver för att söka jobb snabbare och smartare"
+          description="Skapa bättre dokument, hitta relevanta jobb och håll ihop hela processen på ett ställe."
         />
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {features.map((feature) => (
@@ -206,17 +154,9 @@ const lang: Lang = "sv";  const t = copy[lang];
 
       <section id="demo" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
         <SectionTitle
-          eyebrow={lang === "sv" ? "Demo" : "Demo Preview"}
-          title={
-            lang === "sv"
-              ? "Se hur TailorCV anpassar din bakgrund till rollen"
-              : "See how TailorCV aligns your story with the role"
-          }
-          description={
-            lang === "sv"
-              ? "En produktlik förhandsvisning av profilinnehåll, rollinput och liveförslag."
-              : "A product-style preview of profile context, role input, and live suggestions."
-          }
+          eyebrow="Så ser det ut"
+          title="Skapa ett jobbredo CV på några minuter"
+          description="Fyll i din bakgrund och målroll så skapar Hireon ett tydligt och professionellt CV som är lätt att anpassa vidare."
         />
         <div className="mt-10">
           <DemoPanel lang={lang} t={t.demo} />
@@ -225,13 +165,9 @@ const lang: Lang = "sv";  const t = copy[lang];
 
       <section className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
         <SectionTitle
-          eyebrow={lang === "sv" ? "Trygghet" : "Trust"}
-          title={lang === "sv" ? "Byggd för moderna jobbsökare" : "Built for modern job seekers"}
-          description={
-            lang === "sv"
-              ? "Designad för att spara tid. Anpassad för bättre ansökningar."
-              : "Designed to save time. Tailored for better applications."
-          }
+          eyebrow="Fördelar"
+          title="Byggt för att hjälpa dig ta dig in på arbetsmarknaden snabbare"
+          description="Mindre tid på att börja om. Mer tid på att söka rätt jobb med bättre material."
         />
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {trustItems.map((item) => (
@@ -247,17 +183,9 @@ const lang: Lang = "sv";  const t = copy[lang];
 
       <section id="pricing" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
         <SectionTitle
-          eyebrow={lang === "sv" ? "Priser" : "Pricing"}
-          title={
-            lang === "sv"
-              ? "Välj planen som passar ditt jobbsökande"
-              : "Choose the plan that fits your job search pace"
-          }
-          description={
-            lang === "sv"
-              ? "Börja gratis och uppgradera när du vill ha full kraft i dina ansökningar."
-              : "Start free, upgrade when you want full application power."
-          }
+          eyebrow="Priser"
+          title="Välj planen som passar ditt jobbsökande"
+          description="Börja gratis och uppgradera när du vill ha fler verktyg och snabbare väg framåt."
         />
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {pricing.map((tier) => (
@@ -269,20 +197,16 @@ const lang: Lang = "sv";  const t = copy[lang];
       <section id="final-cta" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
         <div className="rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-soft sm:p-16">
           <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-            {lang === "sv"
-              ? "Sluta skriva om varje ansökan från grunden."
-              : "Stop rewriting every application from scratch."}
+            Sök jobb snabbare utan att tumma på kvaliteten
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-slate-600">
-            {lang === "sv"
-              ? "Låt AI hjälpa dig att söka snabbare och bättre."
-              : "Let AI help you apply faster and better."}
+          <p className="mx-auto mt-4 max-w-2xl text-slate-600">
+            Skapa bättre dokument, håll koll på dina ansökningar och lägg tiden på rätt jobb istället för att börja om varje gång.
           </p>
           <a
             href="#"
             className="mt-8 inline-flex rounded-full bg-slate-900 px-7 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
           >
-            {lang === "sv" ? "Kom igång" : "Get Started"}
+            Kom igång gratis
           </a>
         </div>
       </section>
