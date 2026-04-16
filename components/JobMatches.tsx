@@ -327,96 +327,87 @@ export function JobMatches({
   const [generatingCoverLetter, setGeneratingCoverLetter] = useState(false);
   const [coverLetterError, setCoverLetterError] = useState("");
 
-  const [expandedMissingJobId, setExpandedMissingJobId] = useState<string | null>(null);
-  const [expandedReasonJobId, setExpandedReasonJobId] = useState<string | null>(null);
+  const [expandedMissingJobId, setExpandedMissingJobId] =
+    useState<string | null>(null);
+  const [expandedReasonJobId, setExpandedReasonJobId] =
+    useState<string | null>(null);
   const [expandedFitPanel, setExpandedFitPanel] = useState(false);
   const [expandedNextSteps, setExpandedNextSteps] = useState(false);
   const [expandedStrengths, setExpandedStrengths] = useState(false);
 
   useEffect(() => {
-  const runAutoMatch = async () => {
-    if (!cvText.trim() || !targetJob.trim()) return;
-
-    try {
-      setLoading(true);
-      setError("");
-      setJobs([]);
-      setPlan("");
-      setSelectedJobId(null);
-      setExpandedMissingJobId(null);
-      setExpandedReasonJobId(null);
-      setExpandedFitPanel(false);
-      setExpandedNextSteps(false);
-      setExpandedStrengths(false);
-      setCoverLetter("");
-      setCoverLetterError("");
-
-      console.log("FETCHING JOBS NOW", {
-        cvText: cvText.slice(0, 80),
-        targetJob,
-        location,
-        lang,
-      });
-
-      const res = await fetch("/api/jobs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cvText,
-          searchQuery: targetJob,
-          location,
-          lang,
-        }),
-      });
-
-      const text = await res.text();
-
-      console.log("JOBS RESPONSE STATUS:", res.status);
-      console.log("JOBS RESPONSE TEXT:", text.slice(0, 500));
-
-      let data: any = {};
+    const runAutoMatch = async () => {
+      if (!cvText.trim() || !targetJob.trim()) return;
 
       try {
-        data = text ? JSON.parse(text) : {};
-      } catch {
-        throw new Error(
-          isSwedish
-            ? `API:n returnerade HTML i stället för JSON (status ${res.status}). Kontrollera inloggning eller serverfel.`
-            : `The API returned HTML instead of JSON (status ${res.status}). Check authentication or server errors.`
+        setLoading(true);
+        setError("");
+        setJobs([]);
+        setPlan("");
+        setSelectedJobId(null);
+        setExpandedMissingJobId(null);
+        setExpandedReasonJobId(null);
+        setExpandedFitPanel(false);
+        setExpandedNextSteps(false);
+        setExpandedStrengths(false);
+        setCoverLetter("");
+        setCoverLetterError("");
+
+        const res = await fetch("/api/jobs", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cvText,
+            searchQuery: targetJob,
+            location,
+            lang,
+          }),
+        });
+
+        const text = await res.text();
+
+        let data: any = {};
+
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch {
+          throw new Error(
+            isSwedish
+              ? `API:n returnerade HTML i stället för JSON (status ${res.status}). Kontrollera inloggning eller serverfel.`
+              : `The API returned HTML instead of JSON (status ${res.status}). Check authentication or server errors.`
+          );
+        }
+
+        if (!res.ok) {
+          throw new Error(
+            data?.error ||
+              (isSwedish
+                ? `Kunde inte hämta jobb (status ${res.status}).`
+                : `Could not fetch jobs (status ${res.status}).`)
+          );
+        }
+
+        const incomingJobs = Array.isArray(data?.jobs) ? data.jobs : [];
+        setJobs(incomingJobs);
+        setPlan(String(data?.plan || ""));
+
+        if (incomingJobs.length > 0) {
+          setSelectedJobId(incomingJobs[0].id);
+        }
+      } catch (err: any) {
+        setError(
+          err?.message ||
+            (isSwedish ? "Kunde inte hämta jobb." : "Could not fetch jobs.")
         );
+      } finally {
+        setLoading(false);
       }
+    };
 
-      if (!res.ok) {
-        throw new Error(
-          data?.error ||
-            (isSwedish
-              ? `Kunde inte hämta jobb (status ${res.status}).`
-              : `Could not fetch jobs (status ${res.status}).`)
-        );
-      }
-
-      const incomingJobs = Array.isArray(data?.jobs) ? data.jobs : [];
-      setJobs(incomingJobs);
-      setPlan(String(data?.plan || ""));
-
-      if (incomingJobs.length > 0) {
-        setSelectedJobId(incomingJobs[0].id);
-      }
-    } catch (err: any) {
-      console.error("JOBMATCHES FETCH ERROR:", err);
-      setError(
-        err?.message ||
-          (isSwedish ? "Kunde inte hämta jobb." : "Could not fetch jobs.")
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  runAutoMatch();
-}, [cvText, targetJob, location, lang]);
+    runAutoMatch();
+  }, [cvText, targetJob, location, lang]);
 
   const isCareerPlus = plan === "career+";
   const bestJob = jobs[0];
@@ -434,7 +425,10 @@ export function JobMatches({
   );
 
   const nextSteps = useMemo(() => getNextSteps(bestJob, lang), [bestJob, lang]);
-  const strengths = useMemo(() => getCareerStrengths(cvText, lang), [cvText, lang]);
+  const strengths = useMemo(
+    () => getCareerStrengths(cvText, lang),
+    [cvText, lang]
+  );
 
   const toggleMissing = (jobId: string) => {
     setExpandedMissingJobId((prev) => (prev === jobId ? null : jobId));
@@ -448,6 +442,46 @@ export function JobMatches({
     setSelectedJobId(jobId);
     setCoverLetter("");
     setCoverLetterError("");
+  };
+
+  const handleSaveJob = async (job: JobMatch) => {
+    try {
+      const res = await fetch("/api/save-item", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "job",
+          title: job.title,
+          content: job.description || job.summary || "",
+          meta: {
+            company: job.company,
+            location: job.location,
+            url: job.url,
+            score: job.score,
+            summary: job.summary,
+            source: job.source,
+          },
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data?.error ||
+            (isSwedish ? "Kunde inte spara jobb." : "Could not save job.")
+        );
+      }
+
+      alert(isSwedish ? "Jobb sparat." : "Job saved.");
+    } catch (error: any) {
+      alert(
+        error?.message ||
+          (isSwedish ? "Kunde inte spara jobb." : "Could not save job.")
+      );
+    }
   };
 
   const handleImproveCv = async () => {
@@ -468,7 +502,9 @@ export function JobMatches({
           location: selectedJob.location,
           jobDescription:
             selectedJob.description ||
-            `${selectedJob.title}\n${selectedJob.summary}\n${selectedJob.missing?.join(", ") || ""}`,
+            `${selectedJob.title}\n${selectedJob.summary}\n${
+              selectedJob.missing?.join(", ") || ""
+            }`,
           lang,
         }),
       });
@@ -518,7 +554,9 @@ export function JobMatches({
           company: selectedJob.company,
           jobDescription:
             selectedJob.description ||
-            `${selectedJob.title}\n${selectedJob.summary}\n${selectedJob.missing?.join(", ") || ""}`,
+            `${selectedJob.title}\n${selectedJob.summary}\n${
+              selectedJob.missing?.join(", ") || ""
+            }`,
           lang,
         }),
       });
@@ -616,8 +654,12 @@ export function JobMatches({
 
         <p className="mt-1 text-sm text-slate-600">
           {isSwedish
-            ? `Visar jobb baserat på: ${shortTargetRole}${location ? ` i eller nära ${location}` : ""}`
-            : `Showing jobs based on: ${shortTargetRole}${location ? ` in or near ${location}` : ""}`}
+            ? `Visar jobb baserat på: ${shortTargetRole}${
+                location ? ` i eller nära ${location}` : ""
+              }`
+            : `Showing jobs based on: ${shortTargetRole}${
+                location ? ` in or near ${location}` : ""
+              }`}
         </p>
       </div>
 
@@ -662,7 +704,9 @@ export function JobMatches({
                   </h4>
                 </div>
 
-                {bestJob && <MatchCircle score={bestJob.score} color={bestJob.color} />}
+                {bestJob && (
+                  <MatchCircle score={bestJob.score} color={bestJob.color} />
+                )}
               </div>
 
               <div className="mt-4 flex flex-wrap gap-3">
@@ -720,7 +764,9 @@ export function JobMatches({
               <ExpandableCard open={expandedNextSteps}>
                 <div className="mt-4 rounded-2xl border border-white bg-white p-4 shadow-sm">
                   <p className="text-sm font-semibold text-slate-900">
-                    {isSwedish ? "Så här går du vidare nu" : "How to move forward now"}
+                    {isSwedish
+                      ? "Så här går du vidare nu"
+                      : "How to move forward now"}
                   </p>
                   <ul className="mt-3 space-y-2 text-sm text-slate-700">
                     {nextSteps.map((step, index) => (
@@ -910,18 +956,31 @@ export function JobMatches({
                   </a>
                 )}
 
-                {isCareerPlus && bestJob?.missing && bestJob.missing.length > 0 && (
-                  <div className="mt-3 rounded-xl border border-purple-200 bg-purple-50 px-3 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">
-                      {isSwedish ? "Det som saknas mest" : "Main missing areas"}
-                    </p>
-                    <p className="mt-2 text-sm text-slate-700">
-                      {bestJob.missing.join(", ")}
-                    </p>
-                  </div>
-                )}
+                {isCareerPlus &&
+                  bestJob?.missing &&
+                  bestJob.missing.length > 0 && (
+                    <div className="mt-3 rounded-xl border border-purple-200 bg-purple-50 px-3 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">
+                        {isSwedish
+                          ? "Det som saknas mest"
+                          : "Main missing areas"}
+                      </p>
+                      <p className="mt-2 text-sm text-slate-700">
+                        {bestJob.missing.join(", ")}
+                      </p>
+                    </div>
+                  )}
 
                 <div className="mt-4 flex flex-wrap gap-3">
+                  {bestJob && (
+                    <button
+                      onClick={() => handleSaveJob(bestJob)}
+                      className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                    >
+                      {isSwedish ? "Spara jobb" : "Save job"}
+                    </button>
+                  )}
+
                   {isCareerPlus && bestJob && (
                     <button
                       onClick={() => handleSelectJob(bestJob.id)}
@@ -973,11 +1032,17 @@ export function JobMatches({
                 </div>
               </div>
 
-              {bestJob && <MatchCircle score={bestJob.score} color={bestJob.color} />}
+              {bestJob && (
+                <MatchCircle score={bestJob.score} color={bestJob.color} />
+              )}
             </div>
 
             <ExpandableCard
-              open={isCareerPlus && !!bestJob && expandedMissingJobId === bestJob.id}
+              open={
+                isCareerPlus &&
+                !!bestJob &&
+                expandedMissingJobId === bestJob.id
+              }
             >
               <div className="mt-4 rounded-2xl border border-purple-200 bg-purple-50 p-4">
                 <p className="text-sm font-semibold text-slate-900">
@@ -1004,7 +1069,11 @@ export function JobMatches({
             </ExpandableCard>
 
             <ExpandableCard
-              open={isCareerPlus && !!bestJob && expandedReasonJobId === bestJob.id}
+              open={
+                isCareerPlus &&
+                !!bestJob &&
+                expandedReasonJobId === bestJob.id
+              }
             >
               <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
                 <p className="text-sm font-semibold text-slate-900">
@@ -1045,7 +1114,8 @@ export function JobMatches({
 
                       {isCareerPlus && job.missing && job.missing.length > 0 && (
                         <p className="mt-2 text-sm font-medium text-purple-700">
-                          {isSwedish ? "Saknas:" : "Missing:"} {job.missing.join(", ")}
+                          {isSwedish ? "Saknas:" : "Missing:"}{" "}
+                          {job.missing.join(", ")}
                         </p>
                       )}
 
@@ -1070,54 +1140,65 @@ export function JobMatches({
                     <MatchCircle score={job.score} color={job.color} />
                   </div>
 
-                  {isCareerPlus && (
-                    <div className="mt-4 flex flex-wrap gap-3">
-                      <button
-                        onClick={() => handleSelectJob(job.id)}
-                        className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                          isSelected
-                            ? "bg-slate-900 text-white"
-                            : "border border-slate-300 text-slate-900 hover:border-slate-900 hover:bg-white"
-                        }`}
-                      >
-                        {isSelected
-                          ? isSwedish
-                            ? "Valt jobb"
-                            : "Selected"
-                          : isSwedish
-                          ? "Välj detta jobb"
-                          : "Select this job"}
-                      </button>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button
+                      onClick={() => handleSaveJob(job)}
+                      className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                    >
+                      {isSwedish ? "Spara jobb" : "Save job"}
+                    </button>
 
-                      <button
-                        onClick={() => toggleMissing(job.id)}
-                        className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
-                      >
-                        {expandedMissingJobId === job.id
-                          ? isSwedish
-                            ? "Dölj vad som saknas"
-                            : "Hide missing items"
-                          : isSwedish
-                          ? "Visa vad som saknas"
-                          : "Show missing items"}
-                      </button>
+                    {isCareerPlus && (
+                      <>
+                        <button
+                          onClick={() => handleSelectJob(job.id)}
+                          className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                            isSelected
+                              ? "bg-slate-900 text-white"
+                              : "border border-slate-300 text-slate-900 hover:border-slate-900 hover:bg-white"
+                          }`}
+                        >
+                          {isSelected
+                            ? isSwedish
+                              ? "Valt jobb"
+                              : "Selected"
+                            : isSwedish
+                            ? "Välj detta jobb"
+                            : "Select this job"}
+                        </button>
 
-                      <button
-                        onClick={() => toggleReason(job.id)}
-                        className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
-                      >
-                        {expandedReasonJobId === job.id
-                          ? isSwedish
-                            ? "Dölj analys"
-                            : "Hide analysis"
-                          : isSwedish
-                          ? "Varför är matchen inte högre?"
-                          : "Why isn’t the match higher?"}
-                      </button>
-                    </div>
-                  )}
+                        <button
+                          onClick={() => toggleMissing(job.id)}
+                          className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                        >
+                          {expandedMissingJobId === job.id
+                            ? isSwedish
+                              ? "Dölj vad som saknas"
+                              : "Hide missing items"
+                            : isSwedish
+                            ? "Visa vad som saknas"
+                            : "Show missing items"}
+                        </button>
 
-                  <ExpandableCard open={isCareerPlus && expandedMissingJobId === job.id}>
+                        <button
+                          onClick={() => toggleReason(job.id)}
+                          className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                        >
+                          {expandedReasonJobId === job.id
+                            ? isSwedish
+                              ? "Dölj analys"
+                              : "Hide analysis"
+                            : isSwedish
+                            ? "Varför är matchen inte högre?"
+                            : "Why isn’t the match higher?"}
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  <ExpandableCard
+                    open={isCareerPlus && expandedMissingJobId === job.id}
+                  >
                     <div className="mt-4 rounded-2xl border border-purple-200 bg-purple-50 p-4">
                       <p className="text-sm font-semibold text-slate-900">
                         {isSwedish ? "Det här saknas mest" : "Main missing areas"}
@@ -1142,7 +1223,9 @@ export function JobMatches({
                     </div>
                   </ExpandableCard>
 
-                  <ExpandableCard open={isCareerPlus && expandedReasonJobId === job.id}>
+                  <ExpandableCard
+                    open={isCareerPlus && expandedReasonJobId === job.id}
+                  >
                     <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
                       <p className="text-sm font-semibold text-slate-900">
                         {isSwedish ? "Career+ analys" : "Career+ analysis"}
