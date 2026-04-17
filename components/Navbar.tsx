@@ -80,7 +80,7 @@ export default function Navbar() {
               {planLabel}
             </span>
 
-            <UserButton afterSignOutUrl="/" />
+           <UserButton />
           </div>
         ) : (
           <div className="flex items-center gap-3">
