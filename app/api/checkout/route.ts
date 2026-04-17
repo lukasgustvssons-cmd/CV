@@ -1,7 +1,13 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const secretKey = process.env.STRIPE_SECRET_KEY;
+
+if (!secretKey) {
+  throw new Error("Missing STRIPE_SECRET_KEY");
+}
+
+const stripe = new Stripe(secretKey);
 
 export async function POST(req: Request) {
   try {
@@ -12,6 +18,10 @@ export async function POST(req: Request) {
     }
 
     const origin = req.headers.get("origin");
+
+    if (!origin) {
+      return NextResponse.json({ error: "Missing origin" }, { status: 400 });
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -26,11 +36,24 @@ export async function POST(req: Request) {
       cancel_url: `${origin}/?canceled=true`,
     });
 
+    if (!session.url) {
+      return NextResponse.json(
+        { error: "No checkout URL returned from Stripe" },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({ url: session.url });
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
+    console.error("STRIPE CHECKOUT ERROR:", err);
+
     return NextResponse.json(
-      { error: "Something went wrong" },
+      {
+        error:
+          err?.message ||
+          err?.raw?.message ||
+          "Stripe checkout failed",
+      },
       { status: 500 }
     );
   }

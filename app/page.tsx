@@ -96,7 +96,7 @@ const pricing = [
     price: "49 kr",
     description: "För dig som söker aktivt",
     cta: "Skaffa Pro",
-    checkoutPriceId: "price_PRO_ID_HÄR",
+    checkoutPriceId: "price_1TNFxfGmbR5zSuzsEuScmuQr",
     features: [
       "3 jobbmatchningar",
       "Spara CV, jobb och brev",
@@ -108,7 +108,7 @@ const pricing = [
     price: "99 kr",
     description: "För dig som vill öka chansen till intervju",
     cta: "Skaffa Career+",
-    checkoutPriceId: "price_CAREER_ID_HÄR",
+    checkoutPriceId: "price_1TNFykGmbR5zSuzsSlHDpJHA",
     highlighted: true,
     features: [
       "Allt i Pro",
