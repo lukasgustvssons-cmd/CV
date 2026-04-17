@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
 type PricingCardProps = {
   name: string;
   price: string;
@@ -8,6 +12,8 @@ type PricingCardProps = {
   checkoutPriceId?: string;
 };
 
+type UserPlan = "free" | "pro" | "career+" | "";
+
 export function PricingCard({
   name,
   price,
@@ -17,8 +23,96 @@ export function PricingCard({
   highlighted = false,
   checkoutPriceId,
 }: PricingCardProps) {
+  const [currentPlan, setCurrentPlan] = useState<UserPlan>("");
+
+  useEffect(() => {
+    const loadPlan = async () => {
+      try {
+        const res = await fetch("/api/user-plan", {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setCurrentPlan("free");
+          return;
+        }
+
+        setCurrentPlan(data?.plan || "free");
+      } catch {
+        setCurrentPlan("free");
+      }
+    };
+
+    loadPlan();
+  }, []);
+
+  const isFreeCard = name === "Gratis";
+  const isProCard = name === "Pro";
+  const isCareerPlusCard = name === "Career+";
+
+  const { buttonText, buttonDisabled } = useMemo(() => {
+    if (!currentPlan) {
+      return {
+        buttonText: cta,
+        buttonDisabled: false,
+      };
+    }
+
+    if (currentPlan === "career+") {
+      if (isCareerPlusCard) {
+        return {
+          buttonText: "Din nuvarande plan",
+          buttonDisabled: true,
+        };
+      }
+
+      if (isProCard) {
+        return {
+          buttonText: "Ingår i Career+",
+          buttonDisabled: true,
+        };
+      }
+
+      return {
+        buttonText: "Börja gratis",
+        buttonDisabled: false,
+      };
+    }
+
+    if (currentPlan === "pro") {
+      if (isProCard) {
+        return {
+          buttonText: "Din nuvarande plan",
+          buttonDisabled: true,
+        };
+      }
+
+      if (isCareerPlusCard) {
+        return {
+          buttonText: "Uppgradera till Career+",
+          buttonDisabled: false,
+        };
+      }
+
+      return {
+        buttonText: "Börja gratis",
+        buttonDisabled: false,
+      };
+    }
+
+    return {
+      buttonText: cta,
+      buttonDisabled: false,
+    };
+  }, [currentPlan, cta, isCareerPlusCard, isFreeCard, isProCard]);
+
   const handleClick = async () => {
-    if (name === "Gratis") {
+    if (buttonDisabled) return;
+
+    if (isFreeCard) {
       window.location.href = "/#demo";
       return;
     }
@@ -28,7 +122,7 @@ export function PricingCard({
       return;
     }
 
-    const plan = name === "Career+" ? "career+" : "pro";
+    const plan = isCareerPlusCard ? "career+" : "pro";
 
     try {
       const res = await fetch("/api/checkout", {
@@ -71,6 +165,7 @@ export function PricingCard({
         {description}
       </p>
       <p className="mt-6 text-4xl font-semibold tracking-tight">{price}</p>
+
       <ul className="mt-6 space-y-3 text-sm">
         {features.map((feature) => (
           <li
@@ -81,15 +176,21 @@ export function PricingCard({
           </li>
         ))}
       </ul>
+
       <button
         onClick={handleClick}
+        disabled={buttonDisabled}
         className={`mt-8 w-full rounded-full px-5 py-3 text-sm font-semibold transition ${
-          highlighted
+          buttonDisabled
+            ? highlighted
+              ? "cursor-not-allowed bg-white/80 text-slate-500"
+              : "cursor-not-allowed bg-slate-200 text-slate-500"
+            : highlighted
             ? "bg-white text-slate-900 hover:bg-slate-100"
             : "bg-slate-900 text-white hover:bg-slate-800"
         }`}
       >
-        {cta}
+        {buttonText}
       </button>
     </article>
   );
