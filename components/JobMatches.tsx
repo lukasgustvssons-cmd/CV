@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { LoadingSpinner } from "./LoadingSpinner";
+import { AppToast } from "./AppToast";
 
 type JobMatch = {
   id: string;
@@ -336,6 +338,11 @@ export function JobMatches({
   const [expandedNextSteps, setExpandedNextSteps] = useState(false);
   const [expandedStrengths, setExpandedStrengths] = useState(false);
 
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error" | "info">(
+    "info"
+  );
+
   useEffect(() => {
     const runAutoMatch = async () => {
       if (!cvText.trim() || !targetJob.trim()) return;
@@ -354,6 +361,7 @@ export function JobMatches({
         setCoverLetter("");
         setCoverLetterError("");
         setImproveMessage("");
+        setToastMessage("");
 
         const res = await fetch("/api/jobs", {
           method: "POST",
@@ -410,6 +418,16 @@ export function JobMatches({
 
     runAutoMatch();
   }, [cvText, targetJob, location, lang, isSwedish]);
+
+  useEffect(() => {
+    if (!toastMessage) return;
+
+    const timeout = setTimeout(() => {
+      setToastMessage("");
+    }, 2500);
+
+    return () => clearTimeout(timeout);
+  }, [toastMessage]);
 
   const isCareerPlus = plan === "career+";
   const canUseSelectedJobTools = isCareerPlus;
@@ -480,9 +498,11 @@ export function JobMatches({
         );
       }
 
-      alert(isSwedish ? "Jobb sparat." : "Job saved.");
+      setToastType("success");
+      setToastMessage(isSwedish ? "Jobb sparat." : "Job saved.");
     } catch (error: any) {
-      alert(
+      setToastType("error");
+      setToastMessage(
         error?.message ||
           (isSwedish ? "Kunde inte spara jobb." : "Could not save job.")
       );
@@ -495,6 +515,7 @@ export function JobMatches({
     try {
       setImprovingCv(true);
       setImproveMessage("");
+      setToastMessage("");
 
       const res = await fetch("/api/improve-cv", {
         method: "POST",
@@ -528,9 +549,16 @@ export function JobMatches({
 
       if (data?.output) {
         onCvImproved(data.output);
+        setToastType("success");
+        setToastMessage(
+          isSwedish
+            ? "CV uppdaterat för valt jobb."
+            : "Resume updated for selected job."
+        );
       }
     } catch (error: any) {
-      alert(
+      setToastType("error");
+      setToastMessage(
         error?.message ||
           (isSwedish
             ? "Något gick fel när CV:t skulle förbättras."
@@ -596,9 +624,22 @@ export function JobMatches({
 
       if (data?.output) {
         setCoverLetter(data.output);
+        setToastType("success");
+        setToastMessage(
+          isSwedish
+            ? "Personligt brev skapat."
+            : "Cover letter generated."
+        );
       }
     } catch (error: any) {
       setCoverLetterError(
+        error?.message ||
+          (isSwedish
+            ? "Något gick fel när personligt brev skulle skapas."
+            : "Something went wrong while generating the cover letter.")
+      );
+      setToastType("error");
+      setToastMessage(
         error?.message ||
           (isSwedish
             ? "Något gick fel när personligt brev skulle skapas."
@@ -644,9 +685,13 @@ export function JobMatches({
         );
       }
 
-      alert(isSwedish ? "Personligt brev sparat." : "Cover letter saved.");
+      setToastType("success");
+      setToastMessage(
+        isSwedish ? "Personligt brev sparat." : "Cover letter saved."
+      );
     } catch (error: any) {
-      alert(
+      setToastType("error");
+      setToastMessage(
         error?.message ||
           (isSwedish
             ? "Kunde inte spara personligt brev."
@@ -660,8 +705,13 @@ export function JobMatches({
 
     try {
       await navigator.clipboard.writeText(coverLetter);
+      setToastType("success");
+      setToastMessage(
+        isSwedish ? "Personligt brev kopierat." : "Cover letter copied."
+      );
     } catch {
-      alert(
+      setToastType("error");
+      setToastMessage(
         isSwedish
           ? "Kunde inte kopiera personligt brev."
           : "Could not copy cover letter."
@@ -731,13 +781,28 @@ export function JobMatches({
         </p>
       </div>
 
+      {toastMessage && (
+        <div className="mb-4">
+          <AppToast
+            message={toastMessage}
+            type={toastType}
+            onClose={() => setToastMessage("")}
+          />
+        </div>
+      )}
+
       {loading && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600"
         >
-          {isSwedish ? "Letar matchande jobb..." : "Finding matching jobs..."}
+          <span className="inline-flex items-center gap-2">
+            <LoadingSpinner size={16} />
+            <span>
+              {isSwedish ? "Letar matchande jobb..." : "Finding matching jobs..."}
+            </span>
+          </span>
         </motion.div>
       )}
 
@@ -911,13 +976,18 @@ export function JobMatches({
                         disabled={improvingCv}
                         className="w-full rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                       >
-                        {improvingCv
-                          ? isSwedish
-                            ? "Förbättrar CV..."
-                            : "Improving CV..."
-                          : isSwedish
-                          ? "Förbättra CV för valt jobb"
-                          : "Improve CV for selected job"}
+                        <span className="inline-flex items-center justify-center gap-2">
+                          {improvingCv && <LoadingSpinner size={16} />}
+                          <span>
+                            {improvingCv
+                              ? isSwedish
+                                ? "Förbättrar CV..."
+                                : "Improving CV..."
+                              : isSwedish
+                              ? "Förbättra CV för valt jobb"
+                              : "Improve CV for selected job"}
+                          </span>
+                        </span>
                       </button>
 
                       <button
@@ -925,13 +995,18 @@ export function JobMatches({
                         disabled={generatingCoverLetter}
                         className="w-full rounded-full border border-white/20 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                       >
-                        {generatingCoverLetter
-                          ? isSwedish
-                            ? "Skapar brev..."
-                            : "Generating letter..."
-                          : isSwedish
-                          ? "Skapa personligt brev"
-                          : "Generate cover letter"}
+                        <span className="inline-flex items-center justify-center gap-2">
+                          {generatingCoverLetter && <LoadingSpinner size={16} />}
+                          <span>
+                            {generatingCoverLetter
+                              ? isSwedish
+                                ? "Skapar brev..."
+                                : "Generating letter..."
+                              : isSwedish
+                              ? "Skapa personligt brev"
+                              : "Generate cover letter"}
+                          </span>
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -1011,13 +1086,18 @@ export function JobMatches({
                     disabled={generatingCoverLetter}
                     className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
-                    {generatingCoverLetter
-                      ? isSwedish
-                        ? "Skapar..."
-                        : "Generating..."
-                      : isSwedish
-                      ? "Skapa ny version"
-                      : "Generate again"}
+                    <span className="inline-flex items-center justify-center gap-2">
+                      {generatingCoverLetter && <LoadingSpinner size={16} />}
+                      <span>
+                        {generatingCoverLetter
+                          ? isSwedish
+                            ? "Skapar..."
+                            : "Generating..."
+                          : isSwedish
+                          ? "Skapa ny version"
+                          : "Generate again"}
+                      </span>
+                    </span>
                   </button>
 
                   <button
