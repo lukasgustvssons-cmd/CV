@@ -92,7 +92,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       if (!previewContainerRef.current) return;
 
       const containerWidth = previewContainerRef.current.offsetWidth;
-      const availableWidth = Math.max(containerWidth - 16, 280);
+      const availableWidth = Math.max(containerWidth - 16, 260);
       const scale = Math.min(1, availableWidth / PAGE_WIDTH);
 
       setPreviewScale(scale);
@@ -276,7 +276,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:gap-10 lg:grid-cols-[420px_minmax(0,1fr)] lg:items-start">
+      <div className="grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)] lg:items-start lg:gap-10">
         <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft sm:rounded-[28px] sm:p-8">
           <div className="mb-5 sm:mb-6">
             <h3 className="text-lg font-semibold text-slate-900 sm:text-xl">
@@ -382,73 +382,75 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
               )}
             </div>
 
-            <div
-              ref={previewContainerRef}
-              className="relative overflow-hidden rounded-[20px] border border-slate-200 bg-[#e9edf3] p-2 sm:rounded-[24px] sm:p-4 md:p-6"
-            >
-              <div
-                className="mx-auto origin-top"
-                style={{
-                  width: `${PAGE_WIDTH * previewScale}px`,
-                  height: `${PAGE_HEIGHT * previewScale}px`,
-                }}
-              >
-                <div
-                  style={{
-                    transform: `scale(${previewScale})`,
-                    transformOrigin: "top left",
-                    width: PAGE_WIDTH,
-                    height: PAGE_HEIGHT,
-                  }}
-                >
-                  <div className="relative">
-                    <div
-                      ref={cvRef}
-                      className="h-[1123px] w-[794px] bg-white px-[72px] py-[76px] text-[15px] leading-[1.75] text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
-                    >
-                      {!result ? (
-                        <div className="flex min-h-full flex-col items-center justify-center px-6 text-center">
-                          <div className="w-full max-w-[420px] rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 sm:px-8 sm:py-12">
-                            <p className="text-base font-medium text-slate-700 sm:text-lg">
-                              {panelCopy.emptyTitle}
-                            </p>
-                            <p className="mt-3 text-sm leading-relaxed text-slate-500">
-                              {panelCopy.emptyText}
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        <StyledResume text={result} />
-                      )}
-                    </div>
-
-                    {!isSignedIn && guestLimitReached && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-white/75 p-3 backdrop-blur-sm sm:p-6">
-                        <div className="mx-auto w-full max-w-md rounded-[24px] border border-slate-200 bg-white p-5 text-center shadow-xl sm:rounded-3xl sm:p-8">
-                          <h4 className="text-xl font-semibold text-slate-900 sm:text-2xl">
-                            {panelCopy.signupGateTitle}
-                          </h4>
-                          <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                            {panelCopy.signupGateText}
-                          </p>
-
-                          <div className="mt-6">
-                            <SignUpButton mode="modal">
-                              <button
-                                type="button"
-                                className="w-full rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
-                              >
-                                {panelCopy.signupGateButton}
-                              </button>
-                            </SignUpButton>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+            {!result ? (
+              <div className="rounded-[20px] border border-slate-200 bg-white p-4 sm:rounded-[24px] sm:p-6">
+                <div className="mx-auto flex min-h-[220px] w-full max-w-2xl items-center justify-center rounded-[20px] border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center sm:min-h-[320px]">
+                  <div className="max-w-md">
+                    <p className="text-base font-semibold text-slate-800 sm:text-lg">
+                      {panelCopy.emptyTitle}
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-slate-600">
+                      {panelCopy.emptyText}
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div
+                ref={previewContainerRef}
+                className="relative overflow-hidden rounded-[20px] border border-slate-200 bg-[#e9edf3] p-2 sm:rounded-[24px] sm:p-4 md:p-6"
+              >
+                <div
+                  className="mx-auto origin-top"
+                  style={{
+                    width: `${PAGE_WIDTH * previewScale}px`,
+                    height: `${PAGE_HEIGHT * previewScale}px`,
+                  }}
+                >
+                  <div
+                    style={{
+                      transform: `scale(${previewScale})`,
+                      transformOrigin: "top left",
+                      width: PAGE_WIDTH,
+                      height: PAGE_HEIGHT,
+                    }}
+                  >
+                    <div className="relative">
+                      <div
+                        ref={cvRef}
+                        className="h-[1123px] w-[794px] bg-white px-[72px] py-[76px] text-[15px] leading-[1.75] text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+                      >
+                        <StyledResume text={result} />
+                      </div>
+
+                      {!isSignedIn && guestLimitReached && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-white/75 p-3 backdrop-blur-sm sm:p-6">
+                          <div className="mx-auto w-full max-w-md rounded-[24px] border border-slate-200 bg-white p-5 text-center shadow-xl sm:rounded-3xl sm:p-8">
+                            <h4 className="text-xl font-semibold text-slate-900 sm:text-2xl">
+                              {panelCopy.signupGateTitle}
+                            </h4>
+                            <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                              {panelCopy.signupGateText}
+                            </p>
+
+                            <div className="mt-6">
+                              <SignUpButton mode="modal">
+                                <button
+                                  type="button"
+                                  className="w-full rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
+                                >
+                                  {panelCopy.signupGateButton}
+                                </button>
+                              </SignUpButton>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {result && !guestLimitReached && (
