@@ -68,8 +68,10 @@ export default function DashboardPage() {
   const [items, setItems] = useState<SavedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [prepData, setPrepData] = useState<Record<string, InterviewPrep>>({});
   const [loadingPrepId, setLoadingPrepId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<DashboardTab>("jobs");
   const [search, setSearch] = useState("");
@@ -111,6 +113,16 @@ export default function DashboardPage() {
     loadItems();
   }, []);
 
+  useEffect(() => {
+    if (!successMessage) return;
+
+    const timeout = setTimeout(() => {
+      setSuccessMessage("");
+    }, 2500);
+
+    return () => clearTimeout(timeout);
+  }, [successMessage]);
+
   const jobs = useMemo(
     () => items.filter((item) => item.type === "job"),
     [items]
@@ -147,7 +159,9 @@ export default function DashboardPage() {
   const filteredJobs = useMemo(() => {
     return jobs.filter((item) => {
       const matchesStatus =
-        jobStatusFilter === "all" ? true : (item.meta?.status || "saved") === jobStatusFilter;
+        jobStatusFilter === "all"
+          ? true
+          : (item.meta?.status || "saved") === jobStatusFilter;
 
       const haystack = [
         item.title,
@@ -268,6 +282,59 @@ export default function DashboardPage() {
     } finally {
       setLoadingPrepId(null);
     }
+  };
+
+  const handleDeleteItem = async (id: string) => {
+    const confirmed = window.confirm("Är du säker på att du vill ta bort detta?");
+    if (!confirmed) return;
+
+    try {
+      setError("");
+      setDeletingId(id);
+
+      const res = await fetch("/api/delete-saved-item", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Kunde inte ta bort objektet.");
+      }
+
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      setSuccessMessage("Objekt borttaget.");
+    } catch (err: any) {
+      setError(err?.message || "Kunde inte ta bort objektet.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleCopyText = async (text: string, message: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setSuccessMessage(message);
+    } catch {
+      setError("Kunde inte kopiera texten.");
+    }
+  };
+
+  const handleDownloadTextFile = (filename: string, content: string) => {
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.click();
+
+    URL.revokeObjectURL(url);
+    setSuccessMessage("Fil nedladdad.");
   };
 
   const tabButtonClass = (tab: DashboardTab) =>
@@ -398,22 +465,29 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {successMessage && (
+          <div className="mb-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-700">
+            {successMessage}
+          </div>
+        )}
+
         {!loading && !error && (
           <div className="space-y-6">
             {activeTab === "jobs" && (
               <section>
-                <div className="mb-4 flex items-center justify-between">
-                  <div>
-                    <h2 className="text-2xl font-semibold text-slate-900">Jobb</h2>
-                    <p className="mt-1 text-sm text-slate-600">
-                      Håll koll på sparade jobb, status och intervjuförberedelser.
-                    </p>
-                  </div>
+                <div className="mb-4">
+                  <h2 className="text-2xl font-semibold text-slate-900">Jobb</h2>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Håll koll på sparade jobb, status och intervjuförberedelser.
+                  </p>
                 </div>
 
                 {filteredJobs.length === 0 ? (
-                  <div className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
-                    Inga jobb matchar din sökning ännu.
+                  <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+                    <p className="text-lg font-medium text-slate-900">Inga jobb ännu</p>
+                    <p className="mt-2 text-sm text-slate-600">
+                      När du sparar jobb dyker de upp här så du kan följa status och förbereda intervjuer.
+                    </p>
                   </div>
                 ) : (
                   <div className="grid gap-4">
@@ -484,6 +558,14 @@ export default function DashboardPage() {
                                   Öppna annons
                                 </a>
                               )}
+
+                              <button
+                                onClick={() => handleDeleteItem(item.id)}
+                                disabled={deletingId === item.id}
+                                className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
+                              >
+                                {deletingId === item.id ? "Tar bort..." : "Ta bort"}
+                              </button>
                             </div>
                           </div>
 
@@ -585,8 +667,11 @@ export default function DashboardPage() {
                 </div>
 
                 {filteredCvs.length === 0 ? (
-                  <div className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
-                    Inga CV matchar din sökning ännu.
+                  <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+                    <p className="text-lg font-medium text-slate-900">Inga CV ännu</p>
+                    <p className="mt-2 text-sm text-slate-600">
+                      När du sparar ett CV dyker det upp här så du kan gå tillbaka till rätt version.
+                    </p>
                   </div>
                 ) : (
                   <div className="grid gap-4">
@@ -619,12 +704,32 @@ export default function DashboardPage() {
                               </p>
                             </div>
 
-                            <div className="flex w-full gap-3 lg:w-auto">
+                            <div className="flex w-full flex-wrap gap-3 lg:w-auto lg:flex-col">
                               <button
                                 onClick={() => toggleExpanded(item.id)}
                                 className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
                               >
                                 {isExpanded ? "Visa mindre" : "Visa mer"}
+                              </button>
+
+                              <button
+                                onClick={() =>
+                                  handleDownloadTextFile(
+                                    `${item.title.replace(/\s+/g, "-").toLowerCase()}.txt`,
+                                    item.content || ""
+                                  )
+                                }
+                                className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                              >
+                                Ladda ner
+                              </button>
+
+                              <button
+                                onClick={() => handleDeleteItem(item.id)}
+                                disabled={deletingId === item.id}
+                                className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
+                              >
+                                {deletingId === item.id ? "Tar bort..." : "Ta bort"}
                               </button>
                             </div>
                           </div>
@@ -646,8 +751,11 @@ export default function DashboardPage() {
                 </div>
 
                 {filteredLetters.length === 0 ? (
-                  <div className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
-                    Inga personliga brev matchar din sökning ännu.
+                  <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+                    <p className="text-lg font-medium text-slate-900">Inga personliga brev ännu</p>
+                    <p className="mt-2 text-sm text-slate-600">
+                      När du sparar ett personligt brev dyker det upp här.
+                    </p>
                   </div>
                 ) : (
                   <div className="grid gap-4">
@@ -676,12 +784,32 @@ export default function DashboardPage() {
                               </p>
                             </div>
 
-                            <div className="flex w-full gap-3 lg:w-auto">
+                            <div className="flex w-full flex-wrap gap-3 lg:w-auto lg:flex-col">
                               <button
                                 onClick={() => toggleExpanded(item.id)}
                                 className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
                               >
                                 {isExpanded ? "Visa mindre" : "Visa mer"}
+                              </button>
+
+                              <button
+                                onClick={() =>
+                                  handleCopyText(
+                                    item.content || "",
+                                    "Personligt brev kopierat."
+                                  )
+                                }
+                                className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                              >
+                                Kopiera
+                              </button>
+
+                              <button
+                                onClick={() => handleDeleteItem(item.id)}
+                                disabled={deletingId === item.id}
+                                className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
+                              >
+                                {deletingId === item.id ? "Tar bort..." : "Ta bort"}
                               </button>
                             </div>
                           </div>
