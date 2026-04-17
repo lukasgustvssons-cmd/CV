@@ -49,6 +49,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   const [previewScale, setPreviewScale] = useState(1);
   const [location, setLocation] = useState("");
   const [guestLimitReached, setGuestLimitReached] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const cvRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
@@ -113,6 +114,19 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", updateScale);
+    };
+  }, []);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
     };
   }, []);
 
@@ -393,6 +407,49 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                       {panelCopy.emptyText}
                     </p>
                   </div>
+                </div>
+              </div>
+            ) : isMobile ? (
+              <div className="rounded-[20px] border border-slate-200 bg-white p-4 sm:rounded-[24px] sm:p-6">
+                <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4 sm:p-6">
+                  <div className="mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      {isSwedish ? "Mobilförhandsvisning" : "Mobile preview"}
+                    </p>
+                    <p className="mt-2 text-sm text-slate-600">
+                      {isSwedish
+                        ? "En läsbar version av ditt CV för mobil."
+                        : "A readable version of your resume for mobile."}
+                    </p>
+                  </div>
+
+                  <div className="max-h-[560px] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4">
+                    <div ref={cvRef} className="text-sm leading-7 text-slate-800">
+                      <StyledResume text={result} />
+                    </div>
+                  </div>
+
+                  {!isSignedIn && guestLimitReached && (
+                    <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm">
+                      <h4 className="text-lg font-semibold text-slate-900 sm:text-xl">
+                        {panelCopy.signupGateTitle}
+                      </h4>
+                      <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                        {panelCopy.signupGateText}
+                      </p>
+
+                      <div className="mt-5">
+                        <SignUpButton mode="modal">
+                          <button
+                            type="button"
+                            className="w-full rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
+                          >
+                            {panelCopy.signupGateButton}
+                          </button>
+                        </SignUpButton>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
