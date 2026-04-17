@@ -92,7 +92,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       if (!previewContainerRef.current) return;
 
       const containerWidth = previewContainerRef.current.offsetWidth;
-      const availableWidth = Math.max(containerWidth - 32, 320);
+      const availableWidth = Math.max(containerWidth - 16, 280);
       const scale = Math.min(1, availableWidth / PAGE_WIDTH);
 
       setPreviewScale(scale);
@@ -260,23 +260,26 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   };
 
   return (
-    <section id="demo" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
-      <div className="mb-12 text-center">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+    <section
+      id="demo"
+      className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8 lg:py-24"
+    >
+      <div className="mb-10 text-center sm:mb-12">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-sm">
           {panelCopy.eyebrow}
         </p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
           {panelCopy.title}
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
+        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base sm:leading-relaxed">
           {panelCopy.description}
         </p>
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-[420px_minmax(0,1fr)] lg:items-start">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-soft">
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold text-slate-900">
+      <div className="grid gap-6 lg:gap-10 lg:grid-cols-[420px_minmax(0,1fr)] lg:items-start">
+        <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft sm:rounded-[28px] sm:p-8">
+          <div className="mb-5 sm:mb-6">
+            <h3 className="text-lg font-semibold text-slate-900 sm:text-xl">
               {panelCopy.formTitle}
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">
@@ -293,7 +296,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
                 placeholder={t.experiencePlaceholder}
-                className="min-h-[180px] w-full rounded-2xl border border-slate-300 bg-white px-4 py-4 text-sm text-slate-900 outline-none transition focus:border-slate-500"
+                className="min-h-[160px] w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 sm:min-h-[180px] sm:py-4"
               />
             </div>
 
@@ -305,7 +308,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                 value={job}
                 onChange={(e) => setJob(e.target.value)}
                 placeholder={t.jobPlaceholder}
-                className="min-h-[180px] w-full rounded-2xl border border-slate-300 bg-white px-4 py-4 text-sm text-slate-900 outline-none transition focus:border-slate-500"
+                className="min-h-[160px] w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 sm:min-h-[180px] sm:py-4"
               />
             </div>
 
@@ -325,7 +328,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
               <SignUpButton mode="modal">
                 <button
                   type="button"
-                  className="w-full rounded-full bg-slate-900 px-6 py-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+                  className="w-full rounded-full bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 sm:py-4"
                 >
                   {lang === "sv"
                     ? "Skapa konto för att fortsätta"
@@ -337,7 +340,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                 type="button"
                 onClick={handleGenerate}
                 disabled={loading}
-                className="w-full rounded-full bg-slate-900 px-6 py-4 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-full bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
               >
                 {loading ? t.generating : t.generate}
               </button>
@@ -345,11 +348,11 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
           </div>
         </div>
 
-        <div className="space-y-8">
-          <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-4 sm:p-6">
+        <div className="space-y-6 sm:space-y-8">
+          <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-3 sm:rounded-[28px] sm:p-6">
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900">
+              <div className="min-w-0">
+                <h3 className="text-base font-semibold text-slate-900 sm:text-lg">
                   {panelCopy.previewTitle}
                 </h3>
                 <p className="text-sm text-slate-600">
@@ -358,11 +361,11 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
               </div>
 
               {result && (
-                <div className="flex flex-wrap gap-3">
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end sm:gap-3">
                   <button
                     type="button"
                     onClick={handleSaveCv}
-                    className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
+                    className="inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900 sm:w-auto"
                   >
                     {panelCopy.save}
                   </button>
@@ -371,7 +374,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                     type="button"
                     onClick={handleDownloadPdf}
                     disabled={downloading}
-                    className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
                     {downloading ? t.downloading : t.download}
                   </button>
@@ -381,7 +384,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
 
             <div
               ref={previewContainerRef}
-              className="relative overflow-hidden rounded-[24px] border border-slate-200 bg-[#e9edf3] p-4 sm:p-6"
+              className="relative overflow-hidden rounded-[20px] border border-slate-200 bg-[#e9edf3] p-2 sm:rounded-[24px] sm:p-4 md:p-6"
             >
               <div
                 className="mx-auto origin-top"
@@ -404,9 +407,9 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                       className="h-[1123px] w-[794px] bg-white px-[72px] py-[76px] text-[15px] leading-[1.75] text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
                     >
                       {!result ? (
-                        <div className="flex min-h-full flex-col items-center justify-center text-center">
-                          <div className="w-full max-w-[420px] rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-8 py-12">
-                            <p className="text-lg font-medium text-slate-700">
+                        <div className="flex min-h-full flex-col items-center justify-center px-6 text-center">
+                          <div className="w-full max-w-[420px] rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 sm:px-8 sm:py-12">
+                            <p className="text-base font-medium text-slate-700 sm:text-lg">
                               {panelCopy.emptyTitle}
                             </p>
                             <p className="mt-3 text-sm leading-relaxed text-slate-500">
@@ -420,9 +423,9 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                     </div>
 
                     {!isSignedIn && guestLimitReached && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-white/75 backdrop-blur-sm">
-                        <div className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl">
-                          <h4 className="text-2xl font-semibold text-slate-900">
+                      <div className="absolute inset-0 flex items-center justify-center bg-white/75 p-3 backdrop-blur-sm sm:p-6">
+                        <div className="mx-auto w-full max-w-md rounded-[24px] border border-slate-200 bg-white p-5 text-center shadow-xl sm:rounded-3xl sm:p-8">
+                          <h4 className="text-xl font-semibold text-slate-900 sm:text-2xl">
                             {panelCopy.signupGateTitle}
                           </h4>
                           <p className="mt-3 text-sm leading-relaxed text-slate-600">
@@ -433,7 +436,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                             <SignUpButton mode="modal">
                               <button
                                 type="button"
-                                className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                                className="w-full rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
                               >
                                 {panelCopy.signupGateButton}
                               </button>
