@@ -41,7 +41,13 @@ export default function Home() {
       description:
         "Skapa ett tydligt grund-CV som är lätt att anpassa för olika jobb.",
       icon: (
-        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <svg
+          viewBox="0 0 24 24"
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
           <path d="M7 6h10M7 12h10M7 18h6" />
         </svg>
       ),
@@ -51,7 +57,13 @@ export default function Home() {
       description:
         "Se vilka roller som ligger närmast din profil och var du har bäst chans.",
       icon: (
-        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <svg
+          viewBox="0 0 24 24"
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
           <path d="M12 3v18M3 12h18" />
         </svg>
       ),
@@ -61,7 +73,13 @@ export default function Home() {
       description:
         "Slipp börja om från början varje gång du söker ett nytt jobb.",
       icon: (
-        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <svg
+          viewBox="0 0 24 24"
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
           <path d="m4 12 5 5 11-11" />
         </svg>
       ),
@@ -71,7 +89,13 @@ export default function Home() {
       description:
         "Få ett starkt första utkast som du kan använda och förbättra direkt.",
       icon: (
-        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <svg
+          viewBox="0 0 24 24"
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+        >
           <path d="M4 5h16v14H4z" />
           <path d="m4 8 8 6 8-6" />
         </svg>
@@ -79,45 +103,45 @@ export default function Home() {
     },
   ];
 
-const pricing = [
-  {
-    name: "Gratis",
-    price: "0 kr",
-    description: "För dig som vill komma igång",
-    cta: "Börja gratis",
-    features: [
-      "1 CV-version",
-      "Grundläggande jobbmatchning",
-      "Begränsad tillgång till brevfunktion",
-    ],
-  },
-  {
-    name: "Pro",
-    price: "49 kr",
-    description: "För dig som söker aktivt",
-    cta: "Skaffa Pro",
-    checkoutPriceId: "price_1TNFxfGmbR5zSuzsEuScmuQr",
-    features: [
-      "3 jobbmatchningar",
-      "Spara CV, jobb och brev",
-      "Job tracker i dashboard",
-    ],
-  },
-  {
-    name: "Career+",
-    price: "99 kr",
-    description: "För dig som vill öka chansen till intervju",
-    cta: "Skaffa Career+",
-    checkoutPriceId: "price_1TNFykGmbR5zSuzsSlHDpJHA",
-    highlighted: true,
-    features: [
-      "Allt i Pro",
-      "Obegränsad jobbmatchning",
-      "Förbättra CV för specifika jobb",
-      "Intervjuförberedelse och djupare insikter",
-    ],
-  },
-];
+  const pricing = [
+    {
+      name: "Gratis",
+      price: "0 kr",
+      description: "För dig som vill komma igång",
+      cta: "Börja gratis",
+      features: [
+        "1 CV-version",
+        "Grundläggande jobbmatchning",
+        "Begränsad tillgång till brevfunktion",
+      ],
+    },
+    {
+      name: "Pro",
+      price: "49 kr",
+      description: "För dig som söker aktivt",
+      cta: "Skaffa Pro",
+      checkoutPriceId: "price_1TNFxfGmbR5zSuzsEuScmuQr",
+      features: [
+        "3 jobbmatchningar",
+        "Spara CV, jobb och brev",
+        "Job tracker i dashboard",
+      ],
+    },
+    {
+      name: "Career+",
+      price: "99 kr",
+      description: "För dig som vill öka chansen till intervju",
+      cta: "Skaffa Career+",
+      checkoutPriceId: "price_1TNFykGmbR5zSuzsSlHDpJHA",
+      highlighted: true,
+      features: [
+        "Allt i Pro",
+        "Obegränsad jobbmatchning",
+        "Förbättra CV för specifika jobb",
+        "Intervjuförberedelse och djupare insikter",
+      ],
+    },
+  ];
 
   const trustItems = [
     "Skapat för att göra jobbsökandet enklare",
@@ -126,30 +150,36 @@ const pricing = [
   ];
 
   return (
-    <main>
+    <main className="overflow-x-hidden">
       <Navbar />
       <Hero t={t.hero} />
 
-      <section id="how-it-works" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
+      <section
+        id="how-it-works"
+        className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8"
+      >
         <SectionTitle
           eyebrow="Så fungerar det"
           title="Tre steg till en starkare jobbansökan"
           description="Från bakgrund till färdiga dokument på ett enkelt sätt."
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3">
           {steps.map((step) => (
             <StepCard key={step.title} {...step} />
           ))}
         </div>
       </section>
 
-      <section id="features" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
+      <section
+        id="features"
+        className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8"
+      >
         <SectionTitle
           eyebrow="Funktioner"
           title="Allt du behöver för att söka jobb snabbare och smartare"
           description="Skapa bättre dokument, hitta relevanta jobb och håll ihop hela processen på ett ställe."
         />
-        <div className="mt-12 grid gap-6 sm:grid-cols-2">
+        <div className="mt-10 grid gap-4 sm:mt-12 sm:gap-6 sm:grid-cols-2">
           {features.map((feature) => (
             <FeatureCard key={feature.title} {...feature} />
           ))}
@@ -158,17 +188,17 @@ const pricing = [
 
       <DemoPanel lang={lang} t={t.demo} />
 
-      <section className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
+      <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
         <SectionTitle
           eyebrow="Fördelar"
           title="Byggt för att hjälpa dig ta dig in på arbetsmarknaden snabbare"
           description="Mindre tid på att börja om. Mer tid på att söka rätt jobb med bättre material."
         />
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-5 md:grid-cols-3">
           {trustItems.map((item) => (
             <div
               key={item}
-              className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm"
+              className="rounded-2xl border border-slate-200 bg-white p-5 text-sm leading-6 text-slate-600 shadow-sm sm:p-6"
             >
               {item}
             </div>
@@ -176,30 +206,37 @@ const pricing = [
         </div>
       </section>
 
-      <section id="pricing" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
+      <section
+        id="pricing"
+        className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8"
+      >
         <SectionTitle
           eyebrow="Priser"
           title="Välj planen som passar ditt jobbsökande"
           description="Börja gratis och uppgradera när du vill ha fler verktyg och snabbare väg framåt."
         />
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:mt-12 sm:gap-6 lg:grid-cols-3">
           {pricing.map((tier) => (
             <PricingCard key={tier.name} {...tier} />
           ))}
         </div>
       </section>
 
-      <section id="final-cta" className="mx-auto w-full max-w-6xl px-6 py-20 lg:px-8">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-soft sm:p-16">
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+      <section
+        id="final-cta"
+        className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8"
+      >
+        <div className="rounded-[1.75rem] border border-slate-200 bg-white px-5 py-10 text-center shadow-soft sm:rounded-[2rem] sm:p-12 lg:p-16">
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
             Sök jobb snabbare utan att tumma på kvaliteten
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-slate-600">
-            Skapa bättre dokument, håll koll på dina ansökningar och lägg tiden på rätt jobb istället för att börja om varje gång.
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+            Skapa bättre dokument, håll koll på dina ansökningar och lägg tiden
+            på rätt jobb istället för att börja om varje gång.
           </p>
           <a
             href="#"
-            className="mt-8 inline-flex rounded-full bg-slate-900 px-7 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+            className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto sm:px-7"
           >
             Kom igång gratis
           </a>
