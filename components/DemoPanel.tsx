@@ -89,15 +89,21 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   };
 
   useEffect(() => {
-    const updateScale = () => {
-      if (!previewContainerRef.current) return;
+   const updateScale = () => {
+  if (!previewContainerRef.current) return;
 
-      const containerWidth = previewContainerRef.current.offsetWidth;
-      const availableWidth = Math.max(containerWidth - 64, 260);
-      const scale = Math.min(1, availableWidth / PAGE_WIDTH);
+  const containerWidth = previewContainerRef.current.offsetWidth;
 
-      setPreviewScale(scale);
-    };
+  const isDesktop = window.innerWidth >= 1024;
+
+  const availableWidth = isDesktop
+    ? containerWidth - 120   // mer luft på desktop
+    : containerWidth - 32;   // mobil som du redan fixat
+
+  const scale = Math.min(1, availableWidth / PAGE_WIDTH);
+
+  setPreviewScale(scale);
+};
 
     updateScale();
 
