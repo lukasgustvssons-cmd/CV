@@ -1,4 +1,5 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -45,6 +46,8 @@ export async function POST(req: Request) {
           : "Missing Supabase environment variables.",
       });
     }
+
+    const cookieStore = await cookies();
 
     let appUser: any = null;
     let email: string | null = null;
@@ -108,6 +111,20 @@ export async function POST(req: Request) {
             : "You have reached the free limit. Upgrade to create more resumes.",
           limitReached: true,
         });
+      }
+    } else {
+      const guestCvCreated = cookieStore.get("hireon_guest_cv_created");
+
+      if (guestCvCreated?.value === "true") {
+        return Response.json(
+          {
+            output: isSwedish
+              ? "Du har redan skapat ett gratis CV. Skapa konto för att fortsätta."
+              : "You have already created one free resume. Create an account to continue.",
+            limitReached: true,
+          },
+          { status: 403 }
+        );
       }
     }
 
@@ -306,6 +323,16 @@ Additional instructions:
               : "The resume was created, but statistics could not be updated."),
         });
       }
+    }
+
+    if (!userId) {
+      cookieStore.set("hireon_guest_cv_created", "true", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 30,
+        path: "/",
+      });
     }
 
     return Response.json({ output });

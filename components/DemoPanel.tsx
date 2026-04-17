@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useUser, SignUpButton } from "@clerk/nextjs";
 import type { Lang } from "../lib/translations";
 import { StyledResume } from "./StyledResume";
 import { JobMatches } from "./JobMatches";
 
 const PAGE_WIDTH = 794;
 const PAGE_HEIGHT = 1123;
+const GUEST_CV_KEY = "hireon_guest_cv_created";
 
 type DemoPanelProps = {
   lang: Lang;
@@ -37,6 +39,8 @@ type DemoPanelProps = {
 };
 
 export function DemoPanel({ lang, t }: DemoPanelProps) {
+  const { isSignedIn } = useUser();
+
   const [experience, setExperience] = useState("");
   const [job, setJob] = useState("");
   const [result, setResult] = useState("");
@@ -44,6 +48,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   const [downloading, setDownloading] = useState(false);
   const [previewScale, setPreviewScale] = useState(1);
   const [location, setLocation] = useState("");
+  const [guestLimitReached, setGuestLimitReached] = useState(false);
 
   const cvRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
@@ -66,11 +71,20 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     previewDescription: isSwedish
       ? "Så här kan ditt CV se ut."
       : "This is how your resume can look.",
-    emptyTitle: isSwedish ? "Din CV-förhandsvisning visas här" : "Your resume preview appears here",
+    emptyTitle: isSwedish
+      ? "Din CV-förhandsvisning visas här"
+      : "Your resume preview appears here",
     emptyText: isSwedish
       ? "Fyll i din erfarenhet och målroll, och klicka sedan på Generera CV."
       : "Fill in your experience and target role, then click Generate resume.",
     save: isSwedish ? "Spara CV" : "Save resume",
+    signupGateTitle: isSwedish
+      ? "Skapa konto för att fortsätta"
+      : "Create an account to continue",
+    signupGateText: isSwedish
+      ? "Du har använt ditt gratis-CV. Skapa ett konto för att fortsätta skapa och spara CV."
+      : "You’ve used your free resume. Create an account to continue creating and saving resumes.",
+    signupGateButton: isSwedish ? "Skapa konto" : "Create account",
   };
 
   useEffect(() => {
@@ -102,9 +116,28 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (isSignedIn) {
+      setGuestLimitReached(false);
+      return;
+    }
+
+    const hasCreatedGuestCv = localStorage.getItem(GUEST_CV_KEY) === "true";
+    setGuestLimitReached(hasCreatedGuestCv);
+  }, [isSignedIn]);
+
   const handleGenerate = async () => {
     if (!experience.trim() || !job.trim()) {
       setResult(t.validation);
+      return;
+    }
+
+    if (!isSignedIn && guestLimitReached) {
+      setResult(
+        isSwedish
+          ? "Du har redan skapat ett gratis CV. Skapa konto för att fortsätta."
+          : "You already created one free resume. Create an account to continue."
+      );
       return;
     }
 
@@ -124,10 +157,21 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
 
       if (data.limitReached) {
         setResult(data.output);
+        setGuestLimitReached(true);
+        return;
+      }
+
+      if (!res.ok) {
+        setResult(data.output || t.error);
         return;
       }
 
       setResult(data.output || t.error);
+
+      if (!isSignedIn && data.output) {
+        localStorage.setItem(GUEST_CV_KEY, "true");
+        setGuestLimitReached(true);
+      }
     } catch {
       setResult(t.error);
     } finally {
@@ -322,7 +366,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
 
             <div
               ref={previewContainerRef}
-              className="overflow-hidden rounded-[24px] border border-slate-200 bg-[#e9edf3] p-4 sm:p-6"
+              className="relative overflow-hidden rounded-[24px] border border-slate-200 bg-[#e9edf3] p-4 sm:p-6"
             >
               <div
                 className="mx-auto origin-top"
@@ -339,23 +383,46 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                     height: PAGE_HEIGHT,
                   }}
                 >
-                  <div
-                    ref={cvRef}
-                    className="h-[1123px] w-[794px] bg-white px-[72px] py-[76px] text-[15px] leading-[1.75] text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
-                  >
-                    {!result ? (
-                      <div className="flex min-h-full flex-col items-center justify-center text-center">
-                        <div className="w-full max-w-[420px] rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-8 py-12">
-                          <p className="text-lg font-medium text-slate-700">
-                            {panelCopy.emptyTitle}
+                  <div className="relative">
+                    <div
+                      ref={cvRef}
+                      className="h-[1123px] w-[794px] bg-white px-[72px] py-[76px] text-[15px] leading-[1.75] text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+                    >
+                      {!result ? (
+                        <div className="flex min-h-full flex-col items-center justify-center text-center">
+                          <div className="w-full max-w-[420px] rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-8 py-12">
+                            <p className="text-lg font-medium text-slate-700">
+                              {panelCopy.emptyTitle}
+                            </p>
+                            <p className="mt-3 text-sm leading-relaxed text-slate-500">
+                              {panelCopy.emptyText}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <StyledResume text={result} />
+                      )}
+                    </div>
+
+                    {!isSignedIn && guestLimitReached && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-white/75 backdrop-blur-sm">
+                        <div className="mx-auto max-w-md rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl">
+                          <h4 className="text-2xl font-semibold text-slate-900">
+                            {panelCopy.signupGateTitle}
+                          </h4>
+                          <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                            {panelCopy.signupGateText}
                           </p>
-                          <p className="mt-3 text-sm leading-relaxed text-slate-500">
-                            {panelCopy.emptyText}
-                          </p>
+
+                          <div className="mt-6">
+                            <SignUpButton mode="modal">
+                              <button className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                                {panelCopy.signupGateButton}
+                              </button>
+                            </SignUpButton>
+                          </div>
                         </div>
                       </div>
-                    ) : (
-                      <StyledResume text={result} />
                     )}
                   </div>
                 </div>
@@ -363,7 +430,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
             </div>
           </div>
 
-          {result && (
+          {result && !guestLimitReached && (
             <JobMatches
               cvText={result}
               lang={lang}
