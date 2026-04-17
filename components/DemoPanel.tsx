@@ -93,7 +93,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       if (!previewContainerRef.current) return;
 
       const containerWidth = previewContainerRef.current.offsetWidth;
-      const availableWidth = Math.max(containerWidth - 16, 260);
+      const availableWidth = Math.max(containerWidth - 64, 260);
       const scale = Math.min(1, availableWidth / PAGE_WIDTH);
 
       setPreviewScale(scale);
@@ -455,7 +455,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
             ) : (
               <div
                 ref={previewContainerRef}
-                className="relative overflow-hidden rounded-[20px] border border-slate-200 bg-[#e9edf3] p-2 sm:rounded-[24px] sm:p-4 md:p-6"
+                className="relative overflow-hidden rounded-[20px] border border-slate-200 bg-[#e9edf3] p-2 sm:rounded-[24px] sm:p-4 lg:p-5"
               >
                 <div
                   className="mx-auto origin-top"
