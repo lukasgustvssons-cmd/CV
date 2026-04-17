@@ -321,13 +321,19 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
               />
             </div>
 
-            <button
-              onClick={handleGenerate}
-              disabled={loading}
-              className="w-full rounded-full bg-slate-900 px-6 py-4 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading ? t.generating : t.generate}
-            </button>
+           <button
+  onClick={handleGenerate}
+  disabled={loading || (!isSignedIn && guestLimitReached)}
+  className="w-full rounded-full bg-slate-900 px-6 py-4 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {loading
+    ? t.generating
+    : !isSignedIn && guestLimitReached
+    ? (lang === "sv"
+        ? "Skapa konto för att fortsätta"
+        : "Create account to continue")
+    : t.generate}
+</button>
           </div>
         </div>
 
