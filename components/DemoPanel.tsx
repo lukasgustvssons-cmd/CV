@@ -95,8 +95,8 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       const containerWidth = previewContainerRef.current.offsetWidth;
       const isDesktop = window.innerWidth >= 1024;
       const availableWidth = isDesktop
-        ? containerWidth - 120
-        : containerWidth - 32;
+        ? containerWidth - 80
+        : containerWidth - 24;
 
       const scale = Math.min(1, availableWidth / PAGE_WIDTH);
       setPreviewScale(scale);
@@ -293,7 +293,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)] lg:items-start lg:gap-10">
+      <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start lg:gap-6 xl:grid-cols-[400px_minmax(0,1fr)] xl:gap-8 2xl:grid-cols-[420px_minmax(0,1fr)] 2xl:gap-10">
         <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft sm:rounded-[28px] sm:p-8">
           <div className="mb-5 sm:mb-6">
             <h3 className="text-lg font-semibold text-slate-900 sm:text-xl">
@@ -458,7 +458,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
             ) : (
               <div
                 ref={previewContainerRef}
-                className="relative overflow-hidden rounded-[20px] border border-slate-200 bg-[#e9edf3] p-2 sm:rounded-[24px] sm:p-4 lg:p-5"
+                className="relative overflow-hidden rounded-[20px] border border-slate-200 bg-[#e9edf3] flex items-center justify-center sm:rounded-[24px]"
               >
                 <div
                   className="mx-auto origin-top"
