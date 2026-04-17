@@ -100,6 +100,9 @@ export default function DashboardPage() {
   const [plan, setPlan] = useState<UserPlan>("");
   const [showCareerModal, setShowCareerModal] = useState(false);
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+
   useEffect(() => {
     const loadPlan = async () => {
       try {
@@ -340,10 +343,18 @@ export default function DashboardPage() {
     }
   };
 
-  const handleDeleteItem = async (id: string) => {
-    const confirmed = window.confirm("Är du säker på att du vill ta bort detta?");
-    if (!confirmed) return;
+  const openDeleteModal = (id: string) => {
+    setItemToDelete(id);
+    setDeleteModalOpen(true);
+  };
 
+  const closeDeleteModal = () => {
+    if (deletingId) return;
+    setDeleteModalOpen(false);
+    setItemToDelete(null);
+  };
+
+  const handleDeleteItem = async (id: string) => {
     try {
       setError("");
       setDeletingId(id);
@@ -368,6 +379,8 @@ export default function DashboardPage() {
       setError(err?.message || "Kunde inte ta bort objektet.");
     } finally {
       setDeletingId(null);
+      setDeleteModalOpen(false);
+      setItemToDelete(null);
     }
   };
 
@@ -437,6 +450,40 @@ export default function DashboardPage() {
                 className="inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
                 Fortsätt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl sm:p-8">
+            <h2 className="text-xl font-semibold text-slate-900 sm:text-2xl">
+              Ta bort objekt
+            </h2>
+
+            <p className="mt-3 text-sm leading-7 text-slate-600">
+              Är du säker på att du vill ta bort detta? Det går inte att ångra.
+            </p>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={closeDeleteModal}
+                disabled={!!deletingId}
+                className="inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+              >
+                Avbryt
+              </button>
+
+              <button
+                type="button"
+                onClick={() => itemToDelete && handleDeleteItem(itemToDelete)}
+                disabled={!itemToDelete || !!deletingId}
+                className="inline-flex w-full items-center justify-center rounded-full bg-rose-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+              >
+                {deletingId ? "Tar bort..." : "Ta bort"}
               </button>
             </div>
           </div>
@@ -668,7 +715,7 @@ export default function DashboardPage() {
                               )}
 
                               <button
-                                onClick={() => handleDeleteItem(item.id)}
+                                onClick={() => openDeleteModal(item.id)}
                                 disabled={deletingId === item.id}
                                 className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
                               >
@@ -833,7 +880,7 @@ export default function DashboardPage() {
                               </button>
 
                               <button
-                                onClick={() => handleDeleteItem(item.id)}
+                                onClick={() => openDeleteModal(item.id)}
                                 disabled={deletingId === item.id}
                                 className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
                               >
@@ -913,7 +960,7 @@ export default function DashboardPage() {
                               </button>
 
                               <button
-                                onClick={() => handleDeleteItem(item.id)}
+                                onClick={() => openDeleteModal(item.id)}
                                 disabled={deletingId === item.id}
                                 className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
                               >
