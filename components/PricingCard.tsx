@@ -5,6 +5,7 @@ type PricingCardProps = {
   features: string[];
   cta: string;
   highlighted?: boolean;
+  checkoutPriceId?: string;
 };
 
 export function PricingCard({
@@ -14,7 +15,42 @@ export function PricingCard({
   features,
   cta,
   highlighted = false,
+  checkoutPriceId,
 }: PricingCardProps) {
+  const handleClick = async () => {
+    if (name === "Gratis") {
+      window.location.href = "/#demo";
+      return;
+    }
+
+    if (!checkoutPriceId) {
+      alert("Pris-ID saknas för denna plan.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ priceId: checkoutPriceId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Kunde inte starta checkout.");
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error: any) {
+      alert(error?.message || "Något gick fel vid betalning.");
+    }
+  };
+
   return (
     <article
       className={`rounded-3xl border p-8 transition hover:-translate-y-1 ${
@@ -23,10 +59,8 @@ export function PricingCard({
           : "border-slate-200 bg-white text-slate-900 shadow-sm"
       }`}
     >
-      {/* Titel */}
       <h3 className="text-xl font-semibold">{name}</h3>
 
-      {/* Beskrivning */}
       <p
         className={`mt-2 text-sm ${
           highlighted ? "text-slate-300" : "text-slate-600"
@@ -35,10 +69,8 @@ export function PricingCard({
         {description}
       </p>
 
-      {/* Pris */}
       <p className="mt-6 text-4xl font-semibold tracking-tight">{price}</p>
 
-      {/* Features */}
       <ul className="mt-6 space-y-3 text-sm">
         {features.map((feature) => (
           <li
@@ -50,8 +82,8 @@ export function PricingCard({
         ))}
       </ul>
 
-      {/* CTA-knapp */}
       <button
+        onClick={handleClick}
         className={`mt-8 w-full rounded-full px-5 py-3 text-sm font-semibold transition ${
           highlighted
             ? "bg-white text-slate-900 hover:bg-slate-100"

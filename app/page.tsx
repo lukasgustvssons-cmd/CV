@@ -84,25 +84,11 @@ const pricing = [
     name: "Gratis",
     price: "0 kr",
     description: "För dig som vill komma igång",
-    cta: "Kom igång gratis",
+    cta: "Börja gratis",
     features: [
       "1 CV-version",
       "Grundläggande jobbmatchning",
-      "Begränsad tillgång till personligt brev",
-    ],
-  },
-  {
-    name: "Career+",
-    price: "99 kr",
-    description: "För dig som vill maximera chansen till intervju",
-    highlighted: true,
-    cta: "Skaffa Career+",
-    features: [
-      "Allt i Pro",
-      "Obegränsad jobbmatchning",
-      "Förbättra CV för specifika jobb",
-      "Personligt brev med AI",
-      "Djupare analys och nästa steg",
+      "Begränsad tillgång till brevfunktion",
     ],
   },
   {
@@ -110,10 +96,25 @@ const pricing = [
     price: "49 kr",
     description: "För dig som söker aktivt",
     cta: "Skaffa Pro",
+    checkoutPriceId: "price_PRO_ID_HÄR",
     features: [
       "3 jobbmatchningar",
       "Spara CV, jobb och brev",
       "Job tracker i dashboard",
+    ],
+  },
+  {
+    name: "Career+",
+    price: "99 kr",
+    description: "För dig som vill öka chansen till intervju",
+    cta: "Skaffa Career+",
+    checkoutPriceId: "price_CAREER_ID_HÄR",
+    highlighted: true,
+    features: [
+      "Allt i Pro",
+      "Obegränsad jobbmatchning",
+      "Förbättra CV för specifika jobb",
+      "Intervjuförberedelse och djupare insikter",
     ],
   },
 ];
