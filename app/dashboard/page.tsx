@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 type JobStatus = "saved" | "applied" | "interview" | "rejected";
 type DashboardTab = "jobs" | "cv" | "letters";
+type UserPlan = "free" | "pro" | "career+" | "";
 
 type InterviewPrep = {
   disclaimer?: string;
@@ -64,6 +65,24 @@ function getPreview(text: string | null | undefined, maxLength = 220) {
   return `${text.slice(0, maxLength).trim()}...`;
 }
 
+function getPlanLabel(plan: UserPlan) {
+  if (plan === "career+") return "Career+";
+  if (plan === "pro") return "Pro";
+  return "Gratis";
+}
+
+function getPlanBadgeClasses(plan: UserPlan) {
+  if (plan === "career+") {
+    return "border-purple-200 bg-purple-50 text-purple-700";
+  }
+
+  if (plan === "pro") {
+    return "border-blue-200 bg-blue-50 text-blue-700";
+  }
+
+  return "border-slate-200 bg-slate-50 text-slate-700";
+}
+
 export default function DashboardPage() {
   const [items, setItems] = useState<SavedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,6 +96,38 @@ export default function DashboardPage() {
   const [search, setSearch] = useState("");
   const [jobStatusFilter, setJobStatusFilter] = useState<JobStatus | "all">("all");
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+
+  const [plan, setPlan] = useState<UserPlan>("");
+  const [showCareerModal, setShowCareerModal] = useState(false);
+
+  useEffect(() => {
+    const loadPlan = async () => {
+      try {
+        const res = await fetch("/api/user-plan", {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) return;
+
+        const currentPlan = (data?.plan || "free") as UserPlan;
+        setPlan(currentPlan);
+
+        if (currentPlan === "career+") {
+          const seen = localStorage.getItem("hireon_career_plus_welcome_seen");
+          if (seen !== "true") {
+            setShowCareerModal(true);
+          }
+        }
+      } catch {
+        setPlan("free");
+      }
+    };
+
+    loadPlan();
+  }, []);
 
   useEffect(() => {
     const loadItems = async () => {
@@ -208,6 +259,11 @@ export default function DashboardPage() {
       ...prev,
       [id]: !prev[id],
     }));
+  };
+
+  const handleCloseCareerModal = () => {
+    localStorage.setItem("hireon_career_plus_welcome_seen", "true");
+    setShowCareerModal(false);
   };
 
   const handleStatusUpdate = async (id: string, newStatus: JobStatus) => {
@@ -342,17 +398,69 @@ export default function DashboardPage() {
       ? "rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
       : "rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50";
 
+  const planLabel = getPlanLabel(plan);
+  const planBadgeClasses = getPlanBadgeClasses(plan);
+
   return (
     <main className="min-h-screen bg-slate-50/60">
+      {showCareerModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl sm:p-8">
+            <div className="mb-4 inline-flex rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-purple-700">
+              Career+
+            </div>
+
+            <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Tack för att du uppgraderade till Career+
+            </h2>
+
+            <p className="mt-3 text-sm leading-7 text-slate-600">
+              Du har nu tillgång till våra mest kraftfulla verktyg för att förbättra dina jobbansökningar och öka chansen till intervju.
+            </p>
+
+            <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+              <p className="text-sm font-semibold text-slate-900">
+                Detta ingår nu i din plan:
+              </p>
+
+              <ul className="mt-4 space-y-3 text-sm text-slate-700">
+                <li>• Obegränsad jobbmatchning</li>
+                <li>• Förbättra CV för specifika jobb</li>
+                <li>• Skapa personligt brev för valt jobb</li>
+                <li>• Djupare insikter och intervjuförberedelse</li>
+              </ul>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={handleCloseCareerModal}
+                className="inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              >
+                Fortsätt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
               Hireon
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-              Min dashboard
-            </h1>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+                Min dashboard
+              </h1>
+
+              <span
+                className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${planBadgeClasses}`}
+              >
+                Nuvarande plan: {planLabel}
+              </span>
+            </div>
+
             <p className="mt-3 max-w-2xl text-slate-600">
               Håll koll på dina sparade jobb, CV-versioner och personliga brev på ett ställe.
             </p>
