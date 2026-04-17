@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 
 const secretKey = process.env.STRIPE_SECRET_KEY;
 
@@ -11,10 +12,19 @@ const stripe = new Stripe(secretKey);
 
 export async function POST(req: Request) {
   try {
-    const { priceId } = await req.json();
+    const { priceId, plan } = await req.json();
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
     if (!priceId) {
       return NextResponse.json({ error: "Missing priceId" }, { status: 400 });
+    }
+
+    if (!plan || !["pro", "career+"].includes(plan)) {
+      return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
     const origin = req.headers.get("origin");
@@ -32,8 +42,13 @@ export async function POST(req: Request) {
           quantity: 1,
         },
       ],
-      success_url: `${origin}/?success=true`,
+      success_url: `${origin}/dashboard?success=true`,
       cancel_url: `${origin}/?canceled=true`,
+      client_reference_id: userId,
+      metadata: {
+        clerk_user_id: userId,
+        plan,
+      },
     });
 
     if (!session.url) {

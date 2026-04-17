@@ -28,13 +28,18 @@ export function PricingCard({
       return;
     }
 
+    const plan = name === "Career+" ? "career+" : "pro";
+
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ priceId: checkoutPriceId }),
+        body: JSON.stringify({
+          priceId: checkoutPriceId,
+          plan,
+        }),
       });
 
       const data = await res.json();
@@ -43,9 +48,11 @@ export function PricingCard({
         throw new Error(data?.error || "Kunde inte starta checkout.");
       }
 
-      if (data?.url) {
-        window.location.href = data.url;
+      if (!data?.url) {
+        throw new Error("Ingen checkout-url returnerades.");
       }
+
+      window.location.href = data.url;
     } catch (error: any) {
       alert(error?.message || "Något gick fel vid betalning.");
     }
@@ -60,17 +67,10 @@ export function PricingCard({
       }`}
     >
       <h3 className="text-xl font-semibold">{name}</h3>
-
-      <p
-        className={`mt-2 text-sm ${
-          highlighted ? "text-slate-300" : "text-slate-600"
-        }`}
-      >
+      <p className={`mt-2 text-sm ${highlighted ? "text-slate-300" : "text-slate-600"}`}>
         {description}
       </p>
-
       <p className="mt-6 text-4xl font-semibold tracking-tight">{price}</p>
-
       <ul className="mt-6 space-y-3 text-sm">
         {features.map((feature) => (
           <li
@@ -81,7 +81,6 @@ export function PricingCard({
           </li>
         ))}
       </ul>
-
       <button
         onClick={handleClick}
         className={`mt-8 w-full rounded-full px-5 py-3 text-sm font-semibold transition ${
