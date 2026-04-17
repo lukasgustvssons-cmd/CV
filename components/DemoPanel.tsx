@@ -169,9 +169,8 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       setResult(data.output || t.error);
 
       if (!isSignedIn && data.output) {
-        localStorage.setItem(GUEST_CV_KEY, "true");
-        setGuestLimitReached(true);
-      }
+  localStorage.setItem(GUEST_CV_KEY, "true");
+}
     } catch {
       setResult(t.error);
     } finally {
