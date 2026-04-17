@@ -169,8 +169,8 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       setResult(data.output || t.error);
 
       if (!isSignedIn && data.output) {
-  localStorage.setItem(GUEST_CV_KEY, "true");
-}
+        localStorage.setItem(GUEST_CV_KEY, "true");
+      }
     } catch {
       setResult(t.error);
     } finally {
@@ -321,19 +321,27 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
               />
             </div>
 
-           <button
-  onClick={handleGenerate}
-  disabled={loading || (!isSignedIn && guestLimitReached)}
-  className="w-full rounded-full bg-slate-900 px-6 py-4 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
->
-  {loading
-    ? t.generating
-    : !isSignedIn && guestLimitReached
-    ? (lang === "sv"
-        ? "Skapa konto för att fortsätta"
-        : "Create account to continue")
-    : t.generate}
-</button>
+            {!isSignedIn && guestLimitReached ? (
+              <SignUpButton mode="modal">
+                <button
+                  type="button"
+                  className="w-full rounded-full bg-slate-900 px-6 py-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+                >
+                  {lang === "sv"
+                    ? "Skapa konto för att fortsätta"
+                    : "Create account to continue"}
+                </button>
+              </SignUpButton>
+            ) : (
+              <button
+                type="button"
+                onClick={handleGenerate}
+                disabled={loading}
+                className="w-full rounded-full bg-slate-900 px-6 py-4 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loading ? t.generating : t.generate}
+              </button>
+            )}
           </div>
         </div>
 
@@ -352,6 +360,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
               {result && (
                 <div className="flex flex-wrap gap-3">
                   <button
+                    type="button"
                     onClick={handleSaveCv}
                     className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
                   >
@@ -359,6 +368,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                   </button>
 
                   <button
+                    type="button"
                     onClick={handleDownloadPdf}
                     disabled={downloading}
                     className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
@@ -421,7 +431,10 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
 
                           <div className="mt-6">
                             <SignUpButton mode="modal">
-                              <button className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                              <button
+                                type="button"
+                                className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                              >
                                 {panelCopy.signupGateButton}
                               </button>
                             </SignUpButton>
