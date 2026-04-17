@@ -1,7 +1,54 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+
+function LockedOverlay({
+  title,
+  text,
+}: {
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[24px] bg-white/75 backdrop-blur-sm">
+      <div className="mx-4 max-w-sm rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-xl">
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 text-white">
+          ✦
+        </div>
+        <h4 className="text-lg font-semibold text-slate-900">{title}</h4>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600">{text}</p>
+        <div className="mt-4">
+          <span className="inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
+            Career+
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LockedBlock({
+  locked,
+  title,
+  text,
+  children,
+}: {
+  locked: boolean;
+  title: string;
+  text: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="relative">
+      <div className={locked ? "pointer-events-none select-none blur-[3px]" : ""}>
+        {children}
+      </div>
+
+      {locked && <LockedOverlay title={title} text={text} />}
+    </div>
+  );
+}
 
 type JobMatch = {
   id: string;
@@ -288,7 +335,7 @@ function ExpandableCard({
   children,
 }: {
   open: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <AnimatePresence initial={false}>
@@ -412,8 +459,7 @@ export function JobMatches({
   }, [cvText, targetJob, location, lang]);
 
   const isCareerPlus = plan === "career+";
-  const isPro = plan === "pro";
-  const canUseSelectedJobTools = isCareerPlus || isPro;
+  const canUseSelectedJobTools = isCareerPlus;
 
   const bestJob = jobs[0];
   const selectedJob =
@@ -754,7 +800,15 @@ export function JobMatches({
 
       {!loading && !error && jobs.length > 0 && (
         <>
-          {isCareerPlus && (
+          <LockedBlock
+            locked={!isCareerPlus}
+            title={isSwedish ? "Lås upp med Career+" : "Unlock with Career+"}
+            text={
+              isSwedish
+                ? "Få premiuminsikter, rekommendationer, nästa steg och styrkor direkt från ditt CV."
+                : "Get premium insights, recommendations, next steps, and strengths directly from your CV."
+            }
+          >
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
@@ -866,75 +920,85 @@ export function JobMatches({
                 </div>
               </ExpandableCard>
             </motion.div>
-          )}
+          </LockedBlock>
 
-          {canUseSelectedJobTools && selectedJob && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-              className="mb-6 rounded-2xl border border-slate-900 bg-slate-900 p-5 text-white"
+          {selectedJob && (
+            <LockedBlock
+              locked={!isCareerPlus}
+              title={isSwedish ? "Career+ krävs" : "Career+ required"}
+              text={
+                isSwedish
+                  ? "Förbättra ditt CV, skapa personligt brev och få smartare jobbanpassning för det valda jobbet."
+                  : "Improve your resume, generate a cover letter, and get smarter job-specific tailoring."
+              }
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
-                {isSwedish ? "Valt jobb" : "Selected job"}
-              </p>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
+                className="mb-6 rounded-2xl border border-slate-900 bg-slate-900 p-5 text-white"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+                  {isSwedish ? "Valt jobb" : "Selected job"}
+                </p>
 
-              <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h4 className="text-base font-semibold">{selectedJob.title}</h4>
-                  <p className="mt-1 text-sm text-slate-300">
-                    {selectedJob.company} • {selectedJob.location}
-                  </p>
+                <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h4 className="text-base font-semibold">{selectedJob.title}</h4>
+                    <p className="mt-1 text-sm text-slate-300">
+                      {selectedJob.company} • {selectedJob.location}
+                    </p>
 
-                  {selectedJob.url && selectedJob.url !== "#" && (
-                    <a
-                      href={selectedJob.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-3 inline-block text-sm font-semibold text-white underline underline-offset-4"
+                    {selectedJob.url && selectedJob.url !== "#" && (
+                      <a
+                        href={selectedJob.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 inline-block text-sm font-semibold text-white underline underline-offset-4"
+                      >
+                        {isSwedish ? "Öppna annons" : "Open job ad"}
+                      </a>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={handleImproveClick}
+                      disabled={improvingCv}
+                      className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {isSwedish ? "Öppna annons" : "Open job ad"}
-                    </a>
-                  )}
+                      {improvingCv
+                        ? isSwedish
+                          ? "Förbättrar CV..."
+                          : "Improving CV..."
+                        : isSwedish
+                        ? "Förbättra CV för valt jobb"
+                        : "Improve CV for selected job"}
+                    </button>
+
+                    <button
+                      onClick={handleGenerateCoverLetter}
+                      disabled={generatingCoverLetter}
+                      className="rounded-full border border-white/20 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {generatingCoverLetter
+                        ? isSwedish
+                          ? "Skapar brev..."
+                          : "Generating letter..."
+                        : isSwedish
+                        ? "Skapa personligt brev"
+                        : "Generate cover letter"}
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={handleImproveClick}
-                    disabled={improvingCv}
-                    className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {improvingCv
-                      ? isSwedish
-                        ? "Förbättrar CV..."
-                        : "Improving CV..."
-                      : isSwedish
-                      ? "Förbättra CV för valt jobb"
-                      : "Improve CV for selected job"}
-                  </button>
-
-                  <button
-                    onClick={handleGenerateCoverLetter}
-                    disabled={generatingCoverLetter}
-                    className="rounded-full border border-white/20 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {generatingCoverLetter
-                      ? isSwedish
-                        ? "Skapar brev..."
-                        : "Generating letter..."
-                      : isSwedish
-                      ? "Skapa personligt brev"
-                      : "Generate cover letter"}
-                  </button>
-                </div>
-              </div>
-
-              {improveMessage && (
-                <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                  {improveMessage}
-                </div>
-              )}
-            </motion.div>
+                {improveMessage && (
+                  <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                    {improveMessage}
+                  </div>
+                )}
+              </motion.div>
+            </LockedBlock>
           )}
 
           {canUseSelectedJobTools && coverLetterError && (
@@ -1038,20 +1102,30 @@ export function JobMatches({
                   </a>
                 )}
 
-                {isCareerPlus &&
-                  bestJob?.missing &&
-                  bestJob.missing.length > 0 && (
-                    <div className="mt-3 rounded-xl border border-purple-200 bg-purple-50 px-3 py-3">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">
-                        {isSwedish
-                          ? "Det som saknas mest"
-                          : "Main missing areas"}
-                      </p>
-                      <p className="mt-2 text-sm text-slate-700">
-                        {bestJob.missing.join(", ")}
-                      </p>
-                    </div>
-                  )}
+                <LockedBlock
+                  locked={!isCareerPlus}
+                  title={isSwedish ? "Lås upp missing skills" : "Unlock missing skills"}
+                  text={
+                    isSwedish
+                      ? "Se exakt vad som saknas och varför matchningen inte är högre."
+                      : "See exactly what is missing and why the match is not higher."
+                  }
+                >
+                  <div className="mt-3">
+                    {bestJob?.missing && bestJob.missing.length > 0 && (
+                      <div className="rounded-xl border border-purple-200 bg-purple-50 px-3 py-3">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">
+                          {isSwedish
+                            ? "Det som saknas mest"
+                            : "Main missing areas"}
+                        </p>
+                        <p className="mt-2 text-sm text-slate-700">
+                          {bestJob.missing.join(", ")}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </LockedBlock>
 
                 <div className="mt-4 flex flex-wrap gap-3">
                   {bestJob && (
@@ -1082,35 +1156,47 @@ export function JobMatches({
                     </button>
                   )}
 
-                  {isCareerPlus && bestJob && (
-                    <>
-                      <button
-                        onClick={() => toggleMissing(bestJob.id)}
-                        className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
-                      >
-                        {expandedMissingJobId === bestJob.id
-                          ? isSwedish
-                            ? "Dölj vad som saknas"
-                            : "Hide missing items"
-                          : isSwedish
-                          ? "Visa vad som saknas"
-                          : "Show missing items"}
-                      </button>
+                  <LockedBlock
+                    locked={!isCareerPlus}
+                    title={isSwedish ? "Career+ analys" : "Career+ analysis"}
+                    text={
+                      isSwedish
+                        ? "Se missing skills och djupare analys för varje jobb."
+                        : "See missing skills and deeper analysis for every job."
+                    }
+                  >
+                    <div className="flex flex-wrap gap-3">
+                      {bestJob && (
+                        <>
+                          <button
+                            onClick={() => toggleMissing(bestJob.id)}
+                            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                          >
+                            {expandedMissingJobId === bestJob.id
+                              ? isSwedish
+                                ? "Dölj vad som saknas"
+                                : "Hide missing items"
+                              : isSwedish
+                              ? "Visa vad som saknas"
+                              : "Show missing items"}
+                          </button>
 
-                      <button
-                        onClick={() => toggleReason(bestJob.id)}
-                        className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
-                      >
-                        {expandedReasonJobId === bestJob.id
-                          ? isSwedish
-                            ? "Dölj analys"
-                            : "Hide analysis"
-                          : isSwedish
-                          ? "Varför är matchen inte högre?"
-                          : "Why isn’t the match higher?"}
-                      </button>
-                    </>
-                  )}
+                          <button
+                            onClick={() => toggleReason(bestJob.id)}
+                            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                          >
+                            {expandedReasonJobId === bestJob.id
+                              ? isSwedish
+                                ? "Dölj analys"
+                                : "Hide analysis"
+                              : isSwedish
+                              ? "Varför är matchen inte högre?"
+                              : "Why isn’t the match higher?"}
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </LockedBlock>
                 </div>
               </div>
 
@@ -1194,12 +1280,24 @@ export function JobMatches({
                       </p>
                       <p className="mt-3 text-sm text-slate-700">{job.summary}</p>
 
-                      {isCareerPlus && job.missing && job.missing.length > 0 && (
-                        <p className="mt-2 text-sm font-medium text-purple-700">
-                          {isSwedish ? "Saknas:" : "Missing:"}{" "}
-                          {job.missing.join(", ")}
-                        </p>
-                      )}
+                      <LockedBlock
+                        locked={!isCareerPlus}
+                        title={isSwedish ? "Lås upp missing skills" : "Unlock missing skills"}
+                        text={
+                          isSwedish
+                            ? "Se vad som saknas för varje jobb och hur du kan höja din matchning."
+                            : "See what is missing for each job and how to improve your match."
+                        }
+                      >
+                        <div className="mt-2">
+                          {job.missing && job.missing.length > 0 && (
+                            <p className="text-sm font-medium text-purple-700">
+                              {isSwedish ? "Saknas:" : "Missing:"}{" "}
+                              {job.missing.join(", ")}
+                            </p>
+                          )}
+                        </div>
+                      </LockedBlock>
 
                       <div className="mt-3 flex flex-wrap items-center gap-3">
                         <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-medium text-slate-700">
@@ -1249,8 +1347,16 @@ export function JobMatches({
                       </button>
                     )}
 
-                    {isCareerPlus && (
-                      <>
+                    <LockedBlock
+                      locked={!isCareerPlus}
+                      title={isSwedish ? "Career+ analys" : "Career+ analysis"}
+                      text={
+                        isSwedish
+                          ? "Se missing skills och djupare analys för varje jobb."
+                          : "See missing skills and deeper analysis for every job."
+                      }
+                    >
+                      <div className="flex flex-wrap gap-3">
                         <button
                           onClick={() => toggleMissing(job.id)}
                           className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
@@ -1276,8 +1382,8 @@ export function JobMatches({
                             ? "Varför är matchen inte högre?"
                             : "Why isn’t the match higher?"}
                         </button>
-                      </>
-                    )}
+                      </div>
+                    </LockedBlock>
                   </div>
 
                   <ExpandableCard
