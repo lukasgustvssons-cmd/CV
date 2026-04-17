@@ -29,7 +29,7 @@ const supabase = createClient(
 
 export async function POST(req: Request) {
   const body = await req.text();
-  const signature = headers().get("stripe-signature");
+  const signature = (await headers()).get("stripe-signature");
 
   if (!signature) {
     return NextResponse.json(
