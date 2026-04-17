@@ -89,21 +89,18 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   };
 
   useEffect(() => {
-   const updateScale = () => {
-  if (!previewContainerRef.current) return;
+    const updateScale = () => {
+      if (!previewContainerRef.current) return;
 
-  const containerWidth = previewContainerRef.current.offsetWidth;
+      const containerWidth = previewContainerRef.current.offsetWidth;
+      const isDesktop = window.innerWidth >= 1024;
+      const availableWidth = isDesktop
+        ? containerWidth - 120
+        : containerWidth - 32;
 
-  const isDesktop = window.innerWidth >= 1024;
-
-  const availableWidth = isDesktop
-    ? containerWidth - 120   // mer luft på desktop
-    : containerWidth - 32;   // mobil som du redan fixat
-
-  const scale = Math.min(1, availableWidth / PAGE_WIDTH);
-
-  setPreviewScale(scale);
-};
+      const scale = Math.min(1, availableWidth / PAGE_WIDTH);
+      setPreviewScale(scale);
+    };
 
     updateScale();
 
@@ -481,9 +478,11 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                     <div className="relative">
                       <div
                         ref={cvRef}
-                        className="h-[1123px] w-[794px] bg-white px-[72px] py-[76px] text-[15px] leading-[1.75] text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+                        className="h-[1123px] w-[794px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
                       >
-                        <StyledResume text={result} />
+                        <div className="px-[72px] py-[76px] text-[15px] leading-[1.75] text-slate-900">
+                          <StyledResume text={result} />
+                        </div>
                       </div>
 
                       {!isSignedIn && guestLimitReached && (
