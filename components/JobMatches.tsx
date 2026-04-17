@@ -40,12 +40,12 @@ function MatchCircle({
       : "border-red-300 bg-red-50 text-red-700";
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex shrink-0 flex-col items-center self-start">
       <motion.div
         initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.28, ease: "easeOut" }}
-        className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 text-sm font-bold ${styles}`}
+        className={`flex h-14 w-14 items-center justify-center rounded-full border-2 text-sm font-bold sm:h-16 sm:w-16 ${styles}`}
       >
         {score}%
       </motion.div>
@@ -409,7 +409,7 @@ export function JobMatches({
     };
 
     runAutoMatch();
-  }, [cvText, targetJob, location, lang]);
+  }, [cvText, targetJob, location, lang, isSwedish]);
 
   const isCareerPlus = plan === "career+";
   const canUseSelectedJobTools = isCareerPlus;
@@ -675,9 +675,9 @@ export function JobMatches({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="mt-8 rounded-[28px] border border-yellow-300 bg-yellow-50 p-6"
+        className="mt-6 rounded-[24px] border border-yellow-300 bg-yellow-50 p-4 sm:mt-8 sm:rounded-[28px] sm:p-6"
       >
-        <h3 className="text-lg font-semibold text-slate-900">
+        <h3 className="text-base font-semibold text-slate-900 sm:text-lg">
           {isSwedish ? "Uppgradera till Pro" : "Upgrade to Pro"}
         </h3>
         <p className="mt-2 text-sm text-slate-700">
@@ -694,16 +694,16 @@ export function JobMatches({
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.32, ease: "easeOut" }}
-      className="mt-8 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
+      className="mt-6 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:mt-8 sm:rounded-[28px] sm:p-6"
     >
       <div className="mb-5">
-        <div className="flex flex-wrap items-center gap-3">
-          <h3 className="text-lg font-semibold text-slate-900">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <h3 className="text-base font-semibold text-slate-900 sm:text-lg">
             {isSwedish ? "Matchande jobb" : "Matching jobs"}
           </h3>
 
           {plan && (
-            <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+            <span className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white sm:text-xs">
               {plan}
             </span>
           )}
@@ -713,14 +713,14 @@ export function JobMatches({
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.25, delay: 0.08 }}
-              className="rounded-full border border-purple-300 bg-purple-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-purple-700"
+              className="rounded-full border border-purple-300 bg-purple-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-purple-700 sm:text-xs"
             >
               Career+ Insights
             </motion.span>
           )}
         </div>
 
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="mt-2 text-sm leading-6 text-slate-600">
           {isSwedish
             ? `Visar jobb baserat på: ${shortTargetRole}${
                 location ? ` i eller nära ${location}` : ""
@@ -754,19 +754,23 @@ export function JobMatches({
       {!loading && !error && jobs.length > 0 && (
         <>
           <div className="relative mb-6">
-            <div className={!isCareerPlus ? "pointer-events-none select-none blur-[3px]" : ""}>
+            <div
+              className={
+                !isCareerPlus ? "pointer-events-none select-none blur-[3px]" : ""
+              }
+            >
               <motion.div
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.05 }}
-                className="mb-6 rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50 to-white p-5"
+                className="mb-5 rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50 to-white p-4 sm:mb-6 sm:p-5"
               >
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-700">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-purple-700 sm:text-xs">
                       Career+ Dashboard
                     </p>
-                    <h4 className="mt-2 text-base font-semibold text-slate-900">
+                    <h4 className="mt-2 text-sm font-semibold text-slate-900 sm:text-base">
                       {isSwedish
                         ? "Premiuminsikter baserat på ditt CV"
                         : "Premium insights based on your CV"}
@@ -774,14 +778,16 @@ export function JobMatches({
                   </div>
 
                   {bestJob && (
-                    <MatchCircle score={bestJob.score} color={bestJob.color} />
+                    <div className="self-start sm:self-auto">
+                      <MatchCircle score={bestJob.score} color={bestJob.color} />
+                    </div>
                   )}
                 </div>
 
-                <div className="mt-4 flex flex-wrap gap-3">
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
                   <button
                     onClick={() => setExpandedFitPanel((prev) => !prev)}
-                    className="rounded-full border border-purple-300 bg-white px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50"
+                    className="w-full rounded-full border border-purple-300 bg-white px-4 py-2.5 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50 sm:w-auto"
                   >
                     {expandedFitPanel
                       ? isSwedish
@@ -794,7 +800,7 @@ export function JobMatches({
 
                   <button
                     onClick={() => setExpandedNextSteps((prev) => !prev)}
-                    className="rounded-full border border-purple-300 bg-white px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50"
+                    className="w-full rounded-full border border-purple-300 bg-white px-4 py-2.5 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50 sm:w-auto"
                   >
                     {expandedNextSteps
                       ? isSwedish
@@ -807,7 +813,7 @@ export function JobMatches({
 
                   <button
                     onClick={() => setExpandedStrengths((prev) => !prev)}
-                    className="rounded-full border border-purple-300 bg-white px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50"
+                    className="w-full rounded-full border border-purple-300 bg-white px-4 py-2.5 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50 sm:w-auto"
                   >
                     {expandedStrengths
                       ? isSwedish
@@ -824,7 +830,7 @@ export function JobMatches({
                     <p className="text-sm font-semibold text-slate-900">
                       {recommendation.title}
                     </p>
-                    <p className="mt-3 text-sm text-slate-700">
+                    <p className="mt-3 text-sm leading-7 text-slate-700">
                       {recommendation.description}
                     </p>
                   </div>
@@ -872,16 +878,18 @@ export function JobMatches({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="rounded-2xl border border-slate-900 bg-slate-900 p-5 text-white"
+                  className="rounded-2xl border border-slate-900 bg-slate-900 p-4 text-white sm:p-5"
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-300 sm:text-xs">
                     {isSwedish ? "Valt jobb" : "Selected job"}
                   </p>
 
-                  <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="mt-2 flex flex-col gap-4 sm:mt-3 sm:gap-4">
                     <div>
-                      <h4 className="text-base font-semibold">{selectedJob.title}</h4>
-                      <p className="mt-1 text-sm text-slate-300">
+                      <h4 className="text-base font-semibold break-words">
+                        {selectedJob.title}
+                      </h4>
+                      <p className="mt-1 text-sm text-slate-300 break-words">
                         {selectedJob.company} • {selectedJob.location}
                       </p>
 
@@ -897,11 +905,11 @@ export function JobMatches({
                       )}
                     </div>
 
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
                       <button
                         onClick={handleImproveClick}
                         disabled={improvingCv}
-                        className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="w-full rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                       >
                         {improvingCv
                           ? isSwedish
@@ -915,7 +923,7 @@ export function JobMatches({
                       <button
                         onClick={handleGenerateCoverLetter}
                         disabled={generatingCoverLetter}
-                        className="rounded-full border border-white/20 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="w-full rounded-full border border-white/20 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                       >
                         {generatingCoverLetter
                           ? isSwedish
@@ -938,12 +946,12 @@ export function JobMatches({
             </div>
 
             {!isCareerPlus && (
-              <div className="absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 justify-center px-4">
-                <div className="w-full max-w-xs rounded-2xl border border-slate-200 bg-white/95 p-5 text-center shadow-xl backdrop-blur-sm">
+              <div className="absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 justify-center px-3 sm:px-4">
+                <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white/95 p-4 text-center shadow-xl backdrop-blur-sm sm:max-w-xs sm:p-5">
                   <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white">
                     ✦
                   </div>
-                  <h4 className="text-lg font-semibold text-slate-900">
+                  <h4 className="text-base font-semibold text-slate-900 sm:text-lg">
                     {isSwedish ? "Lås upp med Career+" : "Unlock with Career+"}
                   </h4>
                   <p className="mt-2 text-sm leading-relaxed text-slate-600">
@@ -976,24 +984,24 @@ export function JobMatches({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.28 }}
-              className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
             >
-              <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-xs">
                     {isSwedish ? "Personligt brev" : "Cover letter"}
                   </p>
-                  <h4 className="mt-2 text-base font-semibold text-slate-900">
+                  <h4 className="mt-2 text-base font-semibold text-slate-900 break-words">
                     {isSwedish
                       ? `Anpassat för ${selectedJob?.title ?? "valt jobb"}`
                       : `Tailored for ${selectedJob?.title ?? "selected job"}`}
                   </h4>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:gap-3">
                   <button
                     onClick={handleCopyCoverLetter}
-                    className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50"
+                    className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 sm:w-auto"
                   >
                     {isSwedish ? "Kopiera" : "Copy"}
                   </button>
@@ -1001,7 +1009,7 @@ export function JobMatches({
                   <button
                     onClick={handleGenerateCoverLetter}
                     disabled={generatingCoverLetter}
-                    className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
                     {generatingCoverLetter
                       ? isSwedish
@@ -1014,14 +1022,14 @@ export function JobMatches({
 
                   <button
                     onClick={handleSaveCoverLetter}
-                    className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50"
+                    className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 sm:w-auto"
                   >
                     {isSwedish ? "Spara" : "Save"}
                   </button>
                 </div>
               </div>
 
-              <div className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-700">
+              <div className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-slate-700">
                 {coverLetter}
               </div>
             </motion.div>
@@ -1037,19 +1045,21 @@ export function JobMatches({
                 : "border-slate-200 bg-slate-50"
             }`}
           >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-xs">
                   {isSwedish ? "Bästa match" : "Best match"}
                 </p>
 
-                <h4 className="mt-2 text-base font-semibold text-slate-900">
+                <h4 className="mt-2 break-words text-base font-semibold text-slate-900">
                   {bestJob?.title}
                 </h4>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 break-words text-sm text-slate-600">
                   {bestJob?.company} • {bestJob?.location}
                 </p>
-                <p className="mt-2 text-sm text-slate-700">{bestJob?.summary}</p>
+                <p className="mt-2 text-sm leading-7 text-slate-700">
+                  {bestJob?.summary}
+                </p>
 
                 {bestJob?.url && bestJob.url !== "#" && (
                   <a
@@ -1067,17 +1077,17 @@ export function JobMatches({
                     <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">
                       {isSwedish ? "Det som saknas mest" : "Main missing areas"}
                     </p>
-                    <p className="mt-2 text-sm text-slate-700">
+                    <p className="mt-2 break-words text-sm text-slate-700">
                       {bestJob.missing.join(", ")}
                     </p>
                   </div>
                 )}
 
-                <div className="mt-4 flex flex-wrap gap-3">
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
                   {bestJob && (
                     <button
                       onClick={() => handleSaveJob(bestJob)}
-                      className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                      className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
                     >
                       {isSwedish ? "Spara jobb" : "Save job"}
                     </button>
@@ -1086,7 +1096,7 @@ export function JobMatches({
                   {canUseSelectedJobTools && bestJob && (
                     <button
                       onClick={() => handleSelectJob(bestJob.id)}
-                      className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                      className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold transition sm:w-auto ${
                         selectedJobId === bestJob.id
                           ? "bg-slate-900 text-white"
                           : "border border-slate-300 text-slate-900 hover:border-slate-900"
@@ -1106,7 +1116,7 @@ export function JobMatches({
                     <>
                       <button
                         onClick={() => toggleMissing(bestJob.id)}
-                        className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                        className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
                       >
                         {expandedMissingJobId === bestJob.id
                           ? isSwedish
@@ -1119,7 +1129,7 @@ export function JobMatches({
 
                       <button
                         onClick={() => toggleReason(bestJob.id)}
-                        className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                        className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
                       >
                         {expandedReasonJobId === bestJob.id
                           ? isSwedish
@@ -1135,7 +1145,9 @@ export function JobMatches({
               </div>
 
               {bestJob && (
-                <MatchCircle score={bestJob.score} color={bestJob.color} />
+                <div className="self-start">
+                  <MatchCircle score={bestJob.score} color={bestJob.color} />
+                </div>
               )}
             </div>
 
@@ -1181,7 +1193,7 @@ export function JobMatches({
                 <p className="text-sm font-semibold text-slate-900">
                   {isSwedish ? "Career+ analys" : "Career+ analysis"}
                 </p>
-                <p className="mt-3 text-sm text-slate-700">
+                <p className="mt-3 text-sm leading-7 text-slate-700">
                   {bestJob ? getReasonText(bestJob, lang) : ""}
                 </p>
               </div>
@@ -1204,18 +1216,20 @@ export function JobMatches({
                       : "border-slate-200 bg-slate-50"
                   }`}
                 >
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="min-w-0">
-                      <h4 className="text-base font-semibold text-slate-900">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0 flex-1">
+                      <h4 className="break-words text-base font-semibold text-slate-900">
                         {job.title}
                       </h4>
-                      <p className="mt-1 text-sm text-slate-600">
+                      <p className="mt-1 break-words text-sm text-slate-600">
                         {job.company} • {job.location}
                       </p>
-                      <p className="mt-3 text-sm text-slate-700">{job.summary}</p>
+                      <p className="mt-3 text-sm leading-7 text-slate-700">
+                        {job.summary}
+                      </p>
 
                       {isCareerPlus && job.missing && job.missing.length > 0 && (
-                        <p className="mt-2 text-sm font-medium text-purple-700">
+                        <p className="mt-2 text-sm font-medium text-purple-700 break-words">
                           {isSwedish ? "Saknas:" : "Missing:"} {job.missing.join(", ")}
                         </p>
                       )}
@@ -1238,13 +1252,15 @@ export function JobMatches({
                       </div>
                     </div>
 
-                    <MatchCircle score={job.score} color={job.color} />
+                    <div className="self-start">
+                      <MatchCircle score={job.score} color={job.color} />
+                    </div>
                   </div>
 
-                  <div className="mt-4 flex flex-wrap gap-3">
+                  <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
                     <button
                       onClick={() => handleSaveJob(job)}
-                      className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                      className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
                     >
                       {isSwedish ? "Spara jobb" : "Save job"}
                     </button>
@@ -1252,7 +1268,7 @@ export function JobMatches({
                     {canUseSelectedJobTools && (
                       <button
                         onClick={() => handleSelectJob(job.id)}
-                        className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                        className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold transition sm:w-auto ${
                           isSelected
                             ? "bg-slate-900 text-white"
                             : "border border-slate-300 text-slate-900 hover:border-slate-900 hover:bg-white"
@@ -1269,7 +1285,7 @@ export function JobMatches({
                     )}
 
                     {!isCareerPlus && (
-                      <span className="rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700">
+                      <span className="inline-flex w-full items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm font-semibold text-purple-700 sm:w-auto">
                         {isSwedish ? "Career+ analys" : "Career+ analysis"}
                       </span>
                     )}
@@ -1278,7 +1294,7 @@ export function JobMatches({
                       <>
                         <button
                           onClick={() => toggleMissing(job.id)}
-                          className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                          className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
                         >
                           {expandedMissingJobId === job.id
                             ? isSwedish
@@ -1291,7 +1307,7 @@ export function JobMatches({
 
                         <button
                           onClick={() => toggleReason(job.id)}
-                          className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white"
+                          className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
                         >
                           {expandedReasonJobId === job.id
                             ? isSwedish
@@ -1339,7 +1355,7 @@ export function JobMatches({
                       <p className="text-sm font-semibold text-slate-900">
                         {isSwedish ? "Career+ analys" : "Career+ analysis"}
                       </p>
-                      <p className="mt-3 text-sm text-slate-700">
+                      <p className="mt-3 text-sm leading-7 text-slate-700">
                         {getReasonText(job, lang)}
                       </p>
                     </div>
