@@ -5,6 +5,8 @@ import { useUser, SignUpButton } from "@clerk/nextjs";
 import type { Lang } from "../lib/translations";
 import { StyledResume } from "./StyledResume";
 import { JobMatches } from "./JobMatches";
+import { LoadingSpinner } from "./LoadingSpinner";
+import { AppToast } from "./AppToast";
 
 const PAGE_WIDTH = 794;
 const PAGE_HEIGHT = 1123;
@@ -50,6 +52,10 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   const [location, setLocation] = useState("");
   const [guestLimitReached, setGuestLimitReached] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error" | "info">(
+    "info"
+  );
 
   const cvRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
@@ -143,14 +149,26 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     setGuestLimitReached(hasCreatedGuestCv);
   }, [isSignedIn]);
 
+  useEffect(() => {
+    if (!toastMessage) return;
+
+    const timeout = setTimeout(() => {
+      setToastMessage("");
+    }, 2500);
+
+    return () => clearTimeout(timeout);
+  }, [toastMessage]);
+
   const handleGenerate = async () => {
     if (!experience.trim() || !job.trim()) {
-      setResult(t.validation);
+      setToastType("error");
+      setToastMessage(t.validation);
       return;
     }
 
     if (!isSignedIn && guestLimitReached) {
-      setResult(
+      setToastType("error");
+      setToastMessage(
         isSwedish
           ? "Du har redan skapat ett gratis CV. Skapa konto för att fortsätta."
           : "You already created one free resume. Create an account to continue."
@@ -161,6 +179,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     try {
       setLoading(true);
       setResult("");
+      setToastMessage("");
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -173,13 +192,15 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       const data = await res.json();
 
       if (data.limitReached) {
-        setResult(data.output);
+        setToastType("error");
+        setToastMessage(data.output);
         setGuestLimitReached(true);
         return;
       }
 
       if (!res.ok) {
-        setResult(data.output || t.error);
+        setToastType("error");
+        setToastMessage(data.output || t.error);
         return;
       }
 
@@ -189,7 +210,8 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         localStorage.setItem(GUEST_CV_KEY, "true");
       }
     } catch {
-      setResult(t.error);
+      setToastType("error");
+      setToastMessage(t.error);
     } finally {
       setLoading(false);
     }
@@ -227,9 +249,11 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         );
       }
 
-      alert(lang === "sv" ? "CV sparat." : "Resume saved.");
+      setToastType("success");
+      setToastMessage(lang === "sv" ? "CV sparat." : "Resume saved.");
     } catch (error: any) {
-      alert(
+      setToastType("error");
+      setToastMessage(
         error?.message ||
           (lang === "sv" ? "Kunde inte spara CV." : "Could not save resume.")
       );
@@ -266,7 +290,8 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       await html2pdf().set(options).from(cvRef.current).save();
     } catch (error) {
       console.error(error);
-      alert(
+      setToastType("error");
+      setToastMessage(
         lang === "sv"
           ? "Kunde inte ladda ner PDF."
           : "Could not download PDF."
@@ -359,7 +384,10 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                 disabled={loading}
                 className="w-full rounded-full bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
               >
-                {loading ? t.generating : t.generate}
+                <span className="inline-flex items-center justify-center gap-2">
+                  {loading && <LoadingSpinner size={16} />}
+                  <span>{loading ? t.generating : t.generate}</span>
+                </span>
               </button>
             )}
           </div>
@@ -393,11 +421,24 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                     disabled={downloading}
                     className="inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
-                    {downloading ? t.downloading : t.download}
+                    <span className="inline-flex items-center justify-center gap-2">
+                      {downloading && <LoadingSpinner size={16} />}
+                      <span>{downloading ? t.downloading : t.download}</span>
+                    </span>
                   </button>
                 </div>
               )}
             </div>
+
+            {toastMessage && (
+              <div className="mb-4">
+                <AppToast
+                  message={toastMessage}
+                  type={toastType}
+                  onClose={() => setToastMessage("")}
+                />
+              </div>
+            )}
 
             {!result ? (
               <div className="rounded-[20px] border border-slate-200 bg-white p-4 sm:rounded-[24px] sm:p-6">
@@ -427,7 +468,10 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                   </div>
 
                   <div className="max-h-[560px] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4">
-                    <div ref={cvRef} className="text-sm leading-7 text-slate-800">
+                    <div
+                      ref={cvRef}
+                      className="text-sm leading-7 text-slate-800"
+                    >
                       <StyledResume text={result} />
                     </div>
                   </div>
