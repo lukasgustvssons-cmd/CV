@@ -3,52 +3,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-function LockedOverlay({
-  title,
-  text,
-}: {
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[24px] bg-white/75 backdrop-blur-sm">
-      <div className="mx-4 max-w-sm rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-xl">
-        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 text-white">
-          ✦
-        </div>
-        <h4 className="text-lg font-semibold text-slate-900">{title}</h4>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600">{text}</p>
-        <div className="mt-4">
-          <span className="inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
-            Career+
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function LockedBlock({
-  locked,
-  title,
-  text,
-  children,
-}: {
-  locked: boolean;
-  title: string;
-  text: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="relative">
-      <div className={locked ? "pointer-events-none select-none blur-[3px]" : ""}>
-        {children}
-      </div>
-      {locked && <LockedOverlay title={title} text={text} />}
-    </div>
-  );
-}
-
 type JobMatch = {
   id: string;
   title: string;
@@ -799,206 +753,213 @@ export function JobMatches({
 
       {!loading && !error && jobs.length > 0 && (
         <>
-          <LockedBlock
-            locked={!isCareerPlus}
-            title={isSwedish ? "Lås upp med Career+" : "Unlock with Career+"}
-            text={
-              isSwedish
-                ? "Få premiuminsikter, rekommendationer, nästa steg och styrkor direkt från ditt CV."
-                : "Get premium insights, recommendations, next steps, and strengths directly from your CV."
-            }
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.05 }}
-              className="mb-6 rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50 to-white p-5"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-700">
-                    Career+ Dashboard
-                  </p>
-                  <h4 className="mt-2 text-base font-semibold text-slate-900">
-                    {isSwedish
-                      ? "Premiuminsikter baserat på ditt CV"
-                      : "Premium insights based on your CV"}
-                  </h4>
-                </div>
-
-                {bestJob && (
-                  <MatchCircle score={bestJob.score} color={bestJob.color} />
-                )}
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-3">
-                <button
-                  onClick={() => setExpandedFitPanel((prev) => !prev)}
-                  className="rounded-full border border-purple-300 bg-white px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50"
-                >
-                  {expandedFitPanel
-                    ? isSwedish
-                      ? "Dölj vad som passar bäst"
-                      : "Hide best fit"
-                    : isSwedish
-                    ? "Vad passar mig bäst?"
-                    : "What fits me best?"}
-                </button>
-
-                <button
-                  onClick={() => setExpandedNextSteps((prev) => !prev)}
-                  className="rounded-full border border-purple-300 bg-white px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50"
-                >
-                  {expandedNextSteps
-                    ? isSwedish
-                      ? "Dölj nästa steg"
-                      : "Hide next steps"
-                    : isSwedish
-                    ? "Hur går jag vidare nu?"
-                    : "How do I move forward now?"}
-                </button>
-
-                <button
-                  onClick={() => setExpandedStrengths((prev) => !prev)}
-                  className="rounded-full border border-purple-300 bg-white px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50"
-                >
-                  {expandedStrengths
-                    ? isSwedish
-                      ? "Dölj styrkor"
-                      : "Hide strengths"
-                    : isSwedish
-                    ? "Vilka styrkor ser ni i mitt CV?"
-                    : "What strengths do you see in my CV?"}
-                </button>
-              </div>
-
-              <ExpandableCard open={expandedFitPanel}>
-                <div className="mt-4 rounded-2xl border border-white bg-white p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-slate-900">
-                    {recommendation.title}
-                  </p>
-                  <p className="mt-3 text-sm text-slate-700">
-                    {recommendation.description}
-                  </p>
-                </div>
-              </ExpandableCard>
-
-              <ExpandableCard open={expandedNextSteps}>
-                <div className="mt-4 rounded-2xl border border-white bg-white p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-slate-900">
-                    {isSwedish
-                      ? "Så här går du vidare nu"
-                      : "How to move forward now"}
-                  </p>
-                  <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                    {nextSteps.map((step, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </ExpandableCard>
-
-              <ExpandableCard open={expandedStrengths}>
-                <div className="mt-4 rounded-2xl border border-white bg-white p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-slate-900">
-                    {isSwedish
-                      ? "Styrkor vi ser i din profil"
-                      : "Strengths we see in your profile"}
-                  </p>
-                  <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                    {strengths.map((item, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </ExpandableCard>
-            </motion.div>
-          </LockedBlock>
-
-          {selectedJob && (
-            <LockedBlock
-              locked={!isCareerPlus}
-              title={isSwedish ? "Career+ krävs" : "Career+ required"}
-              text={
-                isSwedish
-                  ? "Förbättra ditt CV, skapa personligt brev och få smartare jobbanpassning för det valda jobbet."
-                  : "Improve your resume, generate a cover letter, and get smarter job-specific tailoring."
-              }
-            >
+          <div className="relative mb-6">
+            <div className={!isCareerPlus ? "pointer-events-none select-none blur-[3px]" : ""}>
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
-                className="mb-6 rounded-2xl border border-slate-900 bg-slate-900 p-5 text-white"
+                transition={{ duration: 0.3, delay: 0.05 }}
+                className="mb-6 rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50 to-white p-5"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
-                  {isSwedish ? "Valt jobb" : "Selected job"}
-                </p>
-
-                <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h4 className="text-base font-semibold">{selectedJob.title}</h4>
-                    <p className="mt-1 text-sm text-slate-300">
-                      {selectedJob.company} • {selectedJob.location}
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-700">
+                      Career+ Dashboard
                     </p>
-
-                    {selectedJob.url && selectedJob.url !== "#" && (
-                      <a
-                        href={selectedJob.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-3 inline-block text-sm font-semibold text-white underline underline-offset-4"
-                      >
-                        {isSwedish ? "Öppna annons" : "Open job ad"}
-                      </a>
-                    )}
+                    <h4 className="mt-2 text-base font-semibold text-slate-900">
+                      {isSwedish
+                        ? "Premiuminsikter baserat på ditt CV"
+                        : "Premium insights based on your CV"}
+                    </h4>
                   </div>
 
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      onClick={handleImproveClick}
-                      disabled={improvingCv}
-                      className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {improvingCv
-                        ? isSwedish
-                          ? "Förbättrar CV..."
-                          : "Improving CV..."
-                        : isSwedish
-                        ? "Förbättra CV för valt jobb"
-                        : "Improve CV for selected job"}
-                    </button>
-
-                    <button
-                      onClick={handleGenerateCoverLetter}
-                      disabled={generatingCoverLetter}
-                      className="rounded-full border border-white/20 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {generatingCoverLetter
-                        ? isSwedish
-                          ? "Skapar brev..."
-                          : "Generating letter..."
-                        : isSwedish
-                        ? "Skapa personligt brev"
-                        : "Generate cover letter"}
-                    </button>
-                  </div>
+                  {bestJob && (
+                    <MatchCircle score={bestJob.score} color={bestJob.color} />
+                  )}
                 </div>
 
-                {improveMessage && (
-                  <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                    {improveMessage}
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    onClick={() => setExpandedFitPanel((prev) => !prev)}
+                    className="rounded-full border border-purple-300 bg-white px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50"
+                  >
+                    {expandedFitPanel
+                      ? isSwedish
+                        ? "Dölj vad som passar bäst"
+                        : "Hide best fit"
+                      : isSwedish
+                      ? "Vad passar mig bäst?"
+                      : "What fits me best?"}
+                  </button>
+
+                  <button
+                    onClick={() => setExpandedNextSteps((prev) => !prev)}
+                    className="rounded-full border border-purple-300 bg-white px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50"
+                  >
+                    {expandedNextSteps
+                      ? isSwedish
+                        ? "Dölj nästa steg"
+                        : "Hide next steps"
+                      : isSwedish
+                      ? "Hur går jag vidare nu?"
+                      : "How do I move forward now?"}
+                  </button>
+
+                  <button
+                    onClick={() => setExpandedStrengths((prev) => !prev)}
+                    className="rounded-full border border-purple-300 bg-white px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50"
+                  >
+                    {expandedStrengths
+                      ? isSwedish
+                        ? "Dölj styrkor"
+                        : "Hide strengths"
+                      : isSwedish
+                      ? "Vilka styrkor ser ni i mitt CV?"
+                      : "What strengths do you see in my CV?"}
+                  </button>
+                </div>
+
+                <ExpandableCard open={expandedFitPanel}>
+                  <div className="mt-4 rounded-2xl border border-white bg-white p-4 shadow-sm">
+                    <p className="text-sm font-semibold text-slate-900">
+                      {recommendation.title}
+                    </p>
+                    <p className="mt-3 text-sm text-slate-700">
+                      {recommendation.description}
+                    </p>
                   </div>
-                )}
+                </ExpandableCard>
+
+                <ExpandableCard open={expandedNextSteps}>
+                  <div className="mt-4 rounded-2xl border border-white bg-white p-4 shadow-sm">
+                    <p className="text-sm font-semibold text-slate-900">
+                      {isSwedish
+                        ? "Så här går du vidare nu"
+                        : "How to move forward now"}
+                    </p>
+                    <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                      {nextSteps.map((step, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </ExpandableCard>
+
+                <ExpandableCard open={expandedStrengths}>
+                  <div className="mt-4 rounded-2xl border border-white bg-white p-4 shadow-sm">
+                    <p className="text-sm font-semibold text-slate-900">
+                      {isSwedish
+                        ? "Styrkor vi ser i din profil"
+                        : "Strengths we see in your profile"}
+                    </p>
+                    <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                      {strengths.map((item, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </ExpandableCard>
               </motion.div>
-            </LockedBlock>
-          )}
+
+              {selectedJob && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="rounded-2xl border border-slate-900 bg-slate-900 p-5 text-white"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+                    {isSwedish ? "Valt jobb" : "Selected job"}
+                  </p>
+
+                  <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h4 className="text-base font-semibold">{selectedJob.title}</h4>
+                      <p className="mt-1 text-sm text-slate-300">
+                        {selectedJob.company} • {selectedJob.location}
+                      </p>
+
+                      {selectedJob.url && selectedJob.url !== "#" && (
+                        <a
+                          href={selectedJob.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-3 inline-block text-sm font-semibold text-white underline underline-offset-4"
+                        >
+                          {isSwedish ? "Öppna annons" : "Open job ad"}
+                        </a>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        onClick={handleImproveClick}
+                        disabled={improvingCv}
+                        className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {improvingCv
+                          ? isSwedish
+                            ? "Förbättrar CV..."
+                            : "Improving CV..."
+                          : isSwedish
+                          ? "Förbättra CV för valt jobb"
+                          : "Improve CV for selected job"}
+                      </button>
+
+                      <button
+                        onClick={handleGenerateCoverLetter}
+                        disabled={generatingCoverLetter}
+                        className="rounded-full border border-white/20 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {generatingCoverLetter
+                          ? isSwedish
+                            ? "Skapar brev..."
+                            : "Generating letter..."
+                          : isSwedish
+                          ? "Skapa personligt brev"
+                          : "Generate cover letter"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {improveMessage && (
+                    <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                      {improveMessage}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </div>
+
+            {!isCareerPlus && (
+              <div className="absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 justify-center px-4">
+                <div className="w-full max-w-xs rounded-2xl border border-slate-200 bg-white/95 p-5 text-center shadow-xl backdrop-blur-sm">
+                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white">
+                    ✦
+                  </div>
+                  <h4 className="text-lg font-semibold text-slate-900">
+                    {isSwedish ? "Lås upp med Career+" : "Unlock with Career+"}
+                  </h4>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                    {isSwedish
+                      ? "Få premiuminsikter, förbättra ditt CV och skapa personligt brev för valt jobb."
+                      : "Get premium insights, improve your resume, and generate a cover letter for the selected job."}
+                  </p>
+                  <div className="mt-4">
+                    <span className="inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
+                      Career+
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {canUseSelectedJobTools && coverLetterError && (
             <motion.div
