@@ -30,8 +30,12 @@ export default function AboutPage() {
             </p>
 
             <p>
-              Du skickar ansökningar utan att få svar.
-              Du vet inte vad som är bra eller vad som saknas.
+              För många är det svårt att ens komma igång. Det är svårt att veta hur ett bra CV ska se ut,
+              vad man ska skriva – och vad man ska ta bort.
+            </p>
+
+            <p>
+              Du skickar ansökningar utan att få svar. Du vet inte vad som är bra eller vad som saknas.
             </p>
 
             <p>
@@ -52,8 +56,7 @@ export default function AboutPage() {
             </p>
 
             <p>
-              Inte bara för att skapa ett CV — utan för att hjälpa dig förstå
-              vad som faktiskt kan öka dina chanser att få en intervju.
+              Inte bara för att skapa ett CV — utan för att hjälpa dig förstå vad som faktiskt kan öka dina chanser att få en intervju.
             </p>
 
             <p>
@@ -62,9 +65,42 @@ export default function AboutPage() {
 
             <ul className="list-disc pl-6 space-y-2">
               <li>Skapa ett starkt CV snabbt</li>
-              <li>Matcha mot riktiga jobb</li>
-              <li>Få konkreta förbättringsförslag</li>
+              <li>Matcha ditt CV mot riktiga jobb från Arbetsförmedlingen (fler källor kommer)</li>
+              <li>Få konkreta förbättringsförslag baserat på jobbet du söker</li>
+              <li>Anpassa ditt CV för en specifik roll istället för att skicka samma överallt</li>
             </ul>
+
+            <p>
+              Hireon granskar ditt CV, jämför det med jobbannonser och visar vad du saknar — så du slipper gissa.
+            </p>
+          </div>
+        </section>
+
+        {/* EXTRA VALUE */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-semibold text-slate-900">
+            Mer än bara CV
+          </h2>
+
+          <div className="mt-6 space-y-4 text-slate-600 leading-7 text-lg">
+            <p>
+              Att få ett jobb handlar inte bara om att bli kallad till intervju.
+            </p>
+
+            <p>
+              Därför hjälper Hireon dig också med:
+            </p>
+
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Vanliga intervjufrågor</li>
+              <li>Vad arbetsgivaren faktiskt letar efter</li>
+              <li>Vad du bör lyfta i intervjun</li>
+              <li>Vad du behöver förbereda innan</li>
+            </ul>
+
+            <p>
+              Målet är att hjälpa dig hela vägen — inte bara första steget.
+            </p>
           </div>
         </section>
 
@@ -80,8 +116,7 @@ export default function AboutPage() {
             </p>
 
             <p>
-              Alla ska kunna förstå hur man förbättrar sin ansökan —
-              utan att behöva gissa.
+              Alla ska kunna förstå hur man förbättrar sin ansökan — utan att behöva gissa eller känna sig osäker.
             </p>
           </div>
         </section>
