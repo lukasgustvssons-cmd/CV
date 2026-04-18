@@ -1,264 +1,278 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
+import { useCallback } from "react";
 
-const roles = [
-  { label: "Säljare", x: "18%", y: "22%" },
-  { label: "Lärare", x: "28%", y: "14%" },
-  { label: "Ingenjör", x: "50%", y: "10%" },
-  { label: "Ekonom", x: "72%", y: "16%" },
-  { label: "Jurist", x: "82%", y: "26%" },
-  { label: "Polis", x: "16%", y: "34%" },
-  { label: "Läkare", x: "78%", y: "34%" },
-  { label: "Psykolog", x: "64%", y: "20%" },
-  { label: "Pedagog", x: "36%", y: "18%" },
-  { label: "Byggare", x: "50%", y: "26%" },
+type RoleNode = {
+  label: string;
+  x: string;
+  y: string;
+};
+
+const roles: RoleNode[] = [
+  { label: "Säljare", x: "28%", y: "22%" },
+  { label: "Lärare", x: "37%", y: "16%" },
+  { label: "Ingenjör", x: "50%", y: "14%" },
+  { label: "Ekonom", x: "63%", y: "18%" },
+  { label: "Jurist", x: "74%", y: "26%" },
+  { label: "Polis", x: "30%", y: "34%" },
+  { label: "Läkare", x: "70%", y: "34%" },
+  { label: "Psykolog", x: "61%", y: "22%" },
+  { label: "Pedagog", x: "44%", y: "20%" },
+  { label: "Byggare", x: "50%", y: "27%" },
 ];
 
-function Pill({
+function MapNode({
   label,
-  className = "",
+  size = "default",
+  delay = 0,
 }: {
   label: string;
-  className?: string;
+  size?: "default" | "large" | "center";
+  delay?: number;
 }) {
+  const sizeClasses =
+    size === "center"
+      ? "px-7 py-3.5 text-base sm:text-lg rounded-2xl"
+      : size === "large"
+      ? "px-5 py-2.5 text-sm sm:text-[15px] rounded-full"
+      : "px-4 py-2 text-sm rounded-full";
+
+  const colorClasses =
+    size === "center"
+      ? "border-slate-900 bg-slate-950 text-white shadow-[0_18px_50px_rgba(15,23,42,0.28)]"
+      : "border-slate-200/90 bg-white/88 text-slate-700 shadow-[0_10px_30px_rgba(15,23,42,0.08)]";
+
   return (
-    <div
-      className={`rounded-full border border-slate-200/80 bg-white/88 px-4 py-2 text-sm font-medium text-slate-700 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl ${className}`}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.92, y: 10, filter: "blur(8px)" }}
+      whileInView={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+      animate={{ y: [0, -3, 0] }}
+      whileHover={{
+        y: -5,
+        scale: 1.04,
+        transition: { duration: 0.2, ease: "easeOut" },
+      }}
+      className="group relative"
     >
-      {label}
-    </div>
+      <div
+        className={[
+          "relative border backdrop-blur-xl transition-all duration-300",
+          "before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit]",
+          "before:bg-gradient-to-b before:from-white/40 before:to-transparent before:opacity-80",
+          "group-hover:shadow-[0_18px_50px_rgba(15,23,42,0.14)]",
+          sizeClasses,
+          colorClasses,
+        ].join(" ")}
+      >
+        <div className="relative z-10 font-medium tracking-tight">{label}</div>
+
+        <div className="pointer-events-none absolute inset-[-8px] -z-10 rounded-[inherit] bg-slate-300/0 blur-xl transition duration-300 group-hover:bg-slate-300/40" />
+      </div>
+    </motion.div>
   );
 }
 
 export default function OrbitMap() {
-  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const mouseX = useMotionValue(50);
+  const mouseY = useMotionValue(50);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
-
-  const hireonScale = useTransform(scrollYProgress, [0, 0.18], [1, 0.78]);
-  const hireonY = useTransform(scrollYProgress, [0, 0.28], [0, 120]);
-  const hireonOpacity = useTransform(scrollYProgress, [0, 0.45], [1, 0.95]);
-
-  const coreOpacity = useTransform(scrollYProgress, [0.1, 0.25], [0, 1]);
-  const coreY = useTransform(scrollYProgress, [0.1, 0.25], [40, 0]);
-
-  const rolesOpacity = useTransform(scrollYProgress, [0.28, 0.48], [0, 1]);
-  const rolesScale = useTransform(scrollYProgress, [0.28, 0.55], [0.92, 1]);
-  const rolesY = useTransform(scrollYProgress, [0.28, 0.48], [40, 0]);
-
-  const backgroundGlow = useTransform(
-    scrollYProgress,
-    [0, 0.4, 0.7, 1],
-    [0.18, 0.28, 0.4, 0.5]
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      mouseX.set(x);
+      mouseY.set(y);
+    },
+    [mouseX, mouseY]
   );
 
-  const gridOpacity = useTransform(scrollYProgress, [0, 0.35], [0.04, 0.1]);
+  const glowBg = useMotionTemplate`radial-gradient(circle at ${mouseX}% ${mouseY}%, rgba(255,255,255,0.9), rgba(255,255,255,0.35) 16%, rgba(226,232,240,0.18) 30%, transparent 52%)`;
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8"
-    >
-      <div className="mb-12 text-center sm:mb-16">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-          Hireon-kartan
-        </p>
-        <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
-          Scrolla ut från Hireon till fler möjligheter
-        </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-          En levande produktsektion där världen öppnas upp runt dig — från CV
-          och ansökan till intervjuer, jobb och roller som passar bättre.
-        </p>
-      </div>
+    <section className="relative mx-auto max-w-7xl px-4 py-28 text-center sm:px-6 lg:px-8">
+      <p className="mb-4 text-xs uppercase tracking-[0.22em] text-slate-500">
+        Hireon-kartan
+      </p>
 
-      <div className="relative h-[220vh]">
-        <div className="sticky top-20 overflow-hidden rounded-[36px] border border-slate-200/80 bg-gradient-to-b from-white via-slate-50 to-white shadow-[0_30px_120px_rgba(15,23,42,0.10)]">
-          <div className="relative h-[78vh] min-h-[680px] w-full">
-            <motion.div
-              style={{ opacity: gridOpacity }}
-              className="pointer-events-none absolute inset-0"
-            >
-              <div
-                className="absolute inset-0"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(to right, rgba(148,163,184,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.12) 1px, transparent 1px)",
-                  backgroundSize: "56px 56px",
-                }}
-              />
-            </motion.div>
+      <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+        Från CV till riktiga möjligheter
+      </h2>
 
-            <motion.div
-              style={{ opacity: backgroundGlow }}
-              className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200 blur-3xl"
+      <p className="mx-auto mt-4 max-w-2xl text-slate-600">
+        Ett levande nätverk där ansökningar, intervjuer och jobb hänger ihop
+        runt Hireon.
+      </p>
+
+      <motion.div
+        onMouseMove={handleMouseMove}
+        className="relative mt-20 h-[620px] overflow-hidden rounded-[36px] border border-slate-200 bg-gradient-to-b from-white via-slate-50 to-white shadow-[0_30px_120px_rgba(15,23,42,0.10)]"
+      >
+        <motion.div
+          style={{ background: glowBg }}
+          className="pointer-events-none absolute inset-0 opacity-80"
+        />
+
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(148,163,184,0.12),transparent_34%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_38%,rgba(255,255,255,0.88)_82%)]" />
+
+        <motion.div
+          animate={{ x: [0, 10, 0], y: [0, -6, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute left-[18%] top-[18%] h-40 w-40 rounded-full bg-white/35 blur-3xl"
+        />
+        <motion.div
+          animate={{ x: [0, -12, 0], y: [0, 8, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute right-[14%] top-[16%] h-44 w-44 rounded-full bg-slate-200/35 blur-3xl"
+        />
+        <motion.div
+          animate={{ x: [0, 8, 0], y: [0, 10, 0] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200/35 blur-3xl"
+        />
+
+        <svg className="pointer-events-none absolute inset-0 h-full w-full">
+          <defs>
+            <linearGradient id="coreLine" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(148,163,184,0.18)" />
+              <stop offset="50%" stopColor="rgba(148,163,184,0.42)" />
+              <stop offset="100%" stopColor="rgba(148,163,184,0.18)" />
+            </linearGradient>
+
+            <linearGradient id="roleLine" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="rgba(203,213,225,0.18)" />
+              <stop offset="50%" stopColor="rgba(148,163,184,0.42)" />
+              <stop offset="100%" stopColor="rgba(226,232,240,0.18)" />
+            </linearGradient>
+          </defs>
+
+          {roles.map((role, i) => (
+            <motion.line
+              key={role.label}
+              x1="50%"
+              y1="55%"
+              x2={role.x}
+              y2={role.y}
+              stroke="url(#roleLine)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              initial={{ pathLength: 0, opacity: 0 }}
+              whileInView={{ pathLength: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.8,
+                delay: 0.05 * i,
+                ease: "easeOut",
+              }}
             />
+          ))}
 
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.92),rgba(255,255,255,0.65)_35%,transparent_70%)]" />
+          <motion.line
+            x1="50%"
+            y1="55%"
+            x2="50%"
+            y2="30%"
+            stroke="url(#coreLine)"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            whileInView={{ pathLength: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+          />
+          <motion.line
+            x1="50%"
+            y1="55%"
+            x2="30%"
+            y2="76%"
+            stroke="url(#coreLine)"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            whileInView={{ pathLength: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.08, ease: "easeOut" }}
+          />
+          <motion.line
+            x1="50%"
+            y1="55%"
+            x2="70%"
+            y2="76%"
+            stroke="url(#coreLine)"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            whileInView={{ pathLength: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9, delay: 0.16, ease: "easeOut" }}
+          />
+        </svg>
 
-            <div className="absolute inset-0">
-              <motion.div
-                style={{
-                  scale: hireonScale,
-                  y: hireonY,
-                  opacity: hireonOpacity,
-                }}
-                className="absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2"
-              >
-                <div className="relative rounded-[28px] border border-slate-900 bg-slate-950 px-8 py-4 text-lg font-semibold text-white shadow-[0_20px_70px_rgba(15,23,42,0.30)]">
-                  <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-b from-white/15 to-transparent" />
-                  <span className="relative z-10">Hireon</span>
-                </div>
-              </motion.div>
-
-              <motion.div
-                style={{ opacity: coreOpacity, y: coreY }}
-                className="absolute inset-0 z-20"
-              >
-                <div className="absolute left-1/2 top-[34%] -translate-x-1/2">
-                  <Pill label="Jobb" className="px-5 py-2.5 text-[15px]" />
-                </div>
-
-                <div className="absolute left-[24%] top-[66%] -translate-x-1/2">
-                  <Pill label="Ansök" className="px-5 py-2.5 text-[15px]" />
-                </div>
-
-                <div className="absolute left-[76%] top-[66%] -translate-x-1/2">
-                  <Pill label="Intervju" className="px-5 py-2.5 text-[15px]" />
-                </div>
-
-                <svg className="pointer-events-none absolute inset-0 h-full w-full">
-                  <motion.line
-                    x1="50%"
-                    y1="50%"
-                    x2="50%"
-                    y2="35%"
-                    stroke="rgba(148,163,184,0.45)"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    whileInView={{ pathLength: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.1, ease: "easeOut" }}
-                  />
-                  <motion.line
-                    x1="50%"
-                    y1="50%"
-                    x2="25%"
-                    y2="66%"
-                    stroke="rgba(148,163,184,0.45)"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    whileInView={{ pathLength: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.1, delay: 0.1, ease: "easeOut" }}
-                  />
-                  <motion.line
-                    x1="50%"
-                    y1="50%"
-                    x2="75%"
-                    y2="66%"
-                    stroke="rgba(148,163,184,0.45)"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    whileInView={{ pathLength: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.1, delay: 0.2, ease: "easeOut" }}
-                  />
-                </svg>
-              </motion.div>
-
-              <motion.div
-                style={{
-                  opacity: rolesOpacity,
-                  scale: rolesScale,
-                  y: rolesY,
-                }}
-                className="absolute inset-0 z-10"
-              >
-                <svg className="pointer-events-none absolute inset-0 h-full w-full">
-                  {roles.map((role, i) => (
-                    <motion.line
-                      key={role.label}
-                      x1="50%"
-                      y1="35%"
-                      x2={role.x}
-                      y2={role.y}
-                      stroke="rgba(148,163,184,0.34)"
-                      strokeWidth="1.25"
-                      strokeLinecap="round"
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      whileInView={{ pathLength: 1, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{
-                        duration: 0.9,
-                        delay: 0.04 * i,
-                        ease: "easeOut",
-                      }}
-                    />
-                  ))}
-                </svg>
-
-                {roles.map((role, i) => (
-                  <motion.div
-                    key={role.label}
-                    className="absolute -translate-x-1/2 -translate-y-1/2"
-                    style={{
-                      left: role.x,
-                      top: role.y,
-                    }}
-                    initial={{ opacity: 0, scale: 0.88, y: 18 }}
-                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      duration: 0.5,
-                      delay: 0.04 * i,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                  >
-                    <motion.div
-                      animate={{ y: [0, -4, 0] }}
-                      transition={{
-                        duration: 4.8 + (i % 4) * 0.45,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    >
-                      <Pill label={role.label} />
-                    </motion.div>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              <motion.div
-                style={{
-                  opacity: useTransform(scrollYProgress, [0.55, 0.8], [0, 1]),
-                  y: useTransform(scrollYProgress, [0.55, 0.8], [30, 0]),
-                }}
-                className="absolute inset-x-0 bottom-10 z-40 px-6"
-              >
-                <div className="mx-auto max-w-3xl rounded-[24px] border border-white/70 bg-white/80 p-5 text-center shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6">
-                  <p className="text-sm font-medium text-slate-900 sm:text-base">
-                    Hireon hjälper dig att gå från ett CV till riktiga
-                    möjligheter — snabbare, smartare och mer träffsäkert.
-                  </p>
-                  <p className="mt-2 text-sm text-slate-600">
-                    Ju längre du går, desto fler roller, jobbspår och nästa steg
-                    öppnar sig runt dig.
-                  </p>
-                </div>
-              </motion.div>
-            </div>
+        <motion.div
+          animate={{ x: [0, 6, 0], y: [0, -5, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-1/2 top-[55%] z-20 -translate-x-1/2 -translate-y-1/2"
+        >
+          <div className="relative">
+            <div className="pointer-events-none absolute inset-[-28px] rounded-[36px] bg-slate-300/30 blur-2xl" />
+            <MapNode label="Hireon" size="center" />
           </div>
-        </div>
-      </div>
+        </motion.div>
+
+        <motion.div
+          animate={{ x: [0, 2, 0], y: [0, -3, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-1/2 top-[30%] z-10 -translate-x-1/2 -translate-y-1/2"
+          style={{ transform: "translate(-50%, -50%) translateZ(24px)" }}
+        >
+          <MapNode label="Jobb" size="large" delay={0.15} />
+        </motion.div>
+
+        <motion.div
+          animate={{ x: [0, -3, 0], y: [0, -2, 0] }}
+          transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-[30%] top-[76%] z-10 -translate-x-1/2 -translate-y-1/2"
+          style={{ transform: "translate(-50%, -50%) translateZ(16px)" }}
+        >
+          <MapNode label="Ansök" size="large" delay={0.22} />
+        </motion.div>
+
+        <motion.div
+          animate={{ x: [0, 3, 0], y: [0, -2, 0] }}
+          transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-[70%] top-[76%] z-10 -translate-x-1/2 -translate-y-1/2"
+          style={{ transform: "translate(-50%, -50%) translateZ(16px)" }}
+        >
+          <MapNode label="Intervju" size="large" delay={0.28} />
+        </motion.div>
+
+        {roles.map((role, i) => (
+          <motion.div
+            key={role.label}
+            className="absolute z-0 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              left: role.x,
+              top: role.y,
+              transform: `translate(-50%, -50%) translateZ(${6 + (i % 4) * 4}px)`,
+            }}
+            animate={{
+              y: [0, -4 - (i % 2), 0],
+              x: [0, i % 2 === 0 ? 2 : -2, 0],
+            }}
+            transition={{
+              duration: 5.2 + (i % 4) * 0.6,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <MapNode label={role.label} delay={0.35 + i * 0.04} />
+          </motion.div>
+        ))}
+      </motion.div>
     </section>
   );
 }
