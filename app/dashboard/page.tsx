@@ -905,7 +905,12 @@ export default function DashboardPage() {
                                 <div className="mt-5 rounded-[20px] border border-slate-200 bg-[#eef2f6] p-2 sm:p-4">
                                   <div className="max-h-[85vh] overflow-auto rounded-2xl border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
                                     <div className="mx-auto w-full max-w-[794px] bg-white">
-                                      <StyledResume text={item.content || ""} />
+                                      <div className="mx-auto w-full max-w-[794px] bg-white">
+  <StyledResume
+    text={item.content || ""}
+    photoUrl={String(item.meta?.photoUrl || "")}
+  />
+</div>
                                     </div>
                                   </div>
                                 </div>
