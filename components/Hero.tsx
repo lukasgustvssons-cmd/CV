@@ -98,10 +98,6 @@ export function Hero({ t }: HeroProps) {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                     {t.profileSummary}
                   </p>
-
-                  <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-medium text-slate-300">
-                    Live AI
-                  </div>
                 </div>
 
                 <p className="mt-4 text-sm leading-7 text-slate-200">
@@ -113,13 +109,10 @@ export function Hero({ t }: HeroProps) {
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                       {t.matchScore}
                     </p>
-                    <div className="mt-3 flex items-end justify-between">
+                    <div className="mt-3">
                       <p className="text-3xl font-semibold text-white sm:text-4xl">
                         92%
                       </p>
-                      <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-xs font-semibold text-emerald-300">
-                        Stark match
-                      </span>
                     </div>
                   </div>
 
@@ -195,7 +188,7 @@ export function Hero({ t }: HeroProps) {
               </div>
             </div>
 
-            <div className="pointer-events-none absolute right-6 top-20 hidden rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-lg backdrop-blur lg:block">
+            <div className="pointer-events-none absolute right-4 top-16 hidden rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-lg backdrop-blur xl:block">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Interview prep
               </p>
@@ -204,7 +197,7 @@ export function Hero({ t }: HeroProps) {
               </p>
             </div>
 
-            <div className="pointer-events-none absolute bottom-6 left-6 hidden rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-lg backdrop-blur lg:block">
+            <div className="pointer-events-none absolute bottom-6 left-6 hidden rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-lg backdrop-blur xl:block">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Dashboard
               </p>
