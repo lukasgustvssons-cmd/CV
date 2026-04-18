@@ -154,56 +154,108 @@ export function PricingCard({
 
   return (
     <article
-      className={`rounded-3xl border p-8 transition hover:-translate-y-1 ${
+      className={`group hover-lift relative overflow-hidden rounded-[2rem] border p-8 transition-all duration-300 hover:shadow-2xl ${
         highlighted
-          ? "border-accent-500 bg-slate-900 text-white shadow-soft"
-          : "border-slate-200 bg-white text-slate-900 shadow-sm"
+          ? "border-slate-900 bg-slate-950 text-white shadow-[0_30px_100px_rgba(2,6,23,0.35)]"
+          : "border-slate-200 bg-white text-slate-900 shadow-[0_12px_40px_rgba(15,23,42,0.05)]"
       }`}
     >
-      <h3 className="text-xl font-semibold">{name}</h3>
+      <div className="pointer-events-none absolute inset-0 opacity-100">
+        {highlighted ? (
+          <>
+            <div className="absolute left-0 top-0 h-40 w-40 rounded-full bg-blue-500/20 blur-3xl" />
+            <div className="absolute bottom-0 right-0 h-40 w-40 rounded-full bg-purple-500/20 blur-3xl" />
+          </>
+        ) : (
+          <div className="absolute -top-16 left-1/2 h-32 w-32 -translate-x-1/2 rounded-full bg-slate-200/60 opacity-0 blur-3xl transition duration-500 group-hover:opacity-100" />
+        )}
+      </div>
 
-      <p className={`mt-2 text-sm ${highlighted ? "text-slate-300" : "text-slate-600"}`}>
-        {description}
-      </p>
+      <div className="relative z-10">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-xl font-semibold">{name}</h3>
+            <p
+              className={`mt-2 text-sm ${
+                highlighted ? "text-slate-300" : "text-slate-600"
+              }`}
+            >
+              {description}
+            </p>
+          </div>
 
-      <p className="mt-6 text-4xl font-semibold tracking-tight">{price}</p>
+          {highlighted && (
+            <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+              Mest värde
+            </span>
+          )}
+        </div>
 
-      <ul className="mt-6 space-y-3 text-sm">
-        {features.map((feature) => (
-          <li
-            key={feature}
-            className={highlighted ? "text-slate-200" : "text-slate-700"}
-          >
-            {feature}
-          </li>
-        ))}
-      </ul>
+        <div className="mt-8 flex items-end gap-2">
+          <p className="text-4xl font-semibold tracking-tight sm:text-5xl">
+            {price}
+          </p>
+          {!isFreeCard && (
+            <span
+              className={`pb-1 text-sm ${
+                highlighted ? "text-slate-400" : "text-slate-500"
+              }`}
+            >
+              / månad
+            </span>
+          )}
+        </div>
 
-      <button
-        onClick={handleClick}
-        disabled={buttonDisabled}
-        className={`mt-8 w-full rounded-full px-5 py-3 text-sm font-semibold transition ${
-          buttonDisabled
-            ? highlighted
-              ? "cursor-not-allowed bg-white/80 text-slate-500"
-              : "cursor-not-allowed bg-slate-200 text-slate-500"
-            : highlighted
-            ? "bg-white text-slate-900 hover:bg-slate-100"
-            : "bg-slate-900 text-white hover:bg-slate-800"
-        }`}
-      >
-        {buttonText}
-      </button>
+        <div
+          className={`mt-6 h-px w-full ${
+            highlighted ? "bg-white/10" : "bg-slate-200"
+          }`}
+        />
 
-      {!isFreeCard && (
-        <p
-          className={`mt-3 text-center text-xs ${
-            highlighted ? "text-slate-300" : "text-slate-500"
+        <ul className="mt-6 space-y-3 text-sm">
+          {features.map((feature) => (
+            <li
+              key={feature}
+              className={`flex items-start gap-3 ${
+                highlighted ? "text-slate-200" : "text-slate-700"
+              }`}
+            >
+              <span
+                className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${
+                  highlighted ? "bg-white" : "bg-slate-900"
+                }`}
+              />
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+
+        <button
+          onClick={handleClick}
+          disabled={buttonDisabled}
+          className={`mt-8 w-full rounded-full px-5 py-3.5 text-sm font-semibold transition ${
+            buttonDisabled
+              ? highlighted
+                ? "cursor-not-allowed bg-white/80 text-slate-500"
+                : "cursor-not-allowed bg-slate-200 text-slate-500"
+              : highlighted
+              ? "bg-white text-slate-900 hover:bg-slate-100"
+              : "bg-slate-950 text-white hover:bg-slate-800"
           }`}
         >
-          ✓ Säker betalning via Stripe • Avsluta när du vill • Ingen bindningstid
-        </p>
-      )}
+          {buttonText}
+        </button>
+
+        {!isFreeCard && (
+          <p
+            className={`mt-3 text-center text-xs ${
+              highlighted ? "text-slate-400" : "text-slate-500"
+            }`}
+          >
+            ✓ Säker betalning via Stripe • Avsluta när du vill • Ingen bindningstid
+          </p>
+        )}
+      </div>
     </article>
   );
 }

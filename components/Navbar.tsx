@@ -56,20 +56,49 @@ export default function Navbar() {
   const planClasses = useMemo(() => getPlanBadgeClasses(plan), [plan]);
 
   return (
-    <nav className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <a
-          href="/"
-          className="shrink-0 text-base font-semibold text-slate-900 sm:text-lg"
-        >
-          Hireon
-        </a>
+    <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
+      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-8">
+          <a
+            href="/"
+            className="shrink-0 text-lg font-semibold tracking-tight text-slate-950 sm:text-xl"
+          >
+            Hireon
+          </a>
+
+          <div className="hidden items-center gap-6 lg:flex">
+            <a
+              href="#how-it-works"
+              className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
+            >
+              Så funkar det
+            </a>
+            <a
+              href="#features"
+              className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
+            >
+              Funktioner
+            </a>
+            <a
+              href="#pricing"
+              className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
+            >
+              Priser
+            </a>
+            <a
+              href="/vilka-ar-vi"
+              className="text-sm font-medium text-slate-600 transition hover:text-slate-950"
+            >
+              Vilka är vi
+            </a>
+          </div>
+        </div>
 
         {!isLoaded ? null : isSignedIn ? (
           <div className="flex items-center gap-3 sm:gap-4">
             <a
               href="/dashboard"
-              className="text-sm font-medium text-slate-700 transition hover:text-slate-900 hover:underline"
+              className="hidden rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-950 sm:inline-flex"
             >
               Dashboard
             </a>
@@ -80,11 +109,13 @@ export default function Navbar() {
               {planLabel}
             </span>
 
-           <UserButton />
+            <div className="rounded-full border border-slate-200 bg-white p-1 shadow-sm">
+              <UserButton />
+            </div>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
-            <div className="hidden text-right text-[11px] leading-4 text-slate-500 sm:block sm:max-w-[240px]">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="hidden max-w-[260px] text-right text-[11px] leading-4 text-slate-500 xl:block">
               Genom att fortsätta godkänner du våra{" "}
               <a href="/terms" className="underline hover:text-slate-900">
                 användarvillkor
@@ -96,14 +127,21 @@ export default function Navbar() {
               .
             </div>
 
+            <a
+              href="#pricing"
+              className="hidden rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-950 sm:inline-flex"
+            >
+              Se priser
+            </a>
+
             <SignInButton mode="modal">
-              <button className="whitespace-nowrap rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800">
+              <button className="whitespace-nowrap rounded-full bg-slate-950 px-5 py-2.5 text-sm font-medium text-white shadow-[0_10px_30px_rgba(15,23,42,0.18)] transition hover:bg-slate-800">
                 Logga in
               </button>
             </SignInButton>
           </div>
         )}
-      </div>
+      </nav>
 
       {!isLoaded || isSignedIn ? null : (
         <div className="border-t border-slate-100 px-4 py-2 sm:hidden">
@@ -120,6 +158,6 @@ export default function Navbar() {
           </p>
         </div>
       )}
-    </nav>
+    </header>
   );
 }
