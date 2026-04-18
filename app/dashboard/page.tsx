@@ -639,9 +639,41 @@ export default function DashboardPage() {
 
                 {filteredJobs.length === 0 ? (
                   <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-                    <p className="text-lg font-medium text-slate-900">Inga jobb ännu</p>
-                    <p className="mt-2 text-sm text-slate-600">
-                      När du sparar jobb dyker de upp här så du kan följa status och förbereda intervjuer.
+                    <h3 className="text-xl font-semibold text-slate-900">
+                      Kom igång med Hireon
+                    </h3>
+
+                    <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-600">
+                      Börja med att skapa ett CV, matcha sedan mot jobb och spara intressanta roller här i dashboarden.
+                    </p>
+
+                    <div className="mx-auto mt-6 max-w-md rounded-3xl border border-slate-200 bg-slate-50 p-5 text-left">
+                      <p className="text-sm font-semibold text-slate-900">Steg för steg</p>
+                      <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                        <li>1. Skapa ett CV</li>
+                        <li>2. Matcha mot jobb</li>
+                        <li>3. Spara jobb här</li>
+                      </ul>
+                    </div>
+
+                    <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+                      <a
+                        href="/#demo"
+                        className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                      >
+                        Skapa CV
+                      </a>
+
+                      <a
+                        href="/#demo"
+                        className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
+                      >
+                        Hitta jobb
+                      </a>
+                    </div>
+
+                    <p className="mt-6 text-xs text-slate-400">
+                      Tips: Börja med att skapa ett CV för att få jobbmatchningar
                     </p>
                   </div>
                 ) : (
