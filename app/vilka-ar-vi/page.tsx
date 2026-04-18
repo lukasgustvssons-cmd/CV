@@ -1,10 +1,10 @@
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white">
-      <div className="mx-auto max-w-4xl px-6 py-16 lg:px-8">
-        
+      <div className="mx-auto max-w-5xl px-6 py-20 lg:px-8">
+
         {/* HERO */}
-        <section className="mb-16 text-center">
+        <section className="mb-20 text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
             Vilka är vi
           </p>
@@ -13,78 +13,97 @@ export default function AboutPage() {
             Varför vi byggde Hireon
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-slate-600">
-            Vi tycker att jobbsökande borde vara tydligt, inte förvirrande.
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+            Jobbsökande ska inte vara ett gissningsspel.
           </p>
         </section>
 
         {/* PROBLEM */}
-        <section className="mb-14">
+        <section className="mb-16">
           <h2 className="text-2xl font-semibold text-slate-900">
             Problemet
           </h2>
 
-          <div className="mt-4 space-y-4 text-slate-600 leading-7">
+          <div className="mt-6 space-y-4 text-slate-600 leading-7 text-lg">
             <p>
               Att söka jobb idag är frustrerande.
             </p>
+
             <p>
               Du skickar ansökningar utan att få svar.
               Du vet inte vad som är bra eller vad som saknas.
             </p>
+
             <p>
-              Det känns ofta som att man chansar – utan tydlig feedback.
+              Det känns ofta som att du chansar — utan tydlig feedback.
             </p>
           </div>
         </section>
 
         {/* SOLUTION */}
-        <section className="mb-14">
+        <section className="mb-16">
           <h2 className="text-2xl font-semibold text-slate-900">
             Lösningen
           </h2>
 
-          <div className="mt-4 space-y-4 text-slate-600 leading-7">
+          <div className="mt-6 space-y-4 text-slate-600 leading-7 text-lg">
             <p>
               Vi byggde Hireon för att ge dig tydlighet.
             </p>
+
             <p>
-              Inte bara för att skapa ett CV – utan för att hjälpa dig förstå
+              Inte bara för att skapa ett CV — utan för att hjälpa dig förstå
               vad som faktiskt kan öka dina chanser att få en intervju.
             </p>
+
             <p>
-              Med hjälp av AI kan du snabbt förbättra ditt CV, matcha mot jobb
-              och få konkreta insikter istället för att gissa.
+              Med hjälp av AI kan du:
             </p>
+
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Skapa ett starkt CV snabbt</li>
+              <li>Matcha mot riktiga jobb</li>
+              <li>Få konkreta förbättringsförslag</li>
+            </ul>
           </div>
         </section>
 
         {/* VISION */}
-        <section className="mb-14">
+        <section className="mb-16">
           <h2 className="text-2xl font-semibold text-slate-900">
             Vår vision
           </h2>
 
-          <div className="mt-4 space-y-4 text-slate-600 leading-7">
+          <div className="mt-6 space-y-4 text-slate-600 leading-7 text-lg">
             <p>
               Vi vill göra jobbsökande smartare, enklare och mindre ensamt.
             </p>
+
             <p>
-              Alla ska kunna förstå hur man förbättrar sin ansökan – utan att behöva
-              gissa eller känna sig osäker.
+              Alla ska kunna förstå hur man förbättrar sin ansökan —
+              utan att behöva gissa.
             </p>
           </div>
         </section>
 
         {/* END */}
         <section className="text-center">
-          <p className="text-lg font-medium text-slate-900">
+          <p className="text-xl font-medium text-slate-900">
             Detta är bara början.
           </p>
 
-          <p className="mt-4 text-slate-600">
+          <p className="mt-4 text-slate-600 text-lg">
             Hireon kommer fortsätta utvecklas för att hjälpa dig hela vägen till jobb.
           </p>
+
+          <div className="mt-8">
+            <a
+              href="/#demo"
+              className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+            >
+              Testa Hireon
+            </a>
+          </div>
         </section>
 
       </div>
