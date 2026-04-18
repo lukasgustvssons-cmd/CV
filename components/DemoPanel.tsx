@@ -67,6 +67,9 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     title: isSwedish
       ? "Skapa ett starkare CV på några minuter"
       : "Create a stronger resume in a few minutes",
+    socialProof: isSwedish
+      ? "Byggt för att hjälpa dig få fler intervjuer"
+      : "Built to help you land more interviews",
     description: isSwedish
       ? "Fyll i din erfarenhet och vilken roll du söker. Hireon hjälper dig formulera ett tydligt och professionellt CV direkt."
       : "Add your experience and the role you want. Hireon helps you turn it into a clear and professional resume right away.",
@@ -313,6 +316,9 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
           {panelCopy.title}
         </h2>
+        <p className="mt-3 text-sm font-medium text-slate-500 sm:text-base">
+          {panelCopy.socialProof}
+        </p>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base sm:leading-relaxed">
           {panelCopy.description}
         </p>
@@ -502,7 +508,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
             ) : (
               <div
                 ref={previewContainerRef}
-                className="relative overflow-hidden rounded-[20px] border border-slate-200 bg-[#e9edf3] flex items-center justify-center sm:rounded-[24px]"
+                className="relative flex items-center justify-center overflow-hidden rounded-[20px] border border-slate-200 bg-[#e9edf3] sm:rounded-[24px]"
               >
                 <div
                   className="mx-auto origin-top"
