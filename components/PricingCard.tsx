@@ -107,7 +107,7 @@ export function PricingCard({
       buttonText: cta,
       buttonDisabled: false,
     };
-  }, [currentPlan, cta, isCareerPlusCard, isFreeCard, isProCard]);
+  }, [currentPlan, cta, isCareerPlusCard, isProCard]);
 
   const handleClick = async () => {
     if (buttonDisabled) return;
@@ -161,9 +161,11 @@ export function PricingCard({
       }`}
     >
       <h3 className="text-xl font-semibold">{name}</h3>
+
       <p className={`mt-2 text-sm ${highlighted ? "text-slate-300" : "text-slate-600"}`}>
         {description}
       </p>
+
       <p className="mt-6 text-4xl font-semibold tracking-tight">{price}</p>
 
       <ul className="mt-6 space-y-3 text-sm">
@@ -192,6 +194,16 @@ export function PricingCard({
       >
         {buttonText}
       </button>
+
+      {!isFreeCard && (
+        <p
+          className={`mt-3 text-center text-xs ${
+            highlighted ? "text-slate-300" : "text-slate-500"
+          }`}
+        >
+          ✓ Säker betalning via Stripe • Avsluta när du vill • Ingen bindningstid
+        </p>
+      )}
     </article>
   );
 }
