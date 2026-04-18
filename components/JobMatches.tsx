@@ -27,35 +27,6 @@ type Props = {
   onCvImproved: (newCv: string) => void;
 };
 
-function MatchCircle({
-  score,
-  color,
-}: {
-  score: number;
-  color: "green" | "orange" | "red";
-}) {
-  const styles =
-    color === "green"
-      ? "border-green-300 bg-green-50 text-green-700"
-      : color === "orange"
-      ? "border-orange-300 bg-orange-50 text-orange-700"
-      : "border-red-300 bg-red-50 text-red-700";
-
-  return (
-    <div className="flex shrink-0 flex-col items-center self-start">
-      <motion.div
-        initial={{ scale: 0.92, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.28, ease: "easeOut" }}
-        className={`flex h-14 w-14 items-center justify-center rounded-full border-2 text-sm font-bold sm:h-16 sm:w-16 ${styles}`}
-      >
-        {score}%
-      </motion.div>
-      <span className="mt-1 text-xs text-slate-500">Match</span>
-    </div>
-  );
-}
-
 function normalizeText(text: string) {
   return text.toLowerCase().trim();
 }
@@ -306,6 +277,105 @@ function ExpandableCard({
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+function SectionBadge({
+  children,
+  dark = false,
+}: {
+  children: ReactNode;
+  dark?: boolean;
+}) {
+  return (
+    <span
+      className={[
+        "inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em]",
+        dark
+          ? "border border-white/10 bg-white/10 text-white/75"
+          : "border border-slate-200 bg-white/90 text-slate-500",
+      ].join(" ")}
+    >
+      {children}
+    </span>
+  );
+}
+
+function MatchCircle({
+  score,
+  color,
+  large = false,
+}: {
+  score: number;
+  color: "green" | "orange" | "red";
+  large?: boolean;
+}) {
+  const styles =
+    color === "green"
+      ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+      : color === "orange"
+      ? "border-amber-300 bg-amber-50 text-amber-700"
+      : "border-rose-300 bg-rose-50 text-rose-700";
+
+  return (
+    <div className="flex shrink-0 flex-col items-center self-start">
+      <motion.div
+        initial={{ scale: 0.92, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.28, ease: "easeOut" }}
+        className={[
+          "flex items-center justify-center rounded-full border-2 font-bold shadow-sm",
+          large ? "h-20 w-20 text-lg" : "h-14 w-14 text-sm sm:h-16 sm:w-16",
+          styles,
+        ].join(" ")}
+      >
+        {score}%
+      </motion.div>
+      <span className="mt-1 text-xs text-slate-500">Match</span>
+    </div>
+  );
+}
+
+function ActionButton({
+  children,
+  onClick,
+  disabled,
+  primary = false,
+}: {
+  children: ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  primary?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={[
+        "w-full rounded-full px-4 py-2.5 text-sm font-semibold transition sm:w-auto",
+        primary
+          ? "bg-slate-950 text-white hover:bg-slate-800"
+          : "border border-slate-300 bg-white text-slate-900 hover:border-slate-900 hover:bg-slate-50",
+        "disabled:cursor-not-allowed disabled:opacity-60",
+      ].join(" ")}
+    >
+      {children}
+    </button>
+  );
+}
+
+function InsightPanel({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="rounded-[1.35rem] border border-white/70 bg-white/88 p-4 shadow-sm backdrop-blur">
+      <p className="text-sm font-semibold text-slate-900">{title}</p>
+      <div className="mt-3">{children}</div>
+    </div>
   );
 }
 
@@ -725,12 +795,12 @@ export function JobMatches({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="mt-6 rounded-[24px] border border-yellow-300 bg-yellow-50 p-4 sm:mt-8 sm:rounded-[28px] sm:p-6"
+        className="rounded-[1.75rem] border border-amber-300 bg-amber-50 p-5 sm:p-6"
       >
-        <h3 className="text-base font-semibold text-slate-900 sm:text-lg">
+        <h3 className="text-lg font-semibold text-slate-900">
           {isSwedish ? "Uppgradera till Pro" : "Upgrade to Pro"}
         </h3>
-        <p className="mt-2 text-sm text-slate-700">
+        <p className="mt-2 text-sm leading-7 text-slate-700">
           {isSwedish
             ? "AI-jobbmatchning är tillgänglig för Pro och Career+."
             : "AI job matching is available for Pro and Career+."}
@@ -744,40 +814,35 @@ export function JobMatches({
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.32, ease: "easeOut" }}
-      className="mt-6 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:mt-8 sm:rounded-[28px] sm:p-6"
+      className="rounded-[1.85rem] border border-slate-200/80 bg-gradient-to-b from-white via-slate-50 to-white p-4 shadow-[0_24px_80px_rgba(15,23,42,0.08)] sm:p-6"
     >
-      <div className="mb-5">
+      <div className="mb-6">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <h3 className="text-base font-semibold text-slate-900 sm:text-lg">
-            {isSwedish ? "Matchande jobb" : "Matching jobs"}
-          </h3>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+            {isSwedish ? "Jobbmatchning" : "Job matching"}
+          </p>
 
           {plan && (
-            <span className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white sm:text-xs">
-              {plan}
-            </span>
+            <SectionBadge>{plan}</SectionBadge>
           )}
 
           {isCareerPlus && (
-            <motion.span
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.25, delay: 0.08 }}
-              className="rounded-full border border-purple-300 bg-purple-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-purple-700 sm:text-xs"
-            >
-              Career+ Insights
-            </motion.span>
+            <SectionBadge>Career+ Insights</SectionBadge>
           )}
         </div>
 
-        <p className="mt-2 text-sm leading-6 text-slate-600">
+        <h3 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
+          {isSwedish ? "Roller som passar din profil" : "Roles that fit your profile"}
+        </h3>
+
+        <p className="mt-3 text-sm leading-7 text-slate-600">
           {isSwedish
-            ? `Visar jobb baserat på: ${shortTargetRole}${
+            ? `Visar jobb baserat på ${shortTargetRole}${
                 location ? ` i eller nära ${location}` : ""
-              }`
-            : `Showing jobs based on: ${shortTargetRole}${
+              }.`
+            : `Showing jobs based on ${shortTargetRole}${
                 location ? ` in or near ${location}` : ""
-              }`}
+              }.`}
         </p>
       </div>
 
@@ -792,185 +857,160 @@ export function JobMatches({
       )}
 
       {loading && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600"
-        >
+        <div className="rounded-[1.35rem] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-600 shadow-sm">
           <span className="inline-flex items-center gap-2">
             <LoadingSpinner size={16} />
             <span>
               {isSwedish ? "Letar matchande jobb..." : "Finding matching jobs..."}
             </span>
           </span>
-        </motion.div>
+        </div>
       )}
 
       {error && !error.toLowerCase().includes("upgrade to pro") && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-        >
+        <div className="rounded-[1.35rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
           {error}
-        </motion.div>
+        </div>
       )}
 
       {!loading && !error && jobs.length > 0 && (
-        <>
-          <div className="relative mb-6">
+        <div className="space-y-6">
+          <div className="relative overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white/88 p-4 shadow-sm backdrop-blur sm:p-5">
             <div
-              className={
-                !isCareerPlus ? "pointer-events-none select-none blur-[3px]" : ""
-              }
+              className={!isCareerPlus ? "pointer-events-none select-none blur-[3px]" : ""}
             >
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.05 }}
-                className="mb-5 rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50 to-white p-4 sm:mb-6 sm:p-5"
-              >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-purple-700 sm:text-xs">
-                      Career+ Dashboard
-                    </p>
-                    <h4 className="mt-2 text-sm font-semibold text-slate-900 sm:text-base">
-                      {isSwedish
-                        ? "Premiuminsikter baserat på ditt CV"
-                        : "Premium insights based on your CV"}
-                    </h4>
-                  </div>
-
-                  {bestJob && (
-                    <div className="self-start sm:self-auto">
-                      <MatchCircle score={bestJob.score} color={bestJob.color} />
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
-                  <button
-                    onClick={() => setExpandedFitPanel((prev) => !prev)}
-                    className="w-full rounded-full border border-purple-300 bg-white px-4 py-2.5 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50 sm:w-auto"
-                  >
-                    {expandedFitPanel
-                      ? isSwedish
-                        ? "Dölj vad som passar bäst"
-                        : "Hide best fit"
-                      : isSwedish
-                      ? "Vad passar mig bäst?"
-                      : "What fits me best?"}
-                  </button>
-
-                  <button
-                    onClick={() => setExpandedNextSteps((prev) => !prev)}
-                    className="w-full rounded-full border border-purple-300 bg-white px-4 py-2.5 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50 sm:w-auto"
-                  >
-                    {expandedNextSteps
-                      ? isSwedish
-                        ? "Dölj nästa steg"
-                        : "Hide next steps"
-                      : isSwedish
-                      ? "Hur går jag vidare nu?"
-                      : "How do I move forward now?"}
-                  </button>
-
-                  <button
-                    onClick={() => setExpandedStrengths((prev) => !prev)}
-                    className="w-full rounded-full border border-purple-300 bg-white px-4 py-2.5 text-sm font-semibold text-purple-700 transition hover:border-purple-500 hover:bg-purple-50 sm:w-auto"
-                  >
-                    {expandedStrengths
-                      ? isSwedish
-                        ? "Dölj styrkor"
-                        : "Hide strengths"
-                      : isSwedish
-                      ? "Vilka styrkor ser ni i mitt CV?"
-                      : "What strengths do you see in my CV?"}
-                  </button>
-                </div>
-
-                <ExpandableCard open={expandedFitPanel}>
-                  <div className="mt-4 rounded-2xl border border-white bg-white p-4 shadow-sm">
-                    <p className="text-sm font-semibold text-slate-900">
-                      {recommendation.title}
-                    </p>
-                    <p className="mt-3 text-sm leading-7 text-slate-700">
-                      {recommendation.description}
-                    </p>
-                  </div>
-                </ExpandableCard>
-
-                <ExpandableCard open={expandedNextSteps}>
-                  <div className="mt-4 rounded-2xl border border-white bg-white p-4 shadow-sm">
-                    <p className="text-sm font-semibold text-slate-900">
-                      {isSwedish
-                        ? "Så här går du vidare nu"
-                        : "How to move forward now"}
-                    </p>
-                    <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                      {nextSteps.map((step, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
-                          <span>{step}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </ExpandableCard>
-
-                <ExpandableCard open={expandedStrengths}>
-                  <div className="mt-4 rounded-2xl border border-white bg-white p-4 shadow-sm">
-                    <p className="text-sm font-semibold text-slate-900">
-                      {isSwedish
-                        ? "Styrkor vi ser i din profil"
-                        : "Strengths we see in your profile"}
-                    </p>
-                    <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                      {strengths.map((item, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </ExpandableCard>
-              </motion.div>
-
-              {selectedJob && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="rounded-2xl border border-slate-900 bg-slate-900 p-4 text-white sm:p-5"
-                >
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-300 sm:text-xs">
-                    {isSwedish ? "Valt jobb" : "Selected job"}
-                  </p>
-
-                  <div className="mt-2 flex flex-col gap-4 sm:mt-3 sm:gap-4">
+              <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="rounded-[1.4rem] border border-purple-200 bg-gradient-to-br from-purple-50 via-white to-white p-4 sm:p-5">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <h4 className="text-base font-semibold break-words">
-                        {selectedJob.title}
-                      </h4>
-                      <p className="mt-1 text-sm text-slate-300 break-words">
-                        {selectedJob.company} • {selectedJob.location}
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-purple-700">
+                        Career+ Dashboard
                       </p>
-
-                      {selectedJob.url && selectedJob.url !== "#" && (
-                        <a
-                          href={selectedJob.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="mt-3 inline-block text-sm font-semibold text-white underline underline-offset-4"
-                        >
-                          {isSwedish ? "Öppna annons" : "Open job ad"}
-                        </a>
-                      )}
+                      <h4 className="mt-2 text-lg font-semibold tracking-tight text-slate-950">
+                        {isSwedish
+                          ? "Premiuminsikter baserat på ditt CV"
+                          : "Premium insights based on your CV"}
+                      </h4>
                     </div>
 
-                    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
+                    {bestJob && (
+                      <div className="self-start sm:self-auto">
+                        <MatchCircle
+                          score={bestJob.score}
+                          color={bestJob.color}
+                          large
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                    <ActionButton
+                      onClick={() => setExpandedFitPanel((prev) => !prev)}
+                    >
+                      {expandedFitPanel
+                        ? isSwedish
+                          ? "Dölj rekommendation"
+                          : "Hide recommendation"
+                        : isSwedish
+                        ? "Vad passar mig bäst?"
+                        : "What fits me best?"}
+                    </ActionButton>
+
+                    <ActionButton
+                      onClick={() => setExpandedNextSteps((prev) => !prev)}
+                    >
+                      {expandedNextSteps
+                        ? isSwedish
+                          ? "Dölj nästa steg"
+                          : "Hide next steps"
+                        : isSwedish
+                        ? "Hur går jag vidare nu?"
+                        : "How do I move forward now?"}
+                    </ActionButton>
+
+                    <ActionButton
+                      onClick={() => setExpandedStrengths((prev) => !prev)}
+                    >
+                      {expandedStrengths
+                        ? isSwedish
+                          ? "Dölj styrkor"
+                          : "Hide strengths"
+                        : isSwedish
+                        ? "Vilka styrkor ser ni?"
+                        : "What strengths do you see?"}
+                    </ActionButton>
+                  </div>
+
+                  <ExpandableCard open={expandedFitPanel}>
+                    <div className="mt-4 rounded-[1.2rem] border border-white bg-white p-4 shadow-sm">
+                      <p className="text-sm font-semibold text-slate-900">
+                        {recommendation.title}
+                      </p>
+                      <p className="mt-3 text-sm leading-7 text-slate-700">
+                        {recommendation.description}
+                      </p>
+                    </div>
+                  </ExpandableCard>
+
+                  <ExpandableCard open={expandedNextSteps}>
+                    <div className="mt-4 rounded-[1.2rem] border border-white bg-white p-4 shadow-sm">
+                      <p className="text-sm font-semibold text-slate-900">
+                        {isSwedish
+                          ? "Så här går du vidare nu"
+                          : "How to move forward now"}
+                      </p>
+                      <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                        {nextSteps.map((step, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
+                            <span>{step}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </ExpandableCard>
+
+                  <ExpandableCard open={expandedStrengths}>
+                    <div className="mt-4 rounded-[1.2rem] border border-white bg-white p-4 shadow-sm">
+                      <p className="text-sm font-semibold text-slate-900">
+                        {isSwedish
+                          ? "Styrkor vi ser i din profil"
+                          : "Strengths we see in your profile"}
+                      </p>
+                      <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                        {strengths.map((item, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </ExpandableCard>
+                </div>
+
+                {selectedJob && (
+                  <div className="rounded-[1.4rem] border border-slate-900 bg-slate-950 p-4 text-white shadow-[0_22px_70px_rgba(2,6,23,0.24)] sm:p-5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                          {isSwedish ? "Valt jobb" : "Selected job"}
+                        </p>
+                        <h4 className="mt-2 break-words text-lg font-semibold tracking-tight">
+                          {selectedJob.title}
+                        </h4>
+                        <p className="mt-1 break-words text-sm text-slate-300">
+                          {selectedJob.company} • {selectedJob.location}
+                        </p>
+                      </div>
+
+                      <SectionBadge dark>
+                        {isSwedish ? "Aktivt" : "Active"}
+                      </SectionBadge>
+                    </div>
+
+                    <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                       <button
                         onClick={handleImproveClick}
                         disabled={improvingCv}
@@ -984,8 +1024,8 @@ export function JobMatches({
                                 ? "Förbättrar CV..."
                                 : "Improving CV..."
                               : isSwedish
-                              ? "Förbättra CV för valt jobb"
-                              : "Improve CV for selected job"}
+                              ? "Förbättra CV"
+                              : "Improve resume"}
                           </span>
                         </span>
                       </button>
@@ -993,7 +1033,7 @@ export function JobMatches({
                       <button
                         onClick={handleGenerateCoverLetter}
                         disabled={generatingCoverLetter}
-                        className="w-full rounded-full border border-white/20 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                        className="w-full rounded-full border border-white/15 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                       >
                         <span className="inline-flex items-center justify-center gap-2">
                           {generatingCoverLetter && <LoadingSpinner size={16} />}
@@ -1003,39 +1043,50 @@ export function JobMatches({
                                 ? "Skapar brev..."
                                 : "Generating letter..."
                               : isSwedish
-                              ? "Skapa personligt brev"
-                              : "Generate cover letter"}
+                              ? "Skapa brev"
+                              : "Generate letter"}
                           </span>
                         </span>
                       </button>
-                    </div>
-                  </div>
 
-                  {improveMessage && (
-                    <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                      {improveMessage}
+                      {selectedJob.url && selectedJob.url !== "#" && (
+                        <a
+                          href={selectedJob.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex w-full items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 sm:w-auto"
+                        >
+                          {isSwedish ? "Öppna annons" : "Open job ad"}
+                        </a>
+                      )}
                     </div>
-                  )}
-                </motion.div>
-              )}
+
+                    {improveMessage && (
+                      <div className="mt-4 rounded-[1.1rem] border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                        {improveMessage}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {!isCareerPlus && (
               <div className="absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 justify-center px-3 sm:px-4">
-                <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white/95 p-4 text-center shadow-xl backdrop-blur-sm sm:max-w-xs sm:p-5">
-                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white">
+                <div className="w-full max-w-sm rounded-[1.4rem] border border-slate-200 bg-white/96 p-5 text-center shadow-xl backdrop-blur-sm">
+                  <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 text-white">
                     ✦
                   </div>
-                  <h4 className="text-base font-semibold text-slate-900 sm:text-lg">
+                  <h4 className="text-lg font-semibold text-slate-900">
                     {isSwedish ? "Lås upp med Career+" : "Unlock with Career+"}
                   </h4>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  <p className="mt-2 text-sm leading-7 text-slate-600">
                     {isSwedish
                       ? "Få premiuminsikter, förbättra ditt CV och skapa personligt brev för valt jobb."
                       : "Get premium insights, improve your resume, and generate a cover letter for the selected job."}
                   </p>
                   <div className="mt-4">
-                    <span className="inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
+                    <span className="inline-flex rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white">
                       Career+
                     </span>
                   </div>
@@ -1045,13 +1096,9 @@ export function JobMatches({
           </div>
 
           {canUseSelectedJobTools && coverLetterError && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            >
+            <div className="rounded-[1.35rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
               {coverLetterError}
-            </motion.div>
+            </div>
           )}
 
           {canUseSelectedJobTools && coverLetter && (
@@ -1059,32 +1106,28 @@ export function JobMatches({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.28 }}
-              className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+              className="rounded-[1.6rem] border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur sm:p-5"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-xs">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
                     {isSwedish ? "Personligt brev" : "Cover letter"}
                   </p>
-                  <h4 className="mt-2 text-base font-semibold text-slate-900 break-words">
+                  <h4 className="mt-2 text-lg font-semibold tracking-tight text-slate-950 break-words">
                     {isSwedish
                       ? `Anpassat för ${selectedJob?.title ?? "valt jobb"}`
                       : `Tailored for ${selectedJob?.title ?? "selected job"}`}
                   </h4>
                 </div>
 
-                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:gap-3">
-                  <button
-                    onClick={handleCopyCoverLetter}
-                    className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 sm:w-auto"
-                  >
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
+                  <ActionButton onClick={handleCopyCoverLetter}>
                     {isSwedish ? "Kopiera" : "Copy"}
-                  </button>
+                  </ActionButton>
 
-                  <button
+                  <ActionButton
                     onClick={handleGenerateCoverLetter}
                     disabled={generatingCoverLetter}
-                    className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
                     <span className="inline-flex items-center justify-center gap-2">
                       {generatingCoverLetter && <LoadingSpinner size={16} />}
@@ -1098,365 +1141,332 @@ export function JobMatches({
                           : "Generate again"}
                       </span>
                     </span>
-                  </button>
+                  </ActionButton>
 
-                  <button
-                    onClick={handleSaveCoverLetter}
-                    className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 sm:w-auto"
-                  >
+                  <ActionButton onClick={handleSaveCoverLetter} primary>
                     {isSwedish ? "Spara" : "Save"}
-                  </button>
+                  </ActionButton>
                 </div>
               </div>
 
-              <div className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-slate-700">
+              <div className="mt-4 rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-4 whitespace-pre-wrap break-words text-sm leading-7 text-slate-700">
                 {coverLetter}
               </div>
             </motion.div>
           )}
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.28 }}
-            className={`mb-6 rounded-2xl border p-4 ${
-              selectedJobId === bestJob?.id
-                ? "border-slate-900 bg-white shadow-sm"
-                : "border-slate-200 bg-slate-50"
-            }`}
-          >
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-xs">
-                  {isSwedish ? "Bästa match" : "Best match"}
-                </p>
-
-                <h4 className="mt-2 break-words text-base font-semibold text-slate-900">
-                  {bestJob?.title}
-                </h4>
-                <p className="mt-1 break-words text-sm text-slate-600">
-                  {bestJob?.company} • {bestJob?.location}
-                </p>
-                <p className="mt-2 text-sm leading-7 text-slate-700">
-                  {bestJob?.summary}
-                </p>
-
-                {bestJob?.url && bestJob.url !== "#" && (
-                  <a
-                    href={bestJob.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 inline-block text-sm font-semibold text-slate-900 underline"
-                  >
-                    {isSwedish ? "Öppna annons" : "Open job ad"}
-                  </a>
-                )}
-
-                {isCareerPlus && bestJob?.missing && bestJob.missing.length > 0 && (
-                  <div className="mt-3 rounded-xl border border-purple-200 bg-purple-50 px-3 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">
-                      {isSwedish ? "Det som saknas mest" : "Main missing areas"}
-                    </p>
-                    <p className="mt-2 break-words text-sm text-slate-700">
-                      {bestJob.missing.join(", ")}
-                    </p>
-                  </div>
-                )}
-
-                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
-                  {bestJob && (
-                    <button
-                      onClick={() => handleSaveJob(bestJob)}
-                      className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
-                    >
-                      {isSwedish ? "Spara jobb" : "Save job"}
-                    </button>
-                  )}
-
-                  {canUseSelectedJobTools && bestJob && (
-                    <button
-                      onClick={() => handleSelectJob(bestJob.id)}
-                      className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold transition sm:w-auto ${
-                        selectedJobId === bestJob.id
-                          ? "bg-slate-900 text-white"
-                          : "border border-slate-300 text-slate-900 hover:border-slate-900"
-                      }`}
-                    >
-                      {selectedJobId === bestJob.id
-                        ? isSwedish
-                          ? "Valt jobb"
-                          : "Selected"
-                        : isSwedish
-                        ? "Välj detta jobb"
-                        : "Select this job"}
-                    </button>
-                  )}
-
-                  {isCareerPlus && bestJob && (
-                    <>
-                      <button
-                        onClick={() => toggleMissing(bestJob.id)}
-                        className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
-                      >
-                        {expandedMissingJobId === bestJob.id
-                          ? isSwedish
-                            ? "Dölj vad som saknas"
-                            : "Hide missing items"
-                          : isSwedish
-                          ? "Visa vad som saknas"
-                          : "Show missing items"}
-                      </button>
-
-                      <button
-                        onClick={() => toggleReason(bestJob.id)}
-                        className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
-                      >
-                        {expandedReasonJobId === bestJob.id
-                          ? isSwedish
-                            ? "Dölj analys"
-                            : "Hide analysis"
-                          : isSwedish
-                          ? "Varför är matchen inte högre?"
-                          : "Why isn’t the match higher?"}
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {bestJob && (
-                <div className="self-start">
-                  <MatchCircle score={bestJob.score} color={bestJob.color} />
-                </div>
-              )}
-            </div>
-
-            <ExpandableCard
-              open={
-                isCareerPlus &&
-                !!bestJob &&
-                expandedMissingJobId === bestJob.id
-              }
+          {bestJob && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.28 }}
+              className="rounded-[1.7rem] border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur sm:p-5"
             >
-              <div className="mt-4 rounded-2xl border border-purple-200 bg-purple-50 p-4">
-                <p className="text-sm font-semibold text-slate-900">
-                  {isSwedish ? "Det här saknas mest" : "Main missing areas"}
-                </p>
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <SectionBadge>{isSwedish ? "Bästa match" : "Best match"}</SectionBadge>
+                    <SectionBadge>{bestJob.source}</SectionBadge>
+                  </div>
 
-                {bestJob?.missing && bestJob.missing.length > 0 ? (
-                  <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                    {bestJob.missing.map((item, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="mt-3 text-sm text-slate-700">
-                    {isSwedish
-                      ? "Ingen extra information tillgänglig ännu."
-                      : "No extra information available yet."}
+                  <h4 className="mt-3 break-words text-xl font-semibold tracking-tight text-slate-950">
+                    {bestJob.title}
+                  </h4>
+                  <p className="mt-1 break-words text-sm text-slate-600">
+                    {bestJob.company} • {bestJob.location}
                   </p>
-                )}
-              </div>
-            </ExpandableCard>
+                  <p className="mt-4 text-sm leading-7 text-slate-700">
+                    {bestJob.summary}
+                  </p>
 
-            <ExpandableCard
-              open={
-                isCareerPlus &&
-                !!bestJob &&
-                expandedReasonJobId === bestJob.id
-              }
-            >
-              <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-sm font-semibold text-slate-900">
-                  {isSwedish ? "Career+ analys" : "Career+ analysis"}
-                </p>
-                <p className="mt-3 text-sm leading-7 text-slate-700">
-                  {bestJob ? getReasonText(bestJob, lang) : ""}
-                </p>
-              </div>
-            </ExpandableCard>
-          </motion.div>
-
-          <div className="space-y-4">
-            {jobs.slice(1).map((job, index) => {
-              const isSelected = selectedJobId === job.id;
-
-              return (
-                <motion.div
-                  key={job.id}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.28, delay: 0.04 * index }}
-                  className={`rounded-2xl border p-4 ${
-                    isSelected
-                      ? "border-slate-900 bg-white shadow-sm"
-                      : "border-slate-200 bg-slate-50"
-                  }`}
-                >
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0 flex-1">
-                      <h4 className="break-words text-base font-semibold text-slate-900">
-                        {job.title}
-                      </h4>
-                      <p className="mt-1 break-words text-sm text-slate-600">
-                        {job.company} • {job.location}
+                  {isCareerPlus && bestJob.missing && bestJob.missing.length > 0 && (
+                    <div className="mt-4 rounded-[1.2rem] border border-purple-200 bg-purple-50 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-purple-700">
+                        {isSwedish ? "Det som saknas mest" : "Main missing areas"}
                       </p>
-                      <p className="mt-3 text-sm leading-7 text-slate-700">
-                        {job.summary}
+                      <p className="mt-2 text-sm leading-7 text-slate-700">
+                        {bestJob.missing.join(", ")}
                       </p>
-
-                      {isCareerPlus && job.missing && job.missing.length > 0 && (
-                        <p className="mt-2 text-sm font-medium text-purple-700 break-words">
-                          {isSwedish ? "Saknas:" : "Missing:"} {job.missing.join(", ")}
-                        </p>
-                      )}
-
-                      <div className="mt-3 flex flex-wrap items-center gap-3">
-                        <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-medium text-slate-700">
-                          {job.source}
-                        </span>
-
-                        {job.url !== "#" && (
-                          <a
-                            href={job.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-sm font-semibold text-slate-900 underline"
-                          >
-                            {isSwedish ? "Öppna annons" : "Open job ad"}
-                          </a>
-                        )}
-                      </div>
                     </div>
+                  )}
 
-                    <div className="self-start">
-                      <MatchCircle score={job.score} color={job.color} />
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
-                    <button
-                      onClick={() => handleSaveJob(job)}
-                      className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
-                    >
+                  <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                    <ActionButton onClick={() => handleSaveJob(bestJob)}>
                       {isSwedish ? "Spara jobb" : "Save job"}
-                    </button>
+                    </ActionButton>
 
                     {canUseSelectedJobTools && (
-                      <button
-                        onClick={() => handleSelectJob(job.id)}
-                        className={`w-full rounded-full px-4 py-2.5 text-sm font-semibold transition sm:w-auto ${
-                          isSelected
-                            ? "bg-slate-900 text-white"
-                            : "border border-slate-300 text-slate-900 hover:border-slate-900 hover:bg-white"
-                        }`}
+                      <ActionButton
+                        onClick={() => handleSelectJob(bestJob.id)}
+                        primary={selectedJobId === bestJob.id}
                       >
-                        {isSelected
+                        {selectedJobId === bestJob.id
                           ? isSwedish
                             ? "Valt jobb"
                             : "Selected"
                           : isSwedish
                           ? "Välj detta jobb"
                           : "Select this job"}
-                      </button>
+                      </ActionButton>
                     )}
 
-                    {!isCareerPlus && (
-                      <span className="inline-flex w-full items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm font-semibold text-purple-700 sm:w-auto">
-                        {isSwedish ? "Career+ analys" : "Career+ analysis"}
-                      </span>
+                    {bestJob.url && bestJob.url !== "#" && (
+                      <a
+                        href={bestJob.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex w-full items-center justify-center rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 sm:w-auto"
+                      >
+                        {isSwedish ? "Öppna annons" : "Open job ad"}
+                      </a>
                     )}
 
                     {isCareerPlus && (
                       <>
-                        <button
-                          onClick={() => toggleMissing(job.id)}
-                          className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
-                        >
-                          {expandedMissingJobId === job.id
+                        <ActionButton onClick={() => toggleMissing(bestJob.id)}>
+                          {expandedMissingJobId === bestJob.id
                             ? isSwedish
                               ? "Dölj vad som saknas"
                               : "Hide missing items"
                             : isSwedish
                             ? "Visa vad som saknas"
                             : "Show missing items"}
-                        </button>
+                        </ActionButton>
 
-                        <button
-                          onClick={() => toggleReason(job.id)}
-                          className="w-full rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-white sm:w-auto"
-                        >
-                          {expandedReasonJobId === job.id
+                        <ActionButton onClick={() => toggleReason(bestJob.id)}>
+                          {expandedReasonJobId === bestJob.id
                             ? isSwedish
                               ? "Dölj analys"
                               : "Hide analysis"
                             : isSwedish
                             ? "Varför är matchen inte högre?"
                             : "Why isn’t the match higher?"}
-                        </button>
+                        </ActionButton>
                       </>
                     )}
                   </div>
+                </div>
 
-                  <ExpandableCard
-                    open={isCareerPlus && expandedMissingJobId === job.id}
+                <div className="self-start">
+                  <MatchCircle score={bestJob.score} color={bestJob.color} large />
+                </div>
+              </div>
+
+              <ExpandableCard
+                open={isCareerPlus && expandedMissingJobId === bestJob.id}
+              >
+                <div className="mt-4 rounded-[1.25rem] border border-purple-200 bg-purple-50 p-4">
+                  <p className="text-sm font-semibold text-slate-900">
+                    {isSwedish ? "Det här saknas mest" : "Main missing areas"}
+                  </p>
+
+                  {bestJob.missing && bestJob.missing.length > 0 ? (
+                    <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                      {bestJob.missing.map((item, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-3 text-sm text-slate-700">
+                      {isSwedish
+                        ? "Ingen extra information tillgänglig ännu."
+                        : "No extra information available yet."}
+                    </p>
+                  )}
+                </div>
+              </ExpandableCard>
+
+              <ExpandableCard
+                open={isCareerPlus && expandedReasonJobId === bestJob.id}
+              >
+                <div className="mt-4 rounded-[1.25rem] border border-slate-200 bg-white p-4">
+                  <p className="text-sm font-semibold text-slate-900">
+                    {isSwedish ? "Career+ analys" : "Career+ analysis"}
+                  </p>
+                  <p className="mt-3 text-sm leading-7 text-slate-700">
+                    {getReasonText(bestJob, lang)}
+                  </p>
+                </div>
+              </ExpandableCard>
+            </motion.div>
+          )}
+
+          {jobs.length > 1 && (
+            <div className="space-y-4">
+              <div className="mb-1">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  {isSwedish ? "Fler matchningar" : "More matches"}
+                </p>
+                <h4 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">
+                  {isSwedish ? "Andra relevanta jobb" : "Other relevant roles"}
+                </h4>
+              </div>
+
+              {jobs.slice(1).map((job, index) => {
+                const isSelected = selectedJobId === job.id;
+
+                return (
+                  <motion.div
+                    key={job.id}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.28, delay: 0.04 * index }}
+                    className={[
+                      "rounded-[1.5rem] border p-4 shadow-sm backdrop-blur sm:p-5",
+                      isSelected
+                        ? "border-slate-900 bg-white"
+                        : "border-slate-200 bg-white/80",
+                    ].join(" ")}
                   >
-                    <div className="mt-4 rounded-2xl border border-purple-200 bg-purple-50 p-4">
-                      <p className="text-sm font-semibold text-slate-900">
-                        {isSwedish ? "Det här saknas mest" : "Main missing areas"}
-                      </p>
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <SectionBadge>{job.source}</SectionBadge>
+                          {isSelected && (
+                            <SectionBadge>{isSwedish ? "Valt" : "Selected"}</SectionBadge>
+                          )}
+                        </div>
 
-                      {job.missing && job.missing.length > 0 ? (
-                        <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                          {job.missing.map((item, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="mt-3 text-sm text-slate-700">
-                          {isSwedish
-                            ? "Ingen extra information tillgänglig ännu."
-                            : "No extra information available yet."}
+                        <h4 className="mt-3 break-words text-lg font-semibold tracking-tight text-slate-950">
+                          {job.title}
+                        </h4>
+                        <p className="mt-1 break-words text-sm text-slate-600">
+                          {job.company} • {job.location}
                         </p>
-                      )}
-                    </div>
-                  </ExpandableCard>
+                        <p className="mt-4 text-sm leading-7 text-slate-700">
+                          {job.summary}
+                        </p>
 
-                  <ExpandableCard
-                    open={isCareerPlus && expandedReasonJobId === job.id}
-                  >
-                    <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-                      <p className="text-sm font-semibold text-slate-900">
-                        {isSwedish ? "Career+ analys" : "Career+ analysis"}
-                      </p>
-                      <p className="mt-3 text-sm leading-7 text-slate-700">
-                        {getReasonText(job, lang)}
-                      </p>
+                        {isCareerPlus && job.missing && job.missing.length > 0 && (
+                          <p className="mt-3 text-sm font-medium text-purple-700 break-words">
+                            {isSwedish ? "Saknas:" : "Missing:"} {job.missing.join(", ")}
+                          </p>
+                        )}
+
+                        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                          <ActionButton onClick={() => handleSaveJob(job)}>
+                            {isSwedish ? "Spara jobb" : "Save job"}
+                          </ActionButton>
+
+                          {canUseSelectedJobTools && (
+                            <ActionButton
+                              onClick={() => handleSelectJob(job.id)}
+                              primary={isSelected}
+                            >
+                              {isSelected
+                                ? isSwedish
+                                  ? "Valt jobb"
+                                  : "Selected"
+                                : isSwedish
+                                ? "Välj detta jobb"
+                                : "Select this job"}
+                            </ActionButton>
+                          )}
+
+                          {job.url !== "#" && (
+                            <a
+                              href={job.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex w-full items-center justify-center rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 sm:w-auto"
+                            >
+                              {isSwedish ? "Öppna annons" : "Open job ad"}
+                            </a>
+                          )}
+
+                          {!isCareerPlus && (
+                            <span className="inline-flex w-full items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm font-semibold text-purple-700 sm:w-auto">
+                              {isSwedish ? "Career+ analys" : "Career+ analysis"}
+                            </span>
+                          )}
+
+                          {isCareerPlus && (
+                            <>
+                              <ActionButton onClick={() => toggleMissing(job.id)}>
+                                {expandedMissingJobId === job.id
+                                  ? isSwedish
+                                    ? "Dölj vad som saknas"
+                                    : "Hide missing items"
+                                  : isSwedish
+                                  ? "Visa vad som saknas"
+                                  : "Show missing items"}
+                              </ActionButton>
+
+                              <ActionButton onClick={() => toggleReason(job.id)}>
+                                {expandedReasonJobId === job.id
+                                  ? isSwedish
+                                    ? "Dölj analys"
+                                    : "Hide analysis"
+                                  : isSwedish
+                                  ? "Varför är matchen inte högre?"
+                                  : "Why isn’t the match higher?"}
+                              </ActionButton>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="self-start">
+                        <MatchCircle score={job.score} color={job.color} />
+                      </div>
                     </div>
-                  </ExpandableCard>
-                </motion.div>
-              );
-            })}
-          </div>
-        </>
+
+                    <ExpandableCard
+                      open={isCareerPlus && expandedMissingJobId === job.id}
+                    >
+                      <div className="mt-4 rounded-[1.2rem] border border-purple-200 bg-purple-50 p-4">
+                        <p className="text-sm font-semibold text-slate-900">
+                          {isSwedish ? "Det här saknas mest" : "Main missing areas"}
+                        </p>
+
+                        {job.missing && job.missing.length > 0 ? (
+                          <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                            {job.missing.map((item, index) => (
+                              <li key={index} className="flex items-start gap-2">
+                                <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-purple-600" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="mt-3 text-sm text-slate-700">
+                            {isSwedish
+                              ? "Ingen extra information tillgänglig ännu."
+                              : "No extra information available yet."}
+                          </p>
+                        )}
+                      </div>
+                    </ExpandableCard>
+
+                    <ExpandableCard
+                      open={isCareerPlus && expandedReasonJobId === job.id}
+                    >
+                      <div className="mt-4 rounded-[1.2rem] border border-slate-200 bg-white p-4">
+                        <p className="text-sm font-semibold text-slate-900">
+                          {isSwedish ? "Career+ analys" : "Career+ analysis"}
+                        </p>
+                        <p className="mt-3 text-sm leading-7 text-slate-700">
+                          {getReasonText(job, lang)}
+                        </p>
+                      </div>
+                    </ExpandableCard>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       )}
 
       {!loading && !error && jobs.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600"
-        >
+        <div className="rounded-[1.35rem] border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
           {isSwedish
             ? "Inga matchande jobb hittades."
             : "No matching jobs were found."}
-        </motion.div>
+        </div>
       )}
     </motion.div>
   );
