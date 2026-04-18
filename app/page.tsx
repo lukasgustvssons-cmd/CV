@@ -6,6 +6,7 @@ import { FadeInOnScroll } from "@/components/FadeInOnScroll";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
 import Navbar from "@/components/Navbar";
+import { OrbitMap } from "@/components/OrbitMap";
 import { PricingCard } from "@/components/PricingCard";
 import { SectionTitle } from "@/components/SectionTitle";
 import { StepCard } from "@/components/StepCard";
@@ -270,6 +271,8 @@ export default function Home() {
             </div>
           </section>
         </FadeInOnScroll>
+
+        <OrbitMap />
 
         <FadeInOnScroll slow>
           <section className="relative">
