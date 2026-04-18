@@ -49,9 +49,9 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [location, setLocation] = useState("");
   const [guestLimitReached, setGuestLimitReached] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "error" | "info">(
     "info"
@@ -61,7 +61,6 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
 
   const cvRef = useRef<HTMLDivElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
-  const photoObjectUrlRef = useRef<string | null>(null);
 
   const isSwedish = lang === "sv";
 
@@ -102,12 +101,16 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     photoButton: isSwedish ? "Ladda upp bild" : "Upload photo",
     photoChangeButton: isSwedish ? "Byt bild" : "Change photo",
     photoRemoveButton: isSwedish ? "Ta bort bild" : "Remove photo",
+    photoUploading: isSwedish ? "Laddar upp..." : "Uploading...",
     photoHint: isSwedish
       ? "Valfritt. Lägg till en bild för ett mer visuellt CV."
       : "Optional. Add a photo for a more visual resume.",
     photoInvalid: isSwedish
       ? "Välj en giltig bildfil."
       : "Choose a valid image file.",
+    photoUploadError: isSwedish
+      ? "Kunde inte ladda upp bilden."
+      : "Could not upload the image.",
     nameLabel: isSwedish ? "Namn" : "Name",
     namePlaceholder: isSwedish ? "För- och efternamn" : "First and last name",
     emailLabel: isSwedish ? "E-post" : "Email",
@@ -115,19 +118,6 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     phoneLabel: isSwedish ? "Telefonnummer" : "Phone number",
     phonePlaceholder: isSwedish ? "070-123 45 67" : "+46 70 123 45 67",
   };
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-    };
-  }, []);
 
   useEffect(() => {
     if (isSignedIn) {
@@ -149,15 +139,9 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     return () => clearTimeout(timeout);
   }, [toastMessage]);
 
-  useEffect(() => {
-    return () => {
-      if (photoObjectUrlRef.current) {
-        URL.revokeObjectURL(photoObjectUrlRef.current);
-      }
-    };
-  }, []);
-
-  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
 
     if (!file) return;
@@ -168,22 +152,41 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       return;
     }
 
-    if (photoObjectUrlRef.current) {
-      URL.revokeObjectURL(photoObjectUrlRef.current);
-    }
+    try {
+      setUploadingPhoto(true);
+      setToastMessage("");
 
-    const objectUrl = URL.createObjectURL(file);
-    photoObjectUrlRef.current = objectUrl;
-    setPhotoUrl(objectUrl);
-    setPhotoName(file.name);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload-photo", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data?.url) {
+        throw new Error(data?.error || panelCopy.photoUploadError);
+      }
+
+      setPhotoUrl(data.url);
+      setPhotoName(file.name);
+      setToastType("success");
+      setToastMessage(
+        isSwedish ? "Bild uppladdad." : "Photo uploaded."
+      );
+    } catch (error: any) {
+      setToastType("error");
+      setToastMessage(error?.message || panelCopy.photoUploadError);
+      setPhotoUrl("");
+      setPhotoName("");
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
 
   const handleRemovePhoto = () => {
-    if (photoObjectUrlRef.current) {
-      URL.revokeObjectURL(photoObjectUrlRef.current);
-      photoObjectUrlRef.current = null;
-    }
-
     setPhotoUrl("");
     setPhotoName("");
 
@@ -278,6 +281,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
             targetJob: job,
             location,
             photoName,
+            photoUrl,
             name,
             email,
             phone,
@@ -475,9 +479,12 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                     <button
                       type="button"
                       onClick={() => photoInputRef.current?.click()}
-                      className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
+                      disabled={uploadingPhoto}
+                      className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {photoUrl
+                      {uploadingPhoto
+                        ? panelCopy.photoUploading
+                        : photoUrl
                         ? panelCopy.photoChangeButton
                         : panelCopy.photoButton}
                     </button>
