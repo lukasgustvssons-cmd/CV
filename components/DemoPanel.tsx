@@ -38,6 +38,37 @@ type DemoPanelProps = {
   };
 };
 
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="mb-2 block text-sm font-medium tracking-tight text-slate-700">
+      {children}
+    </label>
+  );
+}
+
+function InputShell({
+  children,
+  hint,
+}: {
+  children: React.ReactNode;
+  hint?: string;
+}) {
+  return (
+    <div className="rounded-[1.35rem] border border-slate-200 bg-white/90 p-3 shadow-sm backdrop-blur">
+      {children}
+      {hint ? <p className="mt-2 text-xs text-slate-500">{hint}</p> : null}
+    </div>
+  );
+}
+
+function FeaturePill({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm">
+      {children}
+    </div>
+  );
+}
+
 export function DemoPanel({ lang, t }: DemoPanelProps) {
   const { isSignedIn } = useUser();
 
@@ -65,37 +96,48 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   const isSwedish = lang === "sv";
 
   const panelCopy = {
-    eyebrow: isSwedish ? "SÅ SER DET UT" : "SEE HOW IT WORKS",
+    eyebrow: isSwedish ? "LIVE DEMO" : "LIVE DEMO",
     title: isSwedish
-      ? "Skapa ett starkare CV på några minuter"
-      : "Create a stronger resume in a few minutes",
+      ? "Bygg ett starkare CV och gå vidare direkt"
+      : "Build a stronger resume and move forward instantly",
     socialProof: isSwedish
-      ? "Byggt för att hjälpa dig få fler intervjuer"
-      : "Built to help you land more interviews",
+      ? "Utformat för att göra jobbsökandet snabbare och tydligare"
+      : "Designed to make job searching faster and clearer",
     description: isSwedish
-      ? "Fyll i din erfarenhet och vilken roll du söker. Hireon hjälper dig formulera ett tydligt och professionellt CV direkt."
-      : "Add your experience and the role you want. Hireon helps you turn it into a clear and professional resume right away.",
-    formTitle: isSwedish ? "Skapa ditt CV" : "Create your resume",
+      ? "Beskriv din erfarenhet, vilken roll du söker och var du vill jobba. Hireon genererar ett mer strukturerat och professionellt CV som du sedan kan spara, ladda ner och matcha mot relevanta jobb."
+      : "Describe your experience, your target role, and where you want to work. Hireon generates a stronger, more structured resume that you can save, download, and match to relevant jobs.",
+    formTitle: isSwedish ? "Fyll i din bakgrund" : "Add your background",
     formDescription: isSwedish
-      ? "Lägg till din bakgrund och målroll nedan."
-      : "Add your background and target role below.",
-    previewTitle: isSwedish ? "Förhandsvisning" : "Preview",
+      ? "Det här är underlaget Hireon använder för att skapa ett bättre CV."
+      : "This is the information Hireon uses to create a stronger resume.",
+    previewTitle: isSwedish ? "Live-förhandsvisning" : "Live preview",
     previewDescription: isSwedish
-      ? "Så här kan ditt CV se ut."
-      : "This is how your resume can look.",
+      ? "Resultatet uppdateras här när ditt CV är klart."
+      : "Your result appears here once the resume is ready.",
     emptyTitle: isSwedish
-      ? "Din CV-förhandsvisning visas här"
-      : "Your resume preview appears here",
+      ? "Ditt nya CV visas här"
+      : "Your new resume appears here",
     emptyText: isSwedish
-      ? "Fyll i din erfarenhet och målroll, och klicka sedan på Generera CV."
-      : "Fill in your experience and target role, then click Generate resume.",
+      ? "Fyll i formuläret till vänster och generera ett CV för att se hur Hireon omvandlar din erfarenhet till en tydligare och mer professionell ansökan."
+      : "Fill in the form on the left and generate a resume to see how Hireon turns your experience into a clearer, more professional application.",
+    emptySteps: isSwedish
+      ? [
+          "Lägg till erfarenhet och målroll",
+          "Generera CV med AI",
+          "Spara, ladda ner och matcha mot jobb",
+        ]
+      : [
+          "Add your experience and target role",
+          "Generate a resume with AI",
+          "Save, download, and match to jobs",
+        ],
     save: isSwedish ? "Spara CV" : "Save resume",
     signupGateTitle: isSwedish
       ? "Skapa konto för att fortsätta"
       : "Create an account to continue",
     signupGateText: isSwedish
-      ? "Du har använt ditt gratis-CV. Skapa ett konto för att fortsätta skapa och spara CV."
-      : "You’ve used your free resume. Create an account to continue creating and saving resumes.",
+      ? "Du har använt ditt gratis-CV. Skapa ett konto för att fortsätta skapa, spara och förbättra dina dokument."
+      : "You’ve used your free resume. Create an account to keep generating, saving, and improving your documents.",
     signupGateButton: isSwedish ? "Skapa konto" : "Create account",
     photoLabel: isSwedish ? "Profilbild" : "Profile photo",
     photoButton: isSwedish ? "Ladda upp bild" : "Upload photo",
@@ -103,8 +145,8 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     photoRemoveButton: isSwedish ? "Ta bort bild" : "Remove photo",
     photoUploading: isSwedish ? "Laddar upp..." : "Uploading...",
     photoHint: isSwedish
-      ? "Valfritt. Lägg till en bild för ett mer visuellt CV."
-      : "Optional. Add a photo for a more visual resume.",
+      ? "Valfritt. Lägg till en bild om du vill ha ett mer visuellt CV."
+      : "Optional. Add a photo if you want a more visual resume.",
     photoInvalid: isSwedish
       ? "Välj en giltig bildfil."
       : "Choose a valid image file.",
@@ -117,6 +159,9 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     emailPlaceholder: isSwedish ? "namn@email.com" : "name@email.com",
     phoneLabel: isSwedish ? "Telefonnummer" : "Phone number",
     phonePlaceholder: isSwedish ? "070-123 45 67" : "+46 70 123 45 67",
+    helperOne: isSwedish ? "1 gratis CV utan konto" : "1 free resume without an account",
+    helperTwo: isSwedish ? "PDF-export ingår" : "PDF export included",
+    helperThree: isSwedish ? "Fortsätt till jobbmatchning direkt" : "Continue to job matching instantly",
   };
 
   useEffect(() => {
@@ -143,7 +188,6 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
-
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
@@ -173,9 +217,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       setPhotoUrl(data.url);
       setPhotoName(file.name);
       setToastType("success");
-      setToastMessage(
-        isSwedish ? "Bild uppladdad." : "Photo uploaded."
-      );
+      setToastMessage(isSwedish ? "Bild uppladdad." : "Photo uploaded.");
     } catch (error: any) {
       setToastType("error");
       setToastMessage(error?.message || panelCopy.photoUploadError);
@@ -353,258 +395,299 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   return (
     <section
       id="demo"
-      className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8 lg:py-24"
+      className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24"
     >
-      <div className="mb-10 text-center sm:mb-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-sm">
+      <div className="text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
           {panelCopy.eyebrow}
         </p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
+        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
           {panelCopy.title}
         </h2>
         <p className="mt-3 text-sm font-medium text-slate-500 sm:text-base">
           {panelCopy.socialProof}
         </p>
-        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base sm:leading-relaxed">
+        <p className="mx-auto mt-4 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base sm:leading-8">
           {panelCopy.description}
         </p>
+
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+          <FeaturePill>{panelCopy.helperOne}</FeaturePill>
+          <FeaturePill>{panelCopy.helperTwo}</FeaturePill>
+          <FeaturePill>{panelCopy.helperThree}</FeaturePill>
+        </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)] lg:items-start lg:gap-6 xl:grid-cols-[430px_minmax(0,1fr)] xl:gap-8">
-        <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft sm:rounded-[28px] sm:p-8">
-          <div className="mb-5 sm:mb-6">
-            <h3 className="text-lg font-semibold text-slate-900 sm:text-xl">
-              {panelCopy.formTitle}
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              {panelCopy.formDescription}
-            </p>
-          </div>
+      <div className="relative mt-12 overflow-hidden rounded-[2rem] border border-slate-200/80 bg-gradient-to-b from-white via-slate-50 to-white p-4 shadow-[0_30px_120px_rgba(15,23,42,0.10)] sm:mt-14 sm:rounded-[2.5rem] sm:p-6 lg:p-8">
+        <div className="pointer-events-none absolute left-12 top-10 h-36 w-36 rounded-full bg-slate-200/40 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 right-10 h-44 w-44 rounded-full bg-slate-200/30 blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.9),transparent_38%)]" />
 
-          <div className="space-y-4">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
-                {panelCopy.nameLabel}
-              </label>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={panelCopy.namePlaceholder}
-                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500"
-              />
+        <div className="relative grid gap-6 xl:grid-cols-[430px_minmax(0,1fr)] xl:gap-8">
+          <div className="rounded-[1.75rem] border border-slate-200/80 bg-white/88 p-5 shadow-sm backdrop-blur sm:p-6">
+            <div className="mb-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                {panelCopy.formTitle}
+              </p>
+              <h3 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
+                {isSwedish ? "Berätta om dig själv" : "Tell Hireon about yourself"}
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-slate-600">
+                {panelCopy.formDescription}
+              </p>
             </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
-                {panelCopy.emailLabel}
-              </label>
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={panelCopy.emailPlaceholder}
-                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500"
-              />
-            </div>
+            <div className="space-y-4">
+              <InputShell>
+                <FieldLabel>{panelCopy.nameLabel}</FieldLabel>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={panelCopy.namePlaceholder}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+                />
+              </InputShell>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
-                {panelCopy.phoneLabel}
-              </label>
-              <input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder={panelCopy.phonePlaceholder}
-                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500"
-              />
-            </div>
+              <InputShell>
+                <FieldLabel>{panelCopy.emailLabel}</FieldLabel>
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={panelCopy.emailPlaceholder}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+                />
+              </InputShell>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
-                {t.experienceLabel}
-              </label>
-              <textarea
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                placeholder={t.experiencePlaceholder}
-                className="min-h-[160px] w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 sm:min-h-[180px] sm:py-4"
-              />
-            </div>
+              <InputShell>
+                <FieldLabel>{panelCopy.phoneLabel}</FieldLabel>
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder={panelCopy.phonePlaceholder}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+                />
+              </InputShell>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
-                {t.jobLabel}
-              </label>
-              <textarea
-                value={job}
-                onChange={(e) => setJob(e.target.value)}
-                placeholder={t.jobPlaceholder}
-                className="min-h-[140px] w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 sm:min-h-[160px] sm:py-4"
-              />
-            </div>
+              <InputShell>
+                <FieldLabel>{t.experienceLabel}</FieldLabel>
+                <textarea
+                  value={experience}
+                  onChange={(e) => setExperience(e.target.value)}
+                  placeholder={t.experiencePlaceholder}
+                  className="min-h-[150px] w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white sm:min-h-[170px]"
+                />
+              </InputShell>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
-                {t.locationLabel}
-              </label>
-              <input
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder={t.locationPlaceholder}
-                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500"
-              />
-            </div>
+              <InputShell>
+                <FieldLabel>{t.jobLabel}</FieldLabel>
+                <textarea
+                  value={job}
+                  onChange={(e) => setJob(e.target.value)}
+                  placeholder={t.jobPlaceholder}
+                  className="min-h-[130px] w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white sm:min-h-[150px]"
+                />
+              </InputShell>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
-                {panelCopy.photoLabel}
-              </label>
+              <InputShell>
+                <FieldLabel>{t.locationLabel}</FieldLabel>
+                <input
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder={t.locationPlaceholder}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+                />
+              </InputShell>
 
-              <input
-                ref={photoInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoChange}
-                className="hidden"
-              />
+              <InputShell hint={panelCopy.photoHint}>
+                <FieldLabel>{panelCopy.photoLabel}</FieldLabel>
 
-              <div className="rounded-2xl border border-slate-300 bg-slate-50 p-4">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0">
-                    <p className="text-sm text-slate-700">
-                      {photoName || panelCopy.photoHint}
+                <input
+                  ref={photoInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="hidden"
+                />
+
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="min-w-0 truncate text-sm text-slate-700">
+                      {photoName || (isSwedish ? "Ingen bild vald ännu" : "No photo selected yet")}
                     </p>
-                  </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => photoInputRef.current?.click()}
-                      disabled={uploadingPhoto}
-                      className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {uploadingPhoto
-                        ? panelCopy.photoUploading
-                        : photoUrl
-                        ? panelCopy.photoChangeButton
-                        : panelCopy.photoButton}
-                    </button>
-
-                    {photoUrl && (
+                    <div className="flex flex-wrap gap-2">
                       <button
                         type="button"
-                        onClick={handleRemovePhoto}
-                        className="inline-flex items-center justify-center rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
+                        onClick={() => photoInputRef.current?.click()}
+                        disabled={uploadingPhoto}
+                        className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {panelCopy.photoRemoveButton}
+                        {uploadingPhoto
+                          ? panelCopy.photoUploading
+                          : photoUrl
+                          ? panelCopy.photoChangeButton
+                          : panelCopy.photoButton}
                       </button>
-                    )}
+
+                      {photoUrl && (
+                        <button
+                          type="button"
+                          onClick={handleRemovePhoto}
+                          className="inline-flex items-center justify-center rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
+                        >
+                          {panelCopy.photoRemoveButton}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </InputShell>
 
-            {!isSignedIn && guestLimitReached ? (
-              <SignUpButton mode="modal">
+              {!isSignedIn && guestLimitReached ? (
+                <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 text-center">
+                  <p className="text-sm font-medium text-slate-900">
+                    {panelCopy.signupGateTitle}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {panelCopy.signupGateText}
+                  </p>
+
+                  <div className="mt-4">
+                    <SignUpButton mode="modal">
+                      <button
+                        type="button"
+                        className="w-full rounded-full bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                      >
+                        {panelCopy.signupGateButton}
+                      </button>
+                    </SignUpButton>
+                  </div>
+                </div>
+              ) : (
                 <button
                   type="button"
-                  className="w-full rounded-full bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 sm:py-4"
+                  onClick={handleGenerate}
+                  disabled={loading}
+                  className="w-full rounded-full bg-slate-950 px-6 py-4 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(15,23,42,0.18)] transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {lang === "sv"
-                    ? "Skapa konto för att fortsätta"
-                    : "Create account to continue"}
+                  <span className="inline-flex items-center justify-center gap-2">
+                    {loading && <LoadingSpinner size={16} />}
+                    <span>{loading ? t.generating : t.generate}</span>
+                  </span>
                 </button>
-              </SignUpButton>
-            ) : (
-              <button
-                type="button"
-                onClick={handleGenerate}
-                disabled={loading}
-                className="w-full rounded-full bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
-              >
-                <span className="inline-flex items-center justify-center gap-2">
-                  {loading && <LoadingSpinner size={16} />}
-                  <span>{loading ? t.generating : t.generate}</span>
-                </span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-6 sm:space-y-8">
-          <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-3 sm:rounded-[28px] sm:p-6">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0">
-                <h3 className="text-base font-semibold text-slate-900 sm:text-lg">
-                  {panelCopy.previewTitle}
-                </h3>
-                <p className="text-sm text-slate-600">
-                  {panelCopy.previewDescription}
-                </p>
-              </div>
-
-              {result && (
-                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end sm:gap-3">
-                  <button
-                    type="button"
-                    onClick={handleSaveCv}
-                    className="inline-flex w-full items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900 sm:w-auto"
-                  >
-                    {panelCopy.save}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleDownloadPdf}
-                    disabled={downloading}
-                    className="inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                  >
-                    <span className="inline-flex items-center justify-center gap-2">
-                      {downloading && <LoadingSpinner size={16} />}
-                      <span>{downloading ? t.downloading : t.download}</span>
-                    </span>
-                  </button>
-                </div>
               )}
             </div>
+          </div>
 
-            {toastMessage && (
-              <div className="mb-4">
-                <AppToast
-                  message={toastMessage}
-                  type={toastType}
-                  onClose={() => setToastMessage("")}
-                />
+          <div className="space-y-6">
+            <div className="rounded-[1.75rem] border border-slate-200/80 bg-white/88 p-4 shadow-sm backdrop-blur sm:p-6">
+              <div className="flex flex-col gap-4 border-b border-slate-200/80 pb-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    {panelCopy.previewTitle}
+                  </p>
+                  <h3 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
+                    {isSwedish ? "Ditt nya CV" : "Your new resume"}
+                  </h3>
+                  <p className="mt-2 text-sm leading-7 text-slate-600">
+                    {panelCopy.previewDescription}
+                  </p>
+                </div>
+
+                {result ? (
+                  <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={handleSaveCv}
+                      className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
+                    >
+                      {panelCopy.save}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleDownloadPdf}
+                      disabled={downloading}
+                      className="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <span className="inline-flex items-center justify-center gap-2">
+                        {downloading && <LoadingSpinner size={16} />}
+                        <span>{downloading ? t.downloading : t.download}</span>
+                      </span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-500">
+                    {isSwedish ? "Väntar på input" : "Waiting for input"}
+                  </div>
+                )}
               </div>
-            )}
 
-            {!result ? (
-              <div className="rounded-[20px] border border-slate-200 bg-white p-4 sm:rounded-[24px] sm:p-6">
-                <div className="mx-auto flex min-h-[220px] w-full max-w-2xl items-center justify-center rounded-[20px] border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center sm:min-h-[320px]">
-                  <div className="max-w-md">
-                    <p className="text-base font-semibold text-slate-800 sm:text-lg">
-                      {panelCopy.emptyTitle}
-                    </p>
-                    <p className="mt-3 text-sm leading-7 text-slate-600">
-                      {panelCopy.emptyText}
-                    </p>
+              {toastMessage && (
+                <div className="mt-4">
+                  <AppToast
+                    message={toastMessage}
+                    type={toastType}
+                    onClose={() => setToastMessage("")}
+                  />
+                </div>
+              )}
+
+              {!result ? (
+                <div className="mt-5 rounded-[1.5rem] border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-5 sm:p-7">
+                  <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+                    <div className="rounded-[1.4rem] border border-dashed border-slate-300 bg-white px-6 py-10 text-center shadow-sm sm:px-8 sm:py-14">
+                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500">
+                        ✦
+                      </div>
+                      <p className="mt-5 text-lg font-semibold tracking-tight text-slate-900">
+                        {panelCopy.emptyTitle}
+                      </p>
+                      <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-slate-600">
+                        {panelCopy.emptyText}
+                      </p>
+                    </div>
+
+                    <div className="rounded-[1.4rem] border border-slate-200 bg-white p-5 shadow-sm">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                        {isSwedish ? "Så fungerar det" : "How it works"}
+                      </p>
+
+                      <div className="mt-4 space-y-3">
+                        {panelCopy.emptySteps.map((item, index) => (
+                          <div key={item} className="flex items-start gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-950 text-xs font-semibold text-white">
+                              {index + 1}
+                            </div>
+                            <p className="pt-1 text-sm leading-6 text-slate-700">
+                              {item}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="rounded-[20px] border border-slate-200 bg-white p-2 sm:rounded-[24px] sm:p-4">
-                <div className="rounded-[18px] border border-slate-200 bg-[#eef2f6] p-2 sm:rounded-[20px] sm:p-4">
-                  <div className="mb-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                      {isSwedish ? "CV-förhandsvisning" : "Resume preview"}
-                    </p>
-                    <p className="mt-2 text-sm text-slate-600">
-                      {isSwedish
-                        ? "Scrolla för att se hela CV:t."
-                        : "Scroll to view the full resume."}
-                    </p>
+              ) : (
+                <div className="mt-5 rounded-[1.5rem] border border-slate-200 bg-[#eef2f6] p-3 sm:p-4">
+                  <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                        {isSwedish ? "CV-förhandsvisning" : "Resume preview"}
+                      </p>
+                      <p className="mt-1 text-sm text-slate-600">
+                        {isSwedish
+                          ? "Scrolla för att se hela CV:t."
+                          : "Scroll to view the full resume."}
+                      </p>
+                    </div>
+
+                    <div className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 shadow-sm">
+                      {isSwedish ? "Genererat av Hireon" : "Generated by Hireon"}
+                    </div>
                   </div>
 
-                  <div className="max-h-[85vh] overflow-auto rounded-2xl border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+                  <div className="max-h-[85vh] overflow-auto rounded-[1.35rem] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
                     <div
                       ref={cvRef}
                       className="mx-auto w-full max-w-[794px] bg-white"
@@ -614,11 +697,11 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                   </div>
 
                   {!isSignedIn && guestLimitReached && (
-                    <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm">
+                    <div className="mt-4 rounded-[1.35rem] border border-slate-200 bg-white p-5 text-center shadow-sm">
                       <h4 className="text-lg font-semibold text-slate-900 sm:text-xl">
                         {panelCopy.signupGateTitle}
                       </h4>
-                      <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                      <p className="mt-3 text-sm leading-7 text-slate-600">
                         {panelCopy.signupGateText}
                       </p>
 
@@ -626,7 +709,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                         <SignUpButton mode="modal">
                           <button
                             type="button"
-                            className="w-full rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
+                            className="w-full rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
                           >
                             {panelCopy.signupGateButton}
                           </button>
@@ -635,19 +718,37 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                     </div>
                   )}
                 </div>
+              )}
+            </div>
+
+            {result && !guestLimitReached && (
+              <div className="rounded-[1.75rem] border border-slate-200/80 bg-white/88 p-4 shadow-sm backdrop-blur sm:p-6">
+                <div className="mb-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    {isSwedish ? "Nästa steg" : "Next step"}
+                  </p>
+                  <h3 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
+                    {isSwedish
+                      ? "Matcha ditt CV mot riktiga jobb"
+                      : "Match your resume against real jobs"}
+                  </h3>
+                  <p className="mt-2 text-sm leading-7 text-slate-600">
+                    {isSwedish
+                      ? "När CV:t är klart kan du gå vidare direkt och se vilka roller som passar bäst."
+                      : "Once your resume is ready, continue directly and see which roles fit best."}
+                  </p>
+                </div>
+
+                <JobMatches
+                  cvText={result}
+                  lang={lang}
+                  targetJob={job}
+                  location={location}
+                  onCvImproved={setResult}
+                />
               </div>
             )}
           </div>
-
-          {result && !guestLimitReached && (
-            <JobMatches
-              cvText={result}
-              lang={lang}
-              targetJob={job}
-              location={location}
-              onCvImproved={setResult}
-            />
-          )}
         </div>
       </div>
     </section>
