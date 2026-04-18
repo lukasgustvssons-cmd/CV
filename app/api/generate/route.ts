@@ -16,7 +16,8 @@ const supabase = createClient(
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
-    const { experience, job, lang, location } = await req.json();
+    const { name, email, phone, experience, job, lang, location } =
+      await req.json();
 
     const isSwedish = lang === "sv";
 
@@ -50,12 +51,12 @@ export async function POST(req: Request) {
     const cookieStore = await cookies();
 
     let appUser: any = null;
-    let email: string | null = null;
+    let clerkEmail: string | null = null;
 
     if (userId) {
       const client = await clerkClient();
       const clerkUser = await client.users.getUser(userId);
-      email = clerkUser.emailAddresses?.[0]?.emailAddress ?? null;
+      clerkEmail = clerkUser.emailAddresses?.[0]?.emailAddress ?? null;
 
       const { data: existingUser, error: fetchUserError } = await supabase
         .from("users")
@@ -82,7 +83,7 @@ export async function POST(req: Request) {
           .from("users")
           .insert({
             clerk_user_id: String(userId),
-            email,
+            email: clerkEmail,
             plan: defaultPlan,
             credits_used: 0,
           })
@@ -132,7 +133,7 @@ export async function POST(req: Request) {
       ? `
 Du är en senior CV-expert, karriärcoach och specialist på svenska jobbansökningar.
 
-Din uppgift är att skriva ett starkt, trovärdigt och professionellt CV på svenska baserat på kandidatens erfarenhet och målrollen.
+Din uppgift är att skriva ett starkt, trovärdigt och professionellt CV på svenska baserat på kandidatens erfarenhet, kontaktuppgifter och målrollen.
 
 CV:t kommer att visas i ett designat template med:
 - namn överst
@@ -166,16 +167,17 @@ Viktiga regler:
 - Håll varje sektion ren och lättläst
 - Punktlistor ska vara korta, konkreta och starka
 - Undvik långa stycken i arbetslivserfarenhet
-- Om kandidatens namn eller kontaktuppgifter inte framgår, lämna dem ute helt
 - Om exakt rolltitel är oklar, välj en neutral men trovärdig yrkestitel baserat på erfarenheten
 - Om utbildning saknas, skriv en kort realistisk rad om relevant bakgrund eller motsvarande praktisk erfarenhet
+- Om användaren har fyllt i namn, telefon eller e-post ska dessa användas exakt som de är skrivna
+- Om kontaktuppgifter saknas ska de lämnas ute helt
 
 Returnera endast själva CV-texten.
 
 Använd EXAKT denna struktur och ordning:
 
 Första raden:
-Kandidatens namn endast om det tydligt finns i input. Om namn inte finns, skriv inget namn.
+Kandidatens namn endast om det finns i input. Om namn saknas, skriv inget namn.
 
 Andra raden:
 En kort yrkestitel i versaler, till exempel:
@@ -183,9 +185,8 @@ IT-PROJEKTLEDARE
 MARKNADSKOORDINATOR
 BUTIKSMEDARBETARE
 
-Om kontaktuppgifter tydligt finns i input, skriv dem på egna rader direkt efter titeln:
-telefonnummer
-e-postadress
+Om telefonnummer finns i input, skriv det på en egen rad direkt efter titeln.
+Om e-postadress finns i input, skriv den på en egen rad direkt efter telefonnumret eller direkt efter titeln om telefon saknas.
 
 Tom rad
 
@@ -233,7 +234,7 @@ Utbildning
       : `
 You are a senior resume writer, career coach, and specialist in high-quality job application materials.
 
-Your task is to write a strong, credible, professional resume in English based on the candidate's background and target role.
+Your task is to write a strong, credible, professional resume in English based on the candidate's background, contact details, and target role.
 
 The resume will be shown inside a visual template with:
 - name at the top
@@ -267,16 +268,17 @@ Important rules:
 - Keep each section easy to read
 - Bullet points must be concise and impactful
 - Avoid long paragraphs in experience
-- If the candidate's name or contact details are not provided, leave them out entirely
 - If the exact job title is unclear, choose a neutral but credible title based on the background
 - If education is missing, write a short realistic line about relevant academic background or equivalent practical experience
+- If the user provided name, phone, or email, use them exactly as written
+- If those contact details are missing, leave them out entirely
 
 Return only the resume text.
 
 Use EXACTLY this structure and order:
 
 First line:
-Candidate name only if clearly present in the input. If no name is present, write nothing for the name.
+Candidate name only if it exists in the input. If name is missing, write no name.
 
 Second line:
 A short uppercase role title, for example:
@@ -284,9 +286,8 @@ PROJECT COORDINATOR
 SOFTWARE DEVELOPER
 CUSTOMER SERVICE REPRESENTATIVE
 
-If contact details are clearly present in the input, write them on separate lines directly after the title:
-phone number
-email address
+If phone number exists in the input, write it on its own line directly after the title.
+If email exists in the input, write it on its own line directly after the phone number, or directly after the title if no phone exists.
 
 Blank line
 
@@ -336,6 +337,15 @@ Education
       ? `
 Skriv ett professionellt CV på svenska utifrån informationen nedan.
 
+Kandidatens namn:
+${name || "Ej angivet"}
+
+Kandidatens e-post:
+${email || "Ej angiven"}
+
+Kandidatens telefonnummer:
+${phone || "Ej angivet"}
+
 Kandidatens erfarenhet:
 ${experience}
 
@@ -354,11 +364,20 @@ Extra instruktioner:
 - CV:t ska fungera bra i ett modernt, designat CV-template
 - Skriv inte för långa textblock
 - Om kandidaten verkar vara junior, skriv starkt men realistiskt
-- Om namn, telefon eller e-post finns i input får du använda dem
-- Om de inte finns, lämna dem ute
+- Använd namn, e-post och telefon endast om de faktiskt är angivna ovan
+- Lämna ute kontaktuppgifter som saknas
 `.trim()
       : `
 Write a professional resume in English based on the information below.
+
+Candidate name:
+${name || "Not provided"}
+
+Candidate email:
+${email || "Not provided"}
+
+Candidate phone:
+${phone || "Not provided"}
 
 Candidate background:
 ${experience}
@@ -378,8 +397,8 @@ Additional instructions:
 - The resume should work well inside a modern visual template
 - Avoid overly long text blocks
 - If the candidate seems junior, write strongly but realistically
-- If name, phone, or email are present in the input, you may use them
-- If they are not present, leave them out
+- Use name, email, and phone only if they are actually provided above
+- Omit missing contact details
 `.trim();
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {

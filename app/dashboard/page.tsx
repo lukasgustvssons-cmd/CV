@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { StyledResume } from "@/components/StyledResume";
 
 type JobStatus = "saved" | "applied" | "interview" | "rejected";
 type DashboardTab = "jobs" | "cv" | "letters";
@@ -28,6 +29,10 @@ type SavedItem = {
     company?: string;
     location?: string;
     url?: string;
+    name?: string;
+    email?: string;
+    phone?: string;
+    photoName?: string;
     [key: string]: any;
   };
   created_at: string;
@@ -234,7 +239,14 @@ export default function DashboardPage() {
 
   const filteredCvs = useMemo(() => {
     return cvs.filter((item) => {
-      const haystack = [item.title, item.content || "", item.meta?.targetJob || ""]
+      const haystack = [
+        item.title,
+        item.content || "",
+        item.meta?.targetJob || "",
+        item.meta?.name || "",
+        item.meta?.email || "",
+        item.meta?.phone || "",
+      ]
         .join(" ")
         .toLowerCase();
 
@@ -849,7 +861,7 @@ export default function DashboardPage() {
                 <div className="mb-4">
                   <h2 className="text-2xl font-semibold text-slate-900">CV</h2>
                   <p className="mt-1 text-sm text-slate-600">
-                    Se dina sparade versioner utan att behöva scrolla igenom hela texten direkt.
+                    Se dina sparade versioner i samma layout som förhandsvisningen.
                   </p>
                 </div>
 
@@ -868,7 +880,7 @@ export default function DashboardPage() {
                       return (
                         <div
                           key={item.id}
-                          className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+                          className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
                         >
                           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                             <div className="min-w-0 flex-1">
@@ -884,11 +896,24 @@ export default function DashboardPage() {
                                 {item.meta?.location && (
                                   <span>Plats: {String(item.meta.location)}</span>
                                 )}
+                                {item.meta?.name && (
+                                  <span>Namn: {String(item.meta.name)}</span>
+                                )}
                               </div>
 
-                              <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
-                                {isExpanded ? item.content : getPreview(item.content, 320)}
-                              </p>
+                              {isExpanded ? (
+                                <div className="mt-5 rounded-[20px] border border-slate-200 bg-[#eef2f6] p-2 sm:p-4">
+                                  <div className="max-h-[85vh] overflow-auto rounded-2xl border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+                                    <div className="mx-auto w-full max-w-[794px] bg-white">
+                                      <StyledResume text={item.content || ""} />
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+                                  {getPreview(item.content, 320)}
+                                </p>
+                              )}
                             </div>
 
                             <div className="flex w-full flex-wrap gap-3 lg:w-auto lg:flex-col">
@@ -896,7 +921,7 @@ export default function DashboardPage() {
                                 onClick={() => toggleExpanded(item.id)}
                                 className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
                               >
-                                {isExpanded ? "Visa mindre" : "Visa mer"}
+                                {isExpanded ? "Visa mindre" : "Visa CV"}
                               </button>
 
                               <button
@@ -908,7 +933,7 @@ export default function DashboardPage() {
                                 }
                                 className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
                               >
-                                Ladda ner
+                                Ladda ner text
                               </button>
 
                               <button

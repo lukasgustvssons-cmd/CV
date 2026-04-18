@@ -8,8 +8,6 @@ import { JobMatches } from "./JobMatches";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { AppToast } from "./AppToast";
 
-const PAGE_WIDTH = 794;
-const PAGE_HEIGHT = 1123;
 const GUEST_CV_KEY = "hireon_guest_cv_created";
 
 type DemoPanelProps = {
@@ -43,12 +41,14 @@ type DemoPanelProps = {
 export function DemoPanel({ lang, t }: DemoPanelProps) {
   const { isSignedIn } = useUser();
 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [experience, setExperience] = useState("");
   const [job, setJob] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [previewScale, setPreviewScale] = useState(1);
   const [location, setLocation] = useState("");
   const [guestLimitReached, setGuestLimitReached] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -60,7 +60,6 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   const [photoName, setPhotoName] = useState("");
 
   const cvRef = useRef<HTMLDivElement>(null);
-  const previewContainerRef = useRef<HTMLDivElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const photoObjectUrlRef = useRef<string | null>(null);
 
@@ -109,39 +108,13 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     photoInvalid: isSwedish
       ? "Välj en giltig bildfil."
       : "Choose a valid image file.",
+    nameLabel: isSwedish ? "Namn" : "Name",
+    namePlaceholder: isSwedish ? "För- och efternamn" : "First and last name",
+    emailLabel: isSwedish ? "E-post" : "Email",
+    emailPlaceholder: isSwedish ? "namn@email.com" : "name@email.com",
+    phoneLabel: isSwedish ? "Telefonnummer" : "Phone number",
+    phonePlaceholder: isSwedish ? "070-123 45 67" : "+46 70 123 45 67",
   };
-
-  useEffect(() => {
-    const updateScale = () => {
-      if (!previewContainerRef.current) return;
-
-      const containerWidth = previewContainerRef.current.offsetWidth;
-      const isDesktop = window.innerWidth >= 1024;
-      const availableWidth = isDesktop
-        ? containerWidth - 80
-        : containerWidth - 24;
-
-      const scale = Math.min(1, availableWidth / PAGE_WIDTH);
-      setPreviewScale(scale);
-    };
-
-    updateScale();
-
-    const observer = new ResizeObserver(() => {
-      updateScale();
-    });
-
-    if (previewContainerRef.current) {
-      observer.observe(previewContainerRef.current);
-    }
-
-    window.addEventListener("resize", updateScale);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", updateScale);
-    };
-  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -246,7 +219,15 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ experience, job, lang, location })
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          experience,
+          job,
+          lang,
+          location,
+        }),
       });
 
       const data = await res.json();
@@ -297,6 +278,9 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
             targetJob: job,
             location,
             photoName,
+            name,
+            email,
+            phone,
           },
         }),
       });
@@ -382,7 +366,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start lg:gap-6 xl:grid-cols-[400px_minmax(0,1fr)] xl:gap-8 2xl:grid-cols-[420px_minmax(0,1fr)] 2xl:gap-10">
+      <div className="grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)] lg:items-start lg:gap-6 xl:grid-cols-[430px_minmax(0,1fr)] xl:gap-8">
         <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft sm:rounded-[28px] sm:p-8">
           <div className="mb-5 sm:mb-6">
             <h3 className="text-lg font-semibold text-slate-900 sm:text-xl">
@@ -394,6 +378,42 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
           </div>
 
           <div className="space-y-4">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                {panelCopy.nameLabel}
+              </label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={panelCopy.namePlaceholder}
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                {panelCopy.emailLabel}
+              </label>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={panelCopy.emailPlaceholder}
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                {panelCopy.phoneLabel}
+              </label>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder={panelCopy.phonePlaceholder}
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500"
+              />
+            </div>
+
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 {t.experienceLabel}
@@ -414,7 +434,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                 value={job}
                 onChange={(e) => setJob(e.target.value)}
                 placeholder={t.jobPlaceholder}
-                className="min-h-[160px] w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 sm:min-h-[180px] sm:py-4"
+                className="min-h-[140px] w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-500 sm:min-h-[160px] sm:py-4"
               />
             </div>
 
@@ -563,24 +583,24 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                   </div>
                 </div>
               </div>
-            ) : isMobile ? (
-              <div className="rounded-[20px] border border-slate-200 bg-white p-4 sm:rounded-[24px] sm:p-6">
-                <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4 sm:p-6">
+            ) : (
+              <div className="rounded-[20px] border border-slate-200 bg-white p-2 sm:rounded-[24px] sm:p-4">
+                <div className="rounded-[18px] border border-slate-200 bg-[#eef2f6] p-2 sm:rounded-[20px] sm:p-4">
                   <div className="mb-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                      {isSwedish ? "Mobilförhandsvisning" : "Mobile preview"}
+                      {isSwedish ? "CV-förhandsvisning" : "Resume preview"}
                     </p>
                     <p className="mt-2 text-sm text-slate-600">
                       {isSwedish
-                        ? "En läsbar version av ditt CV för mobil."
-                        : "A readable version of your resume for mobile."}
+                        ? "Scrolla för att se hela CV:t."
+                        : "Scroll to view the full resume."}
                     </p>
                   </div>
 
-                  <div className="max-h-[560px] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4">
+                  <div className="max-h-[85vh] overflow-auto rounded-2xl border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
                     <div
                       ref={cvRef}
-                      className="text-sm leading-7 text-slate-800"
+                      className="mx-auto w-full max-w-[794px] bg-white"
                     >
                       <StyledResume text={result} photoUrl={photoUrl} />
                     </div>
@@ -607,61 +627,6 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                       </div>
                     </div>
                   )}
-                </div>
-              </div>
-            ) : (
-              <div
-                ref={previewContainerRef}
-                className="relative flex items-center justify-center overflow-hidden rounded-[20px] border border-slate-200 bg-[#e9edf3] sm:rounded-[24px]"
-              >
-                <div
-                  className="mx-auto origin-top"
-                  style={{
-                    width: `${PAGE_WIDTH * previewScale}px`,
-                    height: `${PAGE_HEIGHT * previewScale}px`,
-                  }}
-                >
-                  <div
-                    style={{
-                      transform: `scale(${previewScale})`,
-                      transformOrigin: "top left",
-                      width: PAGE_WIDTH,
-                      height: PAGE_HEIGHT,
-                    }}
-                  >
-                    <div className="relative">
-                      <div
-                        ref={cvRef}
-                        className="h-[1123px] w-[794px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
-                      >
-                        <StyledResume text={result} photoUrl={photoUrl} />
-                      </div>
-
-                      {!isSignedIn && guestLimitReached && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-white/75 p-3 backdrop-blur-sm sm:p-6">
-                          <div className="mx-auto w-full max-w-md rounded-[24px] border border-slate-200 bg-white p-5 text-center shadow-xl sm:rounded-3xl sm:p-8">
-                            <h4 className="text-xl font-semibold text-slate-900 sm:text-2xl">
-                              {panelCopy.signupGateTitle}
-                            </h4>
-                            <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                              {panelCopy.signupGateText}
-                            </p>
-
-                            <div className="mt-6">
-                              <SignUpButton mode="modal">
-                                <button
-                                  type="button"
-                                  className="w-full rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
-                                >
-                                  {panelCopy.signupGateButton}
-                                </button>
-                              </SignUpButton>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
