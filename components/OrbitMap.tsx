@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 type Node = {
   id: string;
   label: string;
@@ -10,17 +8,14 @@ type Node = {
 };
 
 export default function OrbitMap() {
-  // Center
   const center: Node = { id: "hireon", label: "Hireon", x: 50, y: 50 };
 
-  // First layer
   const firstLayer: Node[] = [
-    { id: "apply", label: "Ansök", x: 25, y: 65 },
-    { id: "interview", label: "Intervju", x: 75, y: 65 },
+    { id: "apply", label: "Ansök", x: 30, y: 65 },
+    { id: "interview", label: "Intervju", x: 70, y: 65 },
     { id: "jobs", label: "Jobb", x: 50, y: 25 },
   ];
 
-  // Second layer (from Jobb)
   const jobChildren: Node[] = [
     { id: "larare", label: "Lärare", x: 20, y: 10 },
     { id: "saljare", label: "Säljare", x: 35, y: 5 },
@@ -35,29 +30,24 @@ export default function OrbitMap() {
   ];
 
   const renderNode = (node: Node, isCenter = false) => (
-    <motion.div
+    <div
       key={node.id}
-      initial={{ opacity: 0, scale: 0.8 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
-      viewport={{ once: true }}
-      className={`absolute -translate-x-1/2 -translate-y-1/2`}
-      style={{
-        left: `${node.x}%`,
-        top: `${node.y}%`,
-      }}
+      className="absolute -translate-x-1/2 -translate-y-1/2"
+      style={{ left: `${node.x}%`, top: `${node.y}%` }}
     >
       <div
-        className={`px-4 py-2 rounded-xl text-sm backdrop-blur-md border transition-all duration-300
-        ${
-          isCenter
-            ? "bg-white/10 border-white/20 text-white shadow-[0_0_40px_rgba(255,255,255,0.2)] scale-110"
-            : "bg-white/5 border-white/10 text-white/80 hover:bg-white/10 hover:border-white/30 hover:scale-105"
-        }`}
+        className={`
+          rounded-xl px-4 py-2 text-sm backdrop-blur-md border transition-all duration-300
+          ${
+            isCenter
+              ? "bg-white/10 border-white/20 text-white shadow-[0_0_40px_rgba(255,255,255,0.2)] scale-110"
+              : "bg-white/5 border-white/10 text-white/80 hover:bg-white/10 hover:border-white/30 hover:scale-105"
+          }
+        `}
       >
         {node.label}
       </div>
-    </motion.div>
+    </div>
   );
 
   const line = (from: Node, to: Node) => (
@@ -74,17 +64,13 @@ export default function OrbitMap() {
 
   return (
     <section className="relative w-full h-[600px] my-32">
-      <div className="absolute inset-0">
-        <svg className="w-full h-full">
-          {/* Center → First layer */}
-          {firstLayer.map((node) => line(center, node))}
-
-          {/* Jobb → children */}
-          {jobChildren.map((child) =>
-            line(firstLayer.find((n) => n.id === "jobs")!, child)
-          )}
-        </svg>
-      </div>
+      {/* Lines */}
+      <svg className="absolute inset-0 w-full h-full">
+        {firstLayer.map((node) => line(center, node))}
+        {jobChildren.map((child) =>
+          line(firstLayer.find((n) => n.id === "jobs")!, child)
+        )}
+      </svg>
 
       {/* Nodes */}
       {renderNode(center, true)}
