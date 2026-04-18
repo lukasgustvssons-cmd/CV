@@ -56,9 +56,13 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   const [toastType, setToastType] = useState<"success" | "error" | "info">(
     "info"
   );
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [photoName, setPhotoName] = useState("");
 
   const cvRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const photoObjectUrlRef = useRef<string | null>(null);
 
   const isSwedish = lang === "sv";
 
@@ -95,6 +99,16 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       ? "Du har använt ditt gratis-CV. Skapa ett konto för att fortsätta skapa och spara CV."
       : "You’ve used your free resume. Create an account to continue creating and saving resumes.",
     signupGateButton: isSwedish ? "Skapa konto" : "Create account",
+    photoLabel: isSwedish ? "Profilbild" : "Profile photo",
+    photoButton: isSwedish ? "Ladda upp bild" : "Upload photo",
+    photoChangeButton: isSwedish ? "Byt bild" : "Change photo",
+    photoRemoveButton: isSwedish ? "Ta bort bild" : "Remove photo",
+    photoHint: isSwedish
+      ? "Valfritt. Lägg till en bild för ett mer visuellt CV."
+      : "Optional. Add a photo for a more visual resume.",
+    photoInvalid: isSwedish
+      ? "Välj en giltig bildfil."
+      : "Choose a valid image file.",
   };
 
   useEffect(() => {
@@ -162,6 +176,49 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     return () => clearTimeout(timeout);
   }, [toastMessage]);
 
+  useEffect(() => {
+    return () => {
+      if (photoObjectUrlRef.current) {
+        URL.revokeObjectURL(photoObjectUrlRef.current);
+      }
+    };
+  }, []);
+
+  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setToastType("error");
+      setToastMessage(panelCopy.photoInvalid);
+      return;
+    }
+
+    if (photoObjectUrlRef.current) {
+      URL.revokeObjectURL(photoObjectUrlRef.current);
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    photoObjectUrlRef.current = objectUrl;
+    setPhotoUrl(objectUrl);
+    setPhotoName(file.name);
+  };
+
+  const handleRemovePhoto = () => {
+    if (photoObjectUrlRef.current) {
+      URL.revokeObjectURL(photoObjectUrlRef.current);
+      photoObjectUrlRef.current = null;
+    }
+
+    setPhotoUrl("");
+    setPhotoName("");
+
+    if (photoInputRef.current) {
+      photoInputRef.current.value = "";
+    }
+  };
+
   const handleGenerate = async () => {
     if (!experience.trim() || !job.trim()) {
       setToastType("error");
@@ -189,7 +246,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ experience, job, lang }),
+        body: JSON.stringify({ experience, job, lang, location })
       });
 
       const data = await res.json();
@@ -239,6 +296,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
           meta: {
             targetJob: job,
             location,
+            photoName,
           },
         }),
       });
@@ -372,6 +430,52 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
               />
             </div>
 
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                {panelCopy.photoLabel}
+              </label>
+
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+
+              <div className="rounded-2xl border border-slate-300 bg-slate-50 p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
+                    <p className="text-sm text-slate-700">
+                      {photoName || panelCopy.photoHint}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => photoInputRef.current?.click()}
+                      className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-900"
+                    >
+                      {photoUrl
+                        ? panelCopy.photoChangeButton
+                        : panelCopy.photoButton}
+                    </button>
+
+                    {photoUrl && (
+                      <button
+                        type="button"
+                        onClick={handleRemovePhoto}
+                        className="inline-flex items-center justify-center rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
+                      >
+                        {panelCopy.photoRemoveButton}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {!isSignedIn && guestLimitReached ? (
               <SignUpButton mode="modal">
                 <button
@@ -478,7 +582,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                       ref={cvRef}
                       className="text-sm leading-7 text-slate-800"
                     >
-                      <StyledResume text={result} />
+                      <StyledResume text={result} photoUrl={photoUrl} />
                     </div>
                   </div>
 
@@ -530,9 +634,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                         ref={cvRef}
                         className="h-[1123px] w-[794px] bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
                       >
-                        <div className="px-[72px] py-[76px] text-[15px] leading-[1.75] text-slate-900">
-                          <StyledResume text={result} />
-                        </div>
+                        <StyledResume text={result} photoUrl={photoUrl} />
                       </div>
 
                       {!isSignedIn && guestLimitReached && (

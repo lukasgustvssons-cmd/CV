@@ -16,7 +16,7 @@ const supabase = createClient(
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
-    const { experience, job, lang } = await req.json();
+    const { experience, job, lang, location } = await req.json();
 
     const isSwedish = lang === "sv";
 
@@ -130,108 +130,206 @@ export async function POST(req: Request) {
 
     const systemPrompt = isSwedish
       ? `
-Du är en CV-expert på elitnivå och en erfaren karriärcoach.
+Du är en senior CV-expert, karriärcoach och specialist på svenska jobbansökningar.
 
-Din uppgift är att skriva ett professionellt, trovärdigt och starkt CV på svenska baserat på kandidatens erfarenhet och målrollen.
+Din uppgift är att skriva ett starkt, trovärdigt och professionellt CV på svenska baserat på kandidatens erfarenhet och målrollen.
+
+CV:t kommer att visas i ett designat template med:
+- namn överst
+- yrkestitel under namnet
+- profilsektion
+- kompetenser
+- arbetslivserfarenhet
+- utbildning
+- kontaktuppgifter om de finns
+
+Därför måste strukturen vara ren, tydlig och konsekvent.
 
 Mål:
 - CV:t ska kännas mänskligt skrivet
-- Det ska vara tydligt anpassat till rollen
+- Det ska vara tydligt anpassat till målrollen
 - Det ska låta professionellt, relevant och anställningsbart
+- Det ska fungera bra både visuellt och ATS-mässigt
 - Det ska lyfta kandidatens styrkor utan att hitta på osannolika detaljer
 
 Viktiga regler:
 - Skriv endast på svenska
 - Skriv aldrig att texten är AI-genererad
-- Använd inte markdownsymboler
+- Använd inte markdownsymboler som ** eller ##
 - Använd inte platshållare som [Namn], [Telefon], [Email]
 - Hitta inte på företag, examen eller certifikat om det inte stöds av input
-- Du får förbättra formulering, struktur och språk kraftigt
+- Du får förbättra språk, struktur och formulering kraftigt
 - Du får dra rimliga slutsatser från kandidatens input
 - Om erfarenheten är begränsad, skriv starkt men realistiskt
 - Undvik generiska buzzwords och tomma fraser
-- Gör innehållet konkret, professionellt och ATS-vänligt
+- Var konkret, professionell och tydlig
+- Håll varje sektion ren och lättläst
+- Punktlistor ska vara korta, konkreta och starka
+- Undvik långa stycken i arbetslivserfarenhet
+- Om kandidatens namn eller kontaktuppgifter inte framgår, lämna dem ute helt
+- Om exakt rolltitel är oklar, välj en neutral men trovärdig yrkestitel baserat på erfarenheten
+- Om utbildning saknas, skriv en kort realistisk rad om relevant bakgrund eller motsvarande praktisk erfarenhet
 
-Format:
-Svara endast med själva CV-texten.
+Returnera endast själva CV-texten.
 
-Använd exakt denna struktur:
+Använd EXAKT denna struktur och ordning:
+
+Första raden:
+Kandidatens namn endast om det tydligt finns i input. Om namn inte finns, skriv inget namn.
+
+Andra raden:
+En kort yrkestitel i versaler, till exempel:
+IT-PROJEKTLEDARE
+MARKNADSKOORDINATOR
+BUTIKSMEDARBETARE
+
+Om kontaktuppgifter tydligt finns i input, skriv dem på egna rader direkt efter titeln:
+telefonnummer
+e-postadress
+
+Tom rad
 
 Professionell sammanfattning
-3 till 4 meningar
+Skriv 3 till 4 meningar som känns specifika, trovärdiga och anpassade till rollen.
 
-Nyckelkompetenser
-- punkt
-- punkt
-- punkt
-- punkt
-- punkt
-- punkt
+Tom rad
+
+Kompetenser
+- 5 till 8 konkreta kompetenser
+- Kompetenserna ska vara korta och fungera bra i punktlista
+- Om certifikat tydligt finns i input kan de blandas in här som egna punkter
+
+Tom rad
 
 Arbetslivserfarenhet
-Använd 1 till 2 roller beroende på input.
-Om exakt rolltitel är oklar, använd en neutral men trovärdig titel baserad på erfarenheten.
-För varje roll:
+Inkludera 1 till 3 roller beroende på input.
+
+För varje roll, använd exakt detta upplägg:
 Rolltitel
-Kort förklarande rad om det behövs
-- 3 till 5 starka punktlistor med ansvar, resultat eller relevant värde
+Arbetsgivare | datum eller tidsperiod om det finns
+- konkret punkt
+- konkret punkt
+- konkret punkt
+
+Tom rad mellan rollerna.
+
+Tom rad
 
 Utbildning
 Kort sektion.
-Om utbildning inte nämns, skriv:
-Relevant utbildningsbakgrund eller motsvarande praktisk erfarenhet
+
+För varje utbildning:
+Skola eller utbildning
+Examen / inriktning eller kort förklarande rad
+- kort relevant punkt om det behövs
+
+Viktigt:
+- Sektionsrubrikerna måste vara exakt:
+Professionell sammanfattning
+Kompetenser
+Arbetslivserfarenhet
+Utbildning
 `.trim()
       : `
-You are an elite resume writer and experienced career coach.
+You are a senior resume writer, career coach, and specialist in high-quality job application materials.
 
-Your task is to write a polished, credible, professional resume in English based on the candidate's background and target role.
+Your task is to write a strong, credible, professional resume in English based on the candidate's background and target role.
+
+The resume will be shown inside a visual template with:
+- name at the top
+- role title under the name
+- profile section
+- skills
+- professional experience
+- education
+- contact details if available
+
+So the structure must be clean, clear, and consistent.
 
 Goals:
 - The resume must feel human-written
-- It must be clearly tailored to the role
+- It must be clearly tailored to the target role
 - It must sound polished, relevant, and hireable
+- It must work well visually and for ATS
 - It should highlight strengths without inventing unrealistic facts
 
 Important rules:
 - Write only in English
 - Never mention AI
-- Do not use markdown symbols
-- Do not use placeholders like [Your Name], [Phone], [Email]
+- Do not use markdown symbols like ** or ##
+- Do not use placeholders such as [Name], [Phone], [Email]
 - Do not invent employers, degrees, or certifications unless supported by the input
 - You may significantly improve wording, structure, and positioning
 - You may make reasonable inferences from the candidate's background
 - If the experience is limited, make it strong but realistic
 - Avoid generic buzzwords and filler
-- Make the content concrete, ATS-friendly, and professional
+- Be concrete, professional, and clear
+- Keep each section easy to read
+- Bullet points must be concise and impactful
+- Avoid long paragraphs in experience
+- If the candidate's name or contact details are not provided, leave them out entirely
+- If the exact job title is unclear, choose a neutral but credible title based on the background
+- If education is missing, write a short realistic line about relevant academic background or equivalent practical experience
 
-Output:
 Return only the resume text.
 
-Use exactly this structure:
+Use EXACTLY this structure and order:
+
+First line:
+Candidate name only if clearly present in the input. If no name is present, write nothing for the name.
+
+Second line:
+A short uppercase role title, for example:
+PROJECT COORDINATOR
+SOFTWARE DEVELOPER
+CUSTOMER SERVICE REPRESENTATIVE
+
+If contact details are clearly present in the input, write them on separate lines directly after the title:
+phone number
+email address
+
+Blank line
 
 Professional Summary
-3 to 4 sentences
+Write 3 to 4 sentences that feel specific, credible, and tailored to the role.
+
+Blank line
 
 Core Competencies
-- bullet
-- bullet
-- bullet
-- bullet
-- bullet
-- bullet
+- 5 to 8 concrete skills
+- Skills must be short and work well in bullet format
+- If certifications are clearly present in the input, they may appear here as their own bullets
+
+Blank line
 
 Professional Experience
-Include 1 to 2 roles depending on the input.
-If the exact title is unclear, use a neutral but credible title based on the candidate's background.
-For each role:
+Include 1 to 3 roles depending on the input.
+
+For each role, use exactly this format:
 Job Title
-Optional one-line context if useful
-- 3 to 5 strong bullet points
+Employer | dates or time period if available
+- concrete bullet
+- concrete bullet
+- concrete bullet
+
+Blank line between roles.
+
+Blank line
 
 Education
 Short section.
-If no education is provided, write:
-Relevant academic background or equivalent practical experience
+
+For each education entry:
+School or education provider
+Degree / specialization or short clarifying line
+- short relevant bullet if needed
+
+Important:
+- Section headings must be exactly:
+Professional Summary
+Core Competencies
+Professional Experience
+Education
 `.trim();
 
     const userPrompt = isSwedish
@@ -244,13 +342,20 @@ ${experience}
 Målroll:
 ${job}
 
+Plats:
+${location || "Ej angiven"}
+
 Extra instruktioner:
 - Anpassa sammanfattning och kompetenser tydligt efter målrollen
 - Lyft överförbara styrkor om kandidaten byter bransch eller har begränsad erfarenhet
 - Prioritera tydlighet, professionalism och relevans
-- Punktlistor ska vara skarpa och konkreta
+- Punktlistor ska vara skarpa, konkreta och korta
 - Om målrollen innehåller viktiga nyckelord, väv in dem naturligt där det passar
-- Håll texten ren och snygg så den fungerar bra i PDF
+- CV:t ska fungera bra i ett modernt, designat CV-template
+- Skriv inte för långa textblock
+- Om kandidaten verkar vara junior, skriv starkt men realistiskt
+- Om namn, telefon eller e-post finns i input får du använda dem
+- Om de inte finns, lämna dem ute
 `.trim()
       : `
 Write a professional resume in English based on the information below.
@@ -261,13 +366,20 @@ ${experience}
 Target role:
 ${job}
 
+Location:
+${location || "Not provided"}
+
 Additional instructions:
 - Tailor the summary and competencies clearly to the target role
 - Highlight transferable strengths if the candidate is changing fields or has limited experience
 - Prioritize clarity, professionalism, and relevance
-- Bullet points should feel sharp and concrete
+- Bullet points should be concise, sharp, and concrete
 - If the target role includes important keywords, incorporate them naturally where appropriate
-- Keep the formatting clean so it looks strong in PDF
+- The resume should work well inside a modern visual template
+- Avoid overly long text blocks
+- If the candidate seems junior, write strongly but realistically
+- If name, phone, or email are present in the input, you may use them
+- If they are not present, leave them out
 `.trim();
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -278,7 +390,7 @@ Additional instructions:
       },
       body: JSON.stringify({
         model: "gpt-4.1-mini",
-        temperature: 0.7,
+        temperature: 0.6,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
