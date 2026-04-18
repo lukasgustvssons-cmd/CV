@@ -65,7 +65,7 @@ export default function AboutPage() {
 
             <ul className="list-disc pl-6 space-y-2">
               <li>Skapa ett starkt CV snabbt</li>
-              <li>Matcha ditt CV mot riktiga jobb från Arbetsförmedlingen (fler källor kommer)</li>
+              <li>Matcha ditt CV mot riktiga jobb från Arbetsförmedlingen</li>
               <li>Få konkreta förbättringsförslag baserat på jobbet du söker</li>
               <li>Anpassa ditt CV för en specifik roll istället för att skicka samma överallt</li>
             </ul>
