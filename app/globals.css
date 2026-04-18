@@ -181,3 +181,16 @@ body {
     transform: translate(-50%, -50%) rotate(-360deg);
   }
 }
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 40s linear infinite;
+}
+
+.animate-spin-slower {
+  animation: spinSlow 80s linear infinite;
+}
