@@ -272,10 +272,10 @@ export function Hero({ t }: HeroProps) {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                        AI-förslag
+                        Hireons rekommendation
                       </p>
                       <p className="mt-2 text-base font-semibold tracking-tight text-slate-950">
-                        Nästa smarta förbättring
+                        Så gör du ansökan starkare
                       </p>
                     </div>
 
