@@ -63,7 +63,7 @@ export default function Navbar() {
             href="/"
             className="shrink-0 text-lg font-semibold tracking-tight text-slate-950 sm:text-xl"
           >
-            Hireon
+            NEXOR
           </a>
 
           <div className="hidden items-center gap-6 lg:flex">
