@@ -197,7 +197,7 @@ export default function Home() {
               <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                 <div className="max-w-2xl">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                    Hireon i ett nötskal
+                    NEXOR i ett nötskal
                   </p>
                   <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
                     Från första CV till intervju — i ett sammanhängande flöde
@@ -287,7 +287,7 @@ export default function Home() {
                       En levande produktvisning — inte bara en statisk landningssida
                     </h2>
                     <p className="mt-4 text-sm leading-7 text-slate-300 sm:text-base">
-                      Hireon ska kännas som ett riktigt verktyg från första sekunden.
+                      NEXOR ska kännas som ett riktigt verktyg från första sekunden.
                       Därför lyfter vi fram själva produkten tydligt, inte bara texten
                       runt den.
                     </p>

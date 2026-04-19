@@ -124,7 +124,7 @@ export default function DashboardPage() {
         setPlan(currentPlan);
 
         if (currentPlan === "career+") {
-          const seen = localStorage.getItem("hireon_career_plus_welcome_seen");
+          const seen = localStorage.getItem("NEXOR_career_plus_welcome_seen");
           if (seen !== "true") {
             setShowCareerModal(true);
           }
@@ -277,7 +277,7 @@ export default function DashboardPage() {
   };
 
   const handleCloseCareerModal = () => {
-    localStorage.setItem("hireon_career_plus_welcome_seen", "true");
+    localStorage.setItem("NEXOR_career_plus_welcome_seen", "true");
     setShowCareerModal(false);
   };
 
@@ -506,7 +506,7 @@ export default function DashboardPage() {
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Hireon
+              NEXOR
             </p>
             <div className="mt-2 flex flex-wrap items-center gap-3">
               <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
@@ -652,7 +652,7 @@ export default function DashboardPage() {
                 {filteredJobs.length === 0 ? (
                   <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
                     <h3 className="text-xl font-semibold text-slate-900">
-                      Kom igång med Hireon
+                      Kom igång med NEXOR
                     </h3>
 
                     <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-600">

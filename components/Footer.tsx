@@ -20,7 +20,7 @@ export function Footer() {
           {/* LEFT */}
           <div className="max-w-sm">
             <p className="text-lg font-semibold tracking-tight text-slate-950">
-              Hireon
+              NEXOR
             </p>
 
             <p className="mt-3 text-sm leading-relaxed text-slate-600">
@@ -29,7 +29,7 @@ export function Footer() {
             </p>
 
             <p className="mt-6 text-xs text-slate-500">
-              © {new Date().getFullYear()} Hireon. Alla rättigheter förbehållna.
+              © {new Date().getFullYear()} NEXOR. Alla rättigheter förbehållna.
             </p>
           </div>
 

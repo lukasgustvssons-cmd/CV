@@ -15,7 +15,7 @@ export const copy = {
       eyebrow: "FOR PEOPLE WHO WANT TO APPLY SMARTER",
       title: "Get a stronger resume and better job applications faster.",
       description:
-        "Hireon helps you create clearer resumes, stronger cover letters, and more focused job applications with less stress.",
+        "NEXOR helps you create clearer resumes, stronger cover letters, and more focused job applications with less stress.",
       primaryCta: "Get started",
       secondaryCta: "See how it works",
       profileSummary: "PROFILE SUMMARY",
@@ -31,7 +31,7 @@ export const copy = {
       eyebrow: "SEE HOW IT WORKS",
       title: "Create a stronger resume in a few minutes",
       description:
-        "Add your experience and the role you want. Hireon helps you turn it into a clear and professional resume right away.",
+        "Add your experience and the role you want. NEXOR helps you turn it into a clear and professional resume right away.",
       formTitle: "Create your resume",
       formDescription: "Add your background and target role below.",
       experienceLabel: "Experience",
@@ -71,7 +71,7 @@ export const copy = {
       eyebrow: "FÖR DIG SOM VILL SÖKA JOBB SMARTARE",
       title: "Få bättre CV, starkare ansökningar och fler chanser till intervju.",
       description:
-        "Hireon hjälper dig skapa tydligare CV, starkare personliga brev och mer relevanta ansökningar snabbare.",
+        "NEXOR hjälper dig skapa tydligare CV, starkare personliga brev och mer relevanta ansökningar snabbare.",
       primaryCta: "Kom igång",
       secondaryCta: "Se hur det fungerar",
       profileSummary: "PROFILSAMMANFATTNING",
@@ -87,7 +87,7 @@ export const copy = {
       eyebrow: "SÅ SER DET UT",
       title: "Skapa ett starkare CV på några minuter",
       description:
-        "Fyll i din erfarenhet och vilken roll du söker. Hireon hjälper dig formulera ett tydligt och professionellt CV direkt.",
+        "Fyll i din erfarenhet och vilken roll du söker. NEXOR hjälper dig formulera ett tydligt och professionellt CV direkt.",
       formTitle: "Skapa ditt CV",
       formDescription: "Lägg till din bakgrund och målroll nedan.",
       experienceLabel: "Erfarenhet",

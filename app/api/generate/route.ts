@@ -114,7 +114,7 @@ export async function POST(req: Request) {
         });
       }
     } else {
-      const guestCvCreated = cookieStore.get("hireon_guest_cv_created");
+      const guestCvCreated = cookieStore.get("NEXOR_guest_cv_created");
 
       if (guestCvCreated?.value === "true") {
         return Response.json(
@@ -457,7 +457,7 @@ Additional instructions:
     }
 
     if (!userId) {
-      cookieStore.set("hireon_guest_cv_created", "true", {
+      cookieStore.set("NEXOR_guest_cv_created", "true", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",

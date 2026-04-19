@@ -272,7 +272,7 @@ export function Hero({ t }: HeroProps) {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                        Hireons rekommendation
+                        NEXORs rekommendation
                       </p>
                       <p className="mt-2 text-base font-semibold tracking-tight text-slate-950">
                         Så gör du ansökan starkare

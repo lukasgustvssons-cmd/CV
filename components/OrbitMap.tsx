@@ -195,7 +195,7 @@ export default function OrbitMap() {
           transition={{ duration: 0.45 }}
           className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500"
         >
-          Hireon-kompassen
+          NEXOR-kompassen
         </motion.p>
 
         <motion.h2
@@ -205,7 +205,7 @@ export default function OrbitMap() {
           transition={{ duration: 0.6, delay: 0.04 }}
           className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl md:text-5xl"
         >
-          Se hur Hireon anpassar sig efter rollen du vill ha
+          Se hur NEXOR anpassar sig efter rollen du vill ha
         </motion.h2>
 
         <motion.p
@@ -274,7 +274,7 @@ export default function OrbitMap() {
                       {activeRole.name}
                     </h3>
                     <p className="mt-3 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-                      Hireon vrider fokus mot det som är viktigast för just den här
+                      NEXOR vrider fokus mot det som är viktigast för just den här
                       rollen — så att ditt CV och din ansökan känns mer träffsäkra.
                     </p>
                   </div>
@@ -314,7 +314,7 @@ export default function OrbitMap() {
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-[0.18em] text-white/55">
-                        Hireon ser detta
+                        NEXOR ser detta
                       </p>
                       <h4 className="text-xl font-semibold tracking-tight">
                         Det här bör du lyfta mest
@@ -358,7 +358,7 @@ export default function OrbitMap() {
                   </div>
 
                   <p className="mt-5 text-sm leading-7 text-slate-600">
-                    Hireon hjälper dig först bygga ett starkare underlag, sedan
+                    NEXOR hjälper dig först bygga ett starkare underlag, sedan
                     förstå vilka jobb som passar bäst, och därefter vässa nästa steg.
                   </p>
                 </div>

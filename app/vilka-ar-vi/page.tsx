@@ -12,7 +12,7 @@ const problems = [
 const solutions = [
   {
     title: "Tydligare CV",
-    text: "Hireon hjälper dig att formulera ett starkare CV snabbare, med bättre struktur och tydligare relevans.",
+    text: "NEXOR hjälper dig att formulera ett starkare CV snabbare, med bättre struktur och tydligare relevans.",
   },
   {
     title: "Smart jobbmatchning",
@@ -33,7 +33,7 @@ const values = [
   {
     eyebrow: "Fokus",
     title: "Mindre brus. Mer riktning.",
-    text: "Istället för att hoppa mellan verktyg, dokument och magkänsla samlar Hireon allt i ett tydligare flöde.",
+    text: "Istället för att hoppa mellan verktyg, dokument och magkänsla samlar NEXOR allt i ett tydligare flöde.",
   },
   {
     eyebrow: "Trygghet",
@@ -90,7 +90,7 @@ export default function AboutPage() {
             transition={{ duration: 0.65, delay: 0.05 }}
             className="mt-6 text-4xl font-semibold leading-[1.02] tracking-tight text-slate-950 sm:text-5xl lg:text-7xl"
           >
-            Vi bygger Hireon för att jobbsökande ska kännas smartare, tydligare och mindre ensamt
+            Vi bygger NEXOR för att jobbsökande ska kännas smartare, tydligare och mindre ensamt
           </motion.h1>
 
           <motion.p
@@ -99,7 +99,7 @@ export default function AboutPage() {
             transition={{ duration: 0.65, delay: 0.12 }}
             className="mx-auto mt-6 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg"
           >
-            Att söka jobb idag är ofta fullt av osäkerhet. Vad ska man skriva? Vad saknas? Varför får vissa svar och andra inte? Vi byggde Hireon för att göra den processen mer begriplig — med AI som faktiskt hjälper dig framåt.
+            Att söka jobb idag är ofta fullt av osäkerhet. Vad ska man skriva? Vad saknas? Varför får vissa svar och andra inte? Vi byggde NEXOR för att göra den processen mer begriplig — med AI som faktiskt hjälper dig framåt.
           </motion.p>
 
           <motion.div
@@ -112,7 +112,7 @@ export default function AboutPage() {
               href="/#demo"
               className="inline-flex items-center justify-center rounded-full bg-slate-950 px-7 py-3.5 text-sm font-semibold text-white shadow-[0_14px_40px_rgba(15,23,42,0.20)] transition hover:bg-slate-800"
             >
-              Testa Hireon
+              Testa NEXOR
             </Link>
             <Link
               href="/#pricing"
@@ -202,7 +202,7 @@ export default function AboutPage() {
         <div className="mb-10 text-center">
           <SectionEyebrow>Lösningen</SectionEyebrow>
           <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
-            Hireon är byggt för att hjälpa dig hela vägen
+            NEXOR är byggt för att hjälpa dig hela vägen
           </h2>
           <p className="mx-auto mt-4 max-w-3xl text-sm leading-8 text-slate-600 sm:text-base">
             Inte bara för att skapa ett CV, utan för att hjälpa dig förstå vad som faktiskt ökar dina chanser att få en intervju och komma vidare.
@@ -251,7 +251,7 @@ export default function AboutPage() {
                 Vi vill att fler ska förstå hur man faktiskt blir bättre
               </h2>
               <p className="mt-5 max-w-2xl text-sm leading-8 text-slate-300 sm:text-base">
-                Hireon ska göra jobbsökande smartare, enklare och mindre ensamt. Alla ska kunna förstå hur man förbättrar sin ansökan utan att behöva gissa, känna sig osäker eller börja om från noll varje gång.
+                NEXOR ska göra jobbsökande smartare, enklare och mindre ensamt. Alla ska kunna förstå hur man förbättrar sin ansökan utan att behöva gissa, känna sig osäker eller börja om från noll varje gång.
               </p>
             </div>
 
@@ -286,7 +286,7 @@ export default function AboutPage() {
             Vi fortsätter bygga för att hjälpa dig hela vägen till jobb
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-sm leading-8 text-slate-600 sm:text-base">
-            Hireon kommer fortsätta utvecklas med bättre vägledning, tydligare matchning och en ännu starkare produktupplevelse för jobbsökande.
+            NEXOR kommer fortsätta utvecklas med bättre vägledning, tydligare matchning och en ännu starkare produktupplevelse för jobbsökande.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -294,7 +294,7 @@ export default function AboutPage() {
               href="/#demo"
               className="inline-flex items-center justify-center rounded-full bg-slate-950 px-7 py-3.5 text-sm font-semibold text-white shadow-[0_14px_40px_rgba(15,23,42,0.18)] transition hover:bg-slate-800"
             >
-              Testa Hireon
+              Testa NEXOR
             </Link>
             <Link
               href="/#pricing"

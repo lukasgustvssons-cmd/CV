@@ -3,7 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Hireon | Skaffa ditt drömjobb enklare",
+  title: "NEXOR | Skaffa ditt drömjobb enklare",
   description:
     "Skapa bättre CV, personliga brev och jobbansökningar med AI.",
 };
