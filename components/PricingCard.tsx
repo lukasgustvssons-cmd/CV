@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { SignUpButton, useUser } from "@clerk/nextjs";
 
 type PricingCardProps = {
   name: string;
@@ -23,10 +24,16 @@ export function PricingCard({
   highlighted = false,
   checkoutPriceId,
 }: PricingCardProps) {
+  const { isSignedIn } = useUser();
   const [currentPlan, setCurrentPlan] = useState<UserPlan>("");
 
   useEffect(() => {
     const loadPlan = async () => {
+      if (!isSignedIn) {
+        setCurrentPlan("free");
+        return;
+      }
+
       try {
         const res = await fetch("/api/user-plan", {
           method: "GET",
@@ -47,13 +54,27 @@ export function PricingCard({
     };
 
     loadPlan();
-  }, []);
+  }, [isSignedIn]);
 
   const isFreeCard = name === "Gratis";
   const isProCard = name === "Pro";
   const isCareerPlusCard = name === "Career+";
 
   const { buttonText, buttonDisabled } = useMemo(() => {
+    if (isFreeCard) {
+      return {
+        buttonText: cta,
+        buttonDisabled: false,
+      };
+    }
+
+    if (!isSignedIn) {
+      return {
+        buttonText: "Skapa konto för att fortsätta",
+        buttonDisabled: false,
+      };
+    }
+
     if (!currentPlan) {
       return {
         buttonText: cta,
@@ -107,9 +128,16 @@ export function PricingCard({
       buttonText: cta,
       buttonDisabled: false,
     };
-  }, [currentPlan, cta, isCareerPlusCard, isProCard]);
+  }, [
+    isSignedIn,
+    currentPlan,
+    cta,
+    isFreeCard,
+    isCareerPlusCard,
+    isProCard,
+  ]);
 
-  const handleClick = async () => {
+  const handleCheckout = async () => {
     if (buttonDisabled) return;
 
     if (isFreeCard) {
@@ -151,6 +179,16 @@ export function PricingCard({
       alert(error?.message || "Något gick fel vid betalning.");
     }
   };
+
+  const buttonClassName = `mt-8 w-full rounded-full px-5 py-3.5 text-sm font-semibold transition ${
+    buttonDisabled
+      ? highlighted
+        ? "cursor-not-allowed bg-white/80 text-slate-500"
+        : "cursor-not-allowed bg-slate-200 text-slate-500"
+      : highlighted
+      ? "bg-white text-slate-900 hover:bg-slate-100"
+      : "bg-slate-950 text-white hover:bg-slate-800"
+  }`;
 
   return (
     <article
@@ -230,21 +268,19 @@ export function PricingCard({
           ))}
         </ul>
 
-        <button
-          onClick={handleClick}
-          disabled={buttonDisabled}
-          className={`mt-8 w-full rounded-full px-5 py-3.5 text-sm font-semibold transition ${
-            buttonDisabled
-              ? highlighted
-                ? "cursor-not-allowed bg-white/80 text-slate-500"
-                : "cursor-not-allowed bg-slate-200 text-slate-500"
-              : highlighted
-              ? "bg-white text-slate-900 hover:bg-slate-100"
-              : "bg-slate-950 text-white hover:bg-slate-800"
-          }`}
-        >
-          {buttonText}
-        </button>
+        {isFreeCard ? (
+          <button onClick={handleCheckout} disabled={buttonDisabled} className={buttonClassName}>
+            {buttonText}
+          </button>
+        ) : !isSignedIn ? (
+          <SignUpButton mode="modal">
+            <button className={buttonClassName}>{buttonText}</button>
+          </SignUpButton>
+        ) : (
+          <button onClick={handleCheckout} disabled={buttonDisabled} className={buttonClassName}>
+            {buttonText}
+          </button>
+        )}
 
         {!isFreeCard && (
           <p
