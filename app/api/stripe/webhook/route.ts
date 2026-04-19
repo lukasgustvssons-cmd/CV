@@ -42,10 +42,10 @@ export async function POST(req: Request) {
 
   try {
     event = stripe.webhooks.constructEvent(
-      body,
-      signature as string,
-      webhookSecret
-    );
+  body,
+  signature,
+  webhookSecret as string
+);
   } catch (err: any) {
     console.error("Webhook signature verification failed:", err?.message);
     return NextResponse.json(
