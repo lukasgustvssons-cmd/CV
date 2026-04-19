@@ -1,5 +1,6 @@
-import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
+import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { createClient } from "@supabase/supabase-js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -15,36 +16,62 @@ const supabase = createClient(
   }
 );
 
-export async function POST() {
+export async function POST(req: Request) {
   try {
     const { userId } = await auth();
 
     if (!userId) {
-      return Response.json({ error: "Not authenticated" }, { status: 401 });
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("stripe_customer_id")
-      .eq("user_id", userId)
+    const origin = req.headers.get("origin");
+
+    if (!origin) {
+      return NextResponse.json({ error: "Missing origin" }, { status: 400 });
+    }
+
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("clerk_user_id, email, stripe_customer_id")
+      .eq("clerk_user_id", userId)
       .single();
 
-    if (error || !profile?.stripe_customer_id) {
-      return Response.json(
-        { error: "No Stripe customer found for this user." },
+    console.log("BILLING PORTAL auth userId:", userId);
+    console.log("BILLING PORTAL matched user:", user);
+    console.log("BILLING PORTAL query error:", error);
+
+    if (error) {
+      return NextResponse.json(
+        { error: `Supabase error: ${error.message}` },
+        { status: 500 }
+      );
+    }
+
+    if (!user?.stripe_customer_id) {
+      return NextResponse.json(
+        {
+          error: `No Stripe customer found for this user. auth userId=${userId}, db email=${user?.email || "none"}`,
+        },
         { status: 400 }
       );
     }
 
     const session = await stripe.billingPortal.sessions.create({
-      customer: profile.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+      customer: user.stripe_customer_id,
+      return_url: `${origin}/dashboard`,
     });
 
-    return Response.json({ url: session.url });
-  } catch (error: any) {
-    return Response.json(
-      { error: error?.message || "Could not create billing portal session." },
+    return NextResponse.json({ url: session.url });
+  } catch (err: any) {
+    console.error("BILLING PORTAL ERROR:", err);
+
+    return NextResponse.json(
+      {
+        error:
+          err?.message ||
+          err?.raw?.message ||
+          "Could not create billing portal session",
+      },
       { status: 500 }
     );
   }
