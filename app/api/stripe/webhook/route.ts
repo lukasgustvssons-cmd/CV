@@ -41,7 +41,7 @@ export async function POST(req: Request) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret!);
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err: any) {
     console.error("Webhook signature verification failed:", err?.message);
     return NextResponse.json(
@@ -57,15 +57,28 @@ export async function POST(req: Request) {
       const clerkUserId =
         session.metadata?.clerk_user_id || session.client_reference_id;
       const plan = session.metadata?.plan;
+      const stripeCustomerId =
+        typeof session.customer === "string" ? session.customer : null;
 
       if (!clerkUserId || !plan) {
         console.error("Missing clerkUserId or plan in Stripe session metadata");
         return NextResponse.json({ received: true });
       }
 
+      const updatePayload: {
+        plan: string;
+        stripe_customer_id?: string;
+      } = {
+        plan,
+      };
+
+      if (stripeCustomerId) {
+        updatePayload.stripe_customer_id = stripeCustomerId;
+      }
+
       const { error } = await supabase
         .from("users")
-        .update({ plan })
+        .update(updatePayload)
         .eq("clerk_user_id", clerkUserId);
 
       if (error) {
@@ -73,7 +86,11 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
-      console.log(`Updated user ${clerkUserId} to plan ${plan}`);
+      console.log(
+        `Updated user ${clerkUserId} to plan ${plan}${
+          stripeCustomerId ? ` with customer ${stripeCustomerId}` : ""
+        }`
+      );
     }
 
     return NextResponse.json({ received: true });
