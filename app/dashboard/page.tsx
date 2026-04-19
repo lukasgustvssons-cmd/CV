@@ -96,6 +96,7 @@ export default function DashboardPage() {
   const [prepData, setPrepData] = useState<Record<string, InterviewPrep>>({});
   const [loadingPrepId, setLoadingPrepId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [managingSubscription, setManagingSubscription] = useState(false);
 
   const [activeTab, setActiveTab] = useState<DashboardTab>("jobs");
   const [search, setSearch] = useState("");
@@ -279,6 +280,33 @@ export default function DashboardPage() {
   const handleCloseCareerModal = () => {
     localStorage.setItem("NEXOR_career_plus_welcome_seen", "true");
     setShowCareerModal(false);
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      setError("");
+      setManagingSubscription(true);
+
+      const res = await fetch("/api/billing-portal", {
+        method: "POST",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Kunde inte öppna abonnemangshanteringen.");
+      }
+
+      if (!data?.url) {
+        throw new Error("Ingen portal-länk returnerades.");
+      }
+
+      window.location.href = data.url;
+    } catch (err: any) {
+      setError(err?.message || "Kunde inte öppna abonnemangshanteringen.");
+    } finally {
+      setManagingSubscription(false);
+    }
   };
 
   const handleStatusUpdate = async (id: string, newStatus: JobStatus) => {
@@ -526,6 +554,17 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex flex-wrap gap-3">
+            {(plan === "pro" || plan === "career+") && (
+              <button
+                type="button"
+                onClick={handleManageSubscription}
+                disabled={managingSubscription}
+                className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-900 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {managingSubscription ? "Öppnar abonnemang..." : "Hantera abonnemang"}
+              </button>
+            )}
+
             <a
               href="/#demo"
               className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
@@ -906,11 +945,11 @@ export default function DashboardPage() {
                                   <div className="max-h-[85vh] overflow-auto rounded-2xl border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
                                     <div className="mx-auto w-full max-w-[794px] bg-white">
                                       <div className="mx-auto w-full max-w-[794px] bg-white">
-  <StyledResume
-    text={item.content || ""}
-    photoUrl={String(item.meta?.photoUrl || "")}
-  />
-</div>
+                                        <StyledResume
+                                          text={item.content || ""}
+                                          photoUrl={String(item.meta?.photoUrl || "")}
+                                        />
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
