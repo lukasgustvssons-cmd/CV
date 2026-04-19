@@ -8,7 +8,7 @@ import { JobMatches } from "./JobMatches";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { AppToast } from "./AppToast";
 
-const GUEST_CV_KEY = "NEXOR_guest_cv_created";
+const GUEST_CV_KEY = "nexor_guest_cv_created";
 
 type DemoPanelProps = {
   lang: Lang;
@@ -96,7 +96,6 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
   const isSwedish = lang === "sv";
 
   const panelCopy = {
-    eyebrow: isSwedish ? "LIVE DEMO" : "LIVE DEMO",
     title: isSwedish
       ? "Bygg ett starkare CV och gå vidare direkt"
       : "Build a stronger resume and move forward instantly",
@@ -159,9 +158,13 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
     emailPlaceholder: isSwedish ? "namn@email.com" : "name@email.com",
     phoneLabel: isSwedish ? "Telefonnummer" : "Phone number",
     phonePlaceholder: isSwedish ? "070-123 45 67" : "+46 70 123 45 67",
-    helperOne: isSwedish ? "1 gratis CV utan konto" : "1 free resume without an account",
+    helperOne: isSwedish
+      ? "1 gratis CV utan konto"
+      : "1 free resume without an account",
     helperTwo: isSwedish ? "PDF-export ingår" : "PDF export included",
-    helperThree: isSwedish ? "Fortsätt till jobbmatchning direkt" : "Continue to job matching instantly",
+    helperThree: isSwedish
+      ? "Fortsätt till jobbmatchning direkt"
+      : "Continue to job matching instantly",
   };
 
   useEffect(() => {
@@ -398,10 +401,7 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
       className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24"
     >
       <div className="text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-          {panelCopy.eyebrow}
-        </p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
+        <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
           {panelCopy.title}
         </h2>
         <p className="mt-3 text-sm font-medium text-slate-500 sm:text-base">
@@ -512,7 +512,10 @@ export function DemoPanel({ lang, t }: DemoPanelProps) {
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="min-w-0 truncate text-sm text-slate-700">
-                      {photoName || (isSwedish ? "Ingen bild vald ännu" : "No photo selected yet")}
+                      {photoName ||
+                        (isSwedish
+                          ? "Ingen bild vald ännu"
+                          : "No photo selected yet")}
                     </p>
 
                     <div className="flex flex-wrap gap-2">
